@@ -122,7 +122,7 @@ def mark_post_processed(
 # Telegram API Helpers
 # ==========================================
 
-def tg_request(bot_token: str, method: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def tg_request(bot_token: str, method: str, params: Optional[Dict[str, Any]] = None, max_retries: int = 4) -> Dict[str, Any]:
     url = f"https://api.telegram.org/bot{bot_token}/{method}"
     data = None
     if params:
@@ -132,21 +132,31 @@ def tg_request(bot_token: str, method: str, params: Optional[Dict[str, Any]] = N
         data=data,
         headers={"Content-Type": "application/json"} if data else {}
     )
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            res_data = json.loads(resp.read().decode("utf-8"))
-            if not res_data.get("ok"):
-                raise RuntimeError(f"Telegram API Error: {res_data}")
-            return res_data["result"]
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8", errors="ignore")
-        raise RuntimeError(f"HTTPError {e.code} on {method}: {err_body}")
+    last_err = None
+    for attempt in range(max_retries):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                res_data = json.loads(resp.read().decode("utf-8"))
+                if not res_data.get("ok"):
+                    raise RuntimeError(f"Telegram API Error: {res_data}")
+                return res_data["result"]
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8", errors="ignore")
+            last_err = RuntimeError(f"HTTPError {e.code} on {method}: {err_body}")
+        except Exception as e:
+            last_err = e
+
+        if attempt < max_retries - 1:
+            time.sleep(2.0 * (attempt + 1))
+
+    raise RuntimeError(f"Telegram API request failed after {max_retries} attempts for {method}: {last_err}")
 
 
 def get_telegram_file_url(bot_token: str, file_id: str) -> str:
     file_info = tg_request(bot_token, "getFile", {"file_id": file_id})
     file_path = file_info["file_path"]
     return f"https://api.telegram.org/file/bot{bot_token}/{file_path}"
+
 
 
 # ==========================================
@@ -259,16 +269,27 @@ def post_to_threads(config: Dict[str, Any], text: str, media_urls: List[str]) ->
         logger.info(f"Creating carousel with {len(media_urls)} items...")
         carousel_item_ids = []
         for i, url in enumerate(media_urls[:10]):
-            res = threads_api_post(
-                f"{user_id}/threads",
-                {
-                    "media_type": "IMAGE",
-                    "image_url": url,
-                    "is_carousel_item": "true"
-                },
-                access_token
-            )
-            item_id = res["id"]
+            item_id = None
+            for attempt in range(4):
+                try:
+                    res = threads_api_post(
+                        f"{user_id}/threads",
+                        {
+                            "media_type": "IMAGE",
+                            "image_url": url,
+                            "is_carousel_item": "true"
+                        },
+                        access_token
+                    )
+                    item_id = res.get("id")
+                    if item_id:
+                        break
+                except Exception as e:
+                    if attempt == 3:
+                        raise
+                    logger.warning(f"Carousel item {i+1} attempt {attempt+1} failed ({e}), retrying in {(attempt+1)*2}s...")
+                    time.sleep(2.0 * (attempt + 1))
+
             carousel_item_ids.append(item_id)
             logger.info(f"Carousel item {i+1}/{len(media_urls)} created: {item_id}")
 
@@ -414,14 +435,24 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False):
             # 1. Check for ready media groups
             ready_groups = [gid for gid, buf in media_groups.items() if buf.is_ready()]
             for gid in ready_groups:
-                buf = media_groups.pop(gid)
+                buf = media_groups[gid]
                 msg_ids = [m["message_id"] for m in buf.messages]
                 logger.info(f"Processing media group {gid} (messages: {msg_ids})")
 
-                threads_id, twitter_id = process_channel_post(config, buf.messages, dry_run=dry_run)
-                for mid in msg_ids:
-                    mark_post_processed(conn, mid, gid, threads_id, twitter_id)
-                logger.info(f"Media group {gid} published with Threads: {threads_id}, Twitter: {twitter_id}")
+                try:
+                    threads_id, twitter_id = process_channel_post(config, buf.messages, dry_run=dry_run)
+                    for mid in msg_ids:
+                        mark_post_processed(conn, mid, gid, threads_id, twitter_id)
+                    logger.info(f"Media group {gid} published with Threads: {threads_id}, Twitter: {twitter_id}")
+                    media_groups.pop(gid, None)
+                except Exception as err:
+                    logger.error(f"Error publishing media group {gid}: {err}", exc_info=True)
+                    buf.retries = getattr(buf, "retries", 0) + 1
+                    if buf.retries > 5:
+                        logger.error(f"Media group {gid} exceeded max retries. Dropping.")
+                        media_groups.pop(gid, None)
+                    else:
+                        buf.first_seen = time.time() + 10  # retry in 10 seconds
 
             # 2. Fetch Telegram updates
             updates = tg_request(bot_token, "getUpdates", {
