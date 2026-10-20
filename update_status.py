@@ -96,7 +96,11 @@ def update_status_json():
     with open(STATUS_FILE, "w", encoding="utf-8") as f:
         json.dump(status_data, f, indent=2, ensure_ascii=False)
 
-    print(f"Status exported to {STATUS_FILE}")
+    root_status = os.path.join(SCRIPT_DIR, "status.json")
+    with open(root_status, "w", encoding="utf-8") as f:
+        json.dump(status_data, f, indent=2, ensure_ascii=False)
+
+    print(f"Status exported to {STATUS_FILE} and {root_status}")
 
 
 if __name__ == "__main__":
