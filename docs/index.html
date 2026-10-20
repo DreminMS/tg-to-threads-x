@@ -9,8 +9,10 @@
   <meta name="apple-mobile-web-app-title" content="Poster">
   <title>Threads & 𝕏 Cloud Poster</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
   <style>
     :root {
@@ -119,6 +121,18 @@
     .icon-btn:active {
       transform: scale(0.92);
       background: rgba(255, 255, 255, 0.12);
+    }
+
+    .install-banner {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(168, 85, 247, 0.12));
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
     /* Cards */
@@ -486,6 +500,18 @@
       </div>
     </header>
 
+    <!-- Install PWA Banner (Android & Mobile) -->
+    <div id="installBanner" class="install-banner" style="display: none;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 24px;">📲</span>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #fff;">Установить приложение</div>
+          <div style="font-size: 11px; color: var(--text-muted);">Добавить на рабочий стол телефона</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px; white-space: nowrap;" onclick="installApp()">Установить</button>
+    </div>
+
     <!-- Main Stats Card -->
     <div class="card">
       <div class="stats-header">
@@ -576,7 +602,7 @@
 
     <!-- Links Card -->
     <div class="card" style="display: flex; gap: 8px; justify-content: space-around; padding: 14px;">
-      <a href="https://www.threads.net/@m_dremin" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">🧵 Threads</a>
+      <a href="https://www.threads.net/@dremin" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">🧵 Threads</a>
       <span style="color: var(--card-border)">•</span>
       <a href="https://x.com/m_dremin" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">𝕏 Twitter</a>
       <span style="color: var(--card-border)">•</span>
@@ -681,7 +707,7 @@
                   <div class="post-time">${timeStr}</div>
                 </div>
                 <div class="post-links">
-                  ${p.threads_id ? `<a class="post-link-pill pill-threads" href="https://www.threads.net/@m_dremin" target="_blank">🧵 Threads</a>` : ''}
+                  ${p.threads_id ? `<a class="post-link-pill pill-threads" href="https://www.threads.net/@dremin" target="_blank">🧵 Threads</a>` : ''}
                   ${p.twitter_id ? `<a class="post-link-pill pill-twitter" href="https://x.com/m_dremin/status/${p.twitter_id}" target="_blank">𝕏 Tweet</a>` : ''}
                 </div>
               </div>
@@ -734,9 +760,58 @@
       window.open(`https://github.com/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${workflowFile}`, '_blank');
     }
 
+    // PWA Installation handling
+    let deferredPrompt = null;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!isStandalone) {
+        const b = document.getElementById('installBanner');
+        if (b) b.style.display = 'flex';
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      const b = document.getElementById('installBanner');
+      if (b) b.style.display = 'none';
+      showToast('🎉 Приложение установлено на рабочий стол!');
+    });
+
+    async function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if (choice && choice.outcome === 'accepted') {
+          const b = document.getElementById('installBanner');
+          if (b) b.style.display = 'none';
+        }
+        deferredPrompt = null;
+      } else {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (isIOS) {
+          showToast('📲 Safari: нажмите «Поделиться» ⬆️ -> «На экран «Домой»»');
+        } else {
+          showToast('📲 Android: нажмите меню ⋮ (три точки) -> «Установить приложение» или «Добавить на гл. экран»');
+        }
+      }
+    }
+
+    // Show banner on mobile if not standalone
+    if (!isStandalone) {
+      setTimeout(() => {
+        const b = document.getElementById('installBanner');
+        if (b && b.style.display === 'none') {
+          b.style.display = 'flex';
+        }
+      }, 1200);
+    }
+
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
 
     // Initial load and recurring auto-refresh every 20s

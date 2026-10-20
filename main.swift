@@ -202,11 +202,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(NSMenuItem.separator())
         
         // Quick Links
+        let pwaLink = NSMenuItem(title: "📱 Открыть PWA на телефоне / в браузере", action: #selector(openPWAPage), keyEquivalent: "")
+        pwaLink.target = self
+        menu.addItem(pwaLink)
+
         let ghActionsLink = NSMenuItem(title: "🌐 Открыть страницу GitHub Actions", action: #selector(openGitHubActions), keyEquivalent: "")
         ghActionsLink.target = self
         menu.addItem(ghActionsLink)
 
-        let threadsLink = NSMenuItem(title: "🌐 Открыть профиль Threads (@m_dremin)", action: #selector(openThreadsProfile), keyEquivalent: "")
+        let threadsLink = NSMenuItem(title: "🌐 Открыть профиль Threads (@dremin)", action: #selector(openThreadsProfile), keyEquivalent: "")
         threadsLink.target = self
         menu.addItem(threadsLink)
 
@@ -268,6 +272,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
+    @objc func openPWAPage() {
+        if let url = URL(string: "https://dreminms.github.io/tg-to-threads-x/") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
     @objc func openGitHubActions() {
         if let url = URL(string: "https://github.com/DreminMS/tg-to-threads-x/actions") {
             NSWorkspace.shared.open(url)
@@ -275,7 +285,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc func openThreadsProfile() {
-        if let url = URL(string: "https://www.threads.net/@m_dremin") {
+        if let url = URL(string: "https://www.threads.net/@dremin") {
             NSWorkspace.shared.open(url)
         }
     }
