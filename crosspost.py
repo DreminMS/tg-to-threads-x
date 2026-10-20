@@ -82,14 +82,39 @@ def set_stored_offset(conn: sqlite3.Connection, offset: int):
 def is_post_processed(conn: sqlite3.Connection, message_id: int) -> bool:
     cur = conn.cursor()
     cur.execute("SELECT 1 FROM processed_posts WHERE message_id = ?", (message_id,))
+    if cur.fetchone():
+        return True
+    cur.execute("SELECT 1 FROM archive_posts WHERE post_id = ? AND status = 'published'", (message_id,))
     return cur.fetchone() is not None
 
 
-def mark_post_processed(conn: sqlite3.Connection, message_id: int, media_group_id: Optional[str], threads_id: Optional[str]):
+def mark_post_processed(
+    conn: sqlite3.Connection,
+    message_id: int,
+    media_group_id: Optional[str],
+    threads_id: Optional[str],
+    twitter_id: Optional[str] = None
+):
     with conn:
         conn.execute(
-            "INSERT OR REPLACE INTO processed_posts (message_id, media_group_id, threads_id) VALUES (?, ?, ?)",
-            (message_id, media_group_id, threads_id)
+            """
+            INSERT OR REPLACE INTO processed_posts (message_id, media_group_id, threads_id, twitter_id)
+            VALUES (?, ?, ?, ?)
+            """,
+            (message_id, media_group_id, threads_id, twitter_id)
+        )
+        # Crucial: mark as published in archive_posts too, so archive poster NEVER publishes it as an archive post
+        conn.execute(
+            """
+            INSERT INTO archive_posts (post_id, post_date, photos_json, status, threads_id, twitter_id, published_at)
+            VALUES (?, CURRENT_TIMESTAMP, '[]', 'published', ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(post_id) DO UPDATE SET
+                status = 'published',
+                threads_id = COALESCE(excluded.threads_id, archive_posts.threads_id),
+                twitter_id = COALESCE(excluded.twitter_id, archive_posts.twitter_id),
+                published_at = CURRENT_TIMESTAMP
+            """,
+            (message_id, threads_id, twitter_id)
         )
 
 
@@ -337,7 +362,7 @@ def process_channel_post(config: Dict[str, Any], messages: List[Dict[str, Any]],
 
     if dry_run:
         logger.info("[DRY RUN] Would publish to Threads and Twitter.")
-        return "dry_run_post_id"
+        return ("dry_run_threads", "dry_run_twitter")
 
     threads_id = None
     if config.get("threads_enabled", True):
@@ -363,7 +388,7 @@ def process_channel_post(config: Dict[str, Any], messages: List[Dict[str, Any]],
         except Exception as tw_err:
             logger.error(f"Failed to post to Twitter: {tw_err}")
 
-    return threads_id or twitter_id
+    return (threads_id, twitter_id)
 
 
 def run_poller(config: Dict[str, Any], dry_run: bool = False):
@@ -393,10 +418,10 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False):
                 msg_ids = [m["message_id"] for m in buf.messages]
                 logger.info(f"Processing media group {gid} (messages: {msg_ids})")
 
-                threads_id = process_channel_post(config, buf.messages, dry_run=dry_run)
+                threads_id, twitter_id = process_channel_post(config, buf.messages, dry_run=dry_run)
                 for mid in msg_ids:
-                    mark_post_processed(conn, mid, gid, threads_id)
-                logger.info(f"Media group {gid} published with Threads ID: {threads_id}")
+                    mark_post_processed(conn, mid, gid, threads_id, twitter_id)
+                logger.info(f"Media group {gid} published with Threads: {threads_id}, Twitter: {twitter_id}")
 
             # 2. Fetch Telegram updates
             updates = tg_request(bot_token, "getUpdates", {
@@ -436,9 +461,9 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False):
                     logger.info(f"Buffered item for media group {media_group_id} (msg_id: {msg_id})")
                 else:
                     logger.info(f"Processing standalone message {msg_id}")
-                    threads_id = process_channel_post(config, [post], dry_run=dry_run)
-                    mark_post_processed(conn, msg_id, None, threads_id)
-                    logger.info(f"Message {msg_id} published with Threads ID: {threads_id}")
+                    threads_id, twitter_id = process_channel_post(config, [post], dry_run=dry_run)
+                    mark_post_processed(conn, msg_id, None, threads_id, twitter_id)
+                    logger.info(f"Message {msg_id} published with Threads: {threads_id}, Twitter: {twitter_id}")
 
         except Exception as e:
             logger.error(f"Error in poller cycle: {e}", exc_info=True)

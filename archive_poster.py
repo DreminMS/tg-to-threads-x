@@ -157,12 +157,22 @@ def sync_archive(start_after: int = 2167) -> int:
             cur = conn.cursor()
             cur.execute("SELECT 1 FROM archive_posts WHERE post_id = ?", (post_id,))
             if not cur.fetchone():
-                with conn:
-                    conn.execute("""
-                        INSERT INTO archive_posts (post_id, post_date, photos_json, status)
-                        VALUES (?, ?, ?, 'pending')
-                    """, (post_id, post_date, json.dumps(photos)))
-                total_added += 1
+                # Check if already processed by real-time crossposter
+                cur.execute("SELECT threads_id, twitter_id FROM processed_posts WHERE message_id = ?", (post_id,))
+                p_row = cur.fetchone()
+                if p_row:
+                    with conn:
+                        conn.execute("""
+                            INSERT INTO archive_posts (post_id, post_date, photos_json, status, threads_id, twitter_id, published_at)
+                            VALUES (?, ?, ?, 'published', ?, ?, CURRENT_TIMESTAMP)
+                        """, (post_id, post_date, json.dumps(photos), p_row[0], p_row[1]))
+                else:
+                    with conn:
+                        conn.execute("""
+                            INSERT INTO archive_posts (post_id, post_date, photos_json, status)
+                            VALUES (?, ?, ?, 'pending')
+                        """, (post_id, post_date, json.dumps(photos)))
+                    total_added += 1
 
         # Check next pagination link
         next_m = re.search(r'<link rel="next" href="([^"]+)"', html)
@@ -270,16 +280,30 @@ def refresh_threads_token_if_needed(config: Dict[str, Any]):
 
 def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
     """
-    Fetches the oldest pending post and publishes it to Threads without captions.
+    Fetches the oldest pending post and publishes it to Threads and Twitter without captions.
     """
     refresh_threads_token_if_needed(config)
     conn = init_db()
     cur = conn.cursor()
+
+    # 1. Sync any posts that were already crossposted in real-time
+    with conn:
+        conn.execute("""
+            UPDATE archive_posts
+            SET status = 'published',
+                threads_id = (SELECT threads_id FROM processed_posts WHERE processed_posts.message_id = archive_posts.post_id),
+                twitter_id = (SELECT twitter_id FROM processed_posts WHERE processed_posts.message_id = archive_posts.post_id),
+                published_at = CURRENT_TIMESTAMP
+            WHERE status = 'pending' AND post_id IN (SELECT message_id FROM processed_posts)
+        """)
+
+    # 2. Select oldest pending post that has NOT been processed in real-time
     cur.execute("""
-        SELECT post_id, post_date, photos_json
-        FROM archive_posts
-        WHERE status = 'pending'
-        ORDER BY post_id ASC
+        SELECT a.post_id, a.post_date, a.photos_json
+        FROM archive_posts a
+        LEFT JOIN processed_posts p ON a.post_id = p.message_id
+        WHERE a.status = 'pending' AND p.message_id IS NULL
+        ORDER BY a.post_id ASC
         LIMIT 1
     """)
     row = cur.fetchone()
