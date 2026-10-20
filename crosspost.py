@@ -35,13 +35,39 @@ logger = logging.getLogger("crosspost")
 
 
 def load_config() -> Dict[str, Any]:
-    if not os.path.exists(CONFIG_FILE):
-        example_path = os.path.join(SCRIPT_DIR, "config.example.json")
-        logger.error(f"Config file not found: {CONFIG_FILE}")
-        logger.error(f"Please copy {example_path} to {CONFIG_FILE} and fill in your tokens.")
+    cfg: Dict[str, Any] = {
+        "telegram_channel_id": "@dremin_live",
+        "append_signature": True,
+        "signature_text": "\n\nDremin live | t.me/dremin_live",
+        "poll_interval_seconds": 20,
+        "threads_enabled": True,
+    }
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                loaded = json.load(f)
+                cfg.update(loaded)
+        except Exception as e:
+            logger.warning(f"Could not read config.json: {e}")
+
+    # Fallback to Environment Variables (for GitHub Actions, Docker, Cloud)
+    if os.environ.get("THREADS_USER_ID"):
+        cfg["threads_user_id"] = os.environ["THREADS_USER_ID"]
+    if os.environ.get("THREADS_ACCESS_TOKEN"):
+        cfg["threads_access_token"] = os.environ["THREADS_ACCESS_TOKEN"]
+    if os.environ.get("TELEGRAM_BOT_TOKEN"):
+        cfg["telegram_bot_token"] = os.environ["TELEGRAM_BOT_TOKEN"]
+    if os.environ.get("TWITTER_AUTH_TOKEN") and os.environ.get("TWITTER_CT0"):
+        cfg["twitter_enabled"] = True
+        cfg["twitter_cookies"] = {
+            "auth_token": os.environ["TWITTER_AUTH_TOKEN"],
+            "ct0": os.environ["TWITTER_CT0"]
+        }
+
+    if not cfg.get("threads_user_id") or not cfg.get("threads_access_token"):
+        logger.error("Missing threads_user_id or threads_access_token in config and environment!")
         sys.exit(1)
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    return cfg
 
 
 def init_db() -> sqlite3.Connection:
