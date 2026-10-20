@@ -4,6 +4,8 @@ import SQLite3
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var statusItem: NSStatusItem!
     var timer: Timer?
+    var gitTimer: Timer?
+    var isSyncingGit = false
     let dbPath = "/Users/mihaildremin/.gemini/antigravity/scratch/tg_to_threads/crosspost.db"
     let projectDir = "/Users/mihaildremin/.gemini/antigravity/scratch/tg_to_threads"
     
@@ -32,23 +34,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         updateUI()
         
-        // Refresh every 4 seconds
+        // Refresh local UI every 4 seconds
         timer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { [weak self] _ in
             self?.updateUI()
         }
+        
+        // Auto-sync database from GitHub Actions every 60 seconds in the background
+        gitTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { [weak self] _ in
+            self?.syncWithGitHub(showLoading: false)
+        }
+        
+        // Initial sync on start
+        syncWithGitHub(showLoading: false)
     }
     
     func menuWillOpen(_ menu: NSMenu) {
         rebuildMenu()
-    }
-    
-    func isArchiveServiceRunning() -> Bool {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
-        process.arguments = ["-f", "archive_poster.py --daemon"]
-        try? process.run()
-        process.waitUntilExit()
-        return process.terminationStatus == 0
+        // Pull latest updates when user clicks status bar icon
+        syncWithGitHub(showLoading: false)
     }
     
     func isRealtimeServiceRunning() -> Bool {
@@ -105,25 +108,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard let data = try? Data(contentsOf: URL(fileURLWithPath: "\(projectDir)/config.json")),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let enabled = json["twitter_enabled"] as? Bool,
-              let key = json["twitter_consumer_key"] as? String else {
+              let cookies = json["twitter_cookies"] as? [String: String] else {
             return false
         }
-        return enabled && !key.contains("REPLACE")
+        return enabled && !(cookies["auth_token"] ?? "").isEmpty
     }
 
     func updateUI() {
         let stats = fetchStats()
-        let isRunning = isArchiveServiceRunning()
+        let isRtRunning = isRealtimeServiceRunning()
         let twConfigured = isTwitterConfigured()
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self, let button = self.statusItem.button else { return }
-            let stateIcon = isRunning ? "" : " ⏸"
+            if self.isSyncingGit {
+                button.title = "🧵 🔄 ..."
+                return
+            }
             let twIcon = twConfigured ? " | 𝕏" : ""
+            let rtIcon = isRtRunning ? "" : " ⚠️"
             if stats.total > 0 {
-                button.title = "🧵\(twIcon) \(stats.published)/\(stats.total)\(stateIcon)"
+                button.title = "🧵\(twIcon) \(stats.published)/\(stats.total)\(rtIcon)"
             } else {
-                button.title = "🧵\(twIcon) Poster\(stateIcon)"
+                button.title = "🧵\(twIcon) Poster\(rtIcon)"
             }
         }
     }
@@ -133,12 +140,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.removeAllItems()
         
         let stats = fetchStats()
-        let isArchiveRunning = isArchiveServiceRunning()
         let isRtRunning = isRealtimeServiceRunning()
         let twConfigured = isTwitterConfigured()
         
         // Header
-        let headerItem = NSMenuItem(title: "🧵 Threads & 𝕏 Poster", action: nil, keyEquivalent: "")
+        let headerItem = NSMenuItem(title: "🧵 Threads & 𝕏 Auto-Poster", action: nil, keyEquivalent: "")
         let titleAttr: [NSAttributedString.Key: Any] = [
             .font: NSFont.boldSystemFont(ofSize: 14)
         ]
@@ -146,18 +152,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         headerItem.isEnabled = false
         menu.addItem(headerItem)
         
-        // Status row
-        let statusStr = isArchiveRunning ? "🟢 Автопостинг архива (раз в час): АКТИВЕН" : "⏸️ Автопостинг архива: НА ПАУЗЕ"
-        let statusItem = NSMenuItem(title: statusStr, action: nil, keyEquivalent: "")
-        statusItem.isEnabled = false
-        menu.addItem(statusItem)
+        // Status rows
+        let cloudStr = "☁️ Архив на GitHub Actions: АКТИВЕН (каждый час)"
+        let cloudItem = NSMenuItem(title: cloudStr, action: nil, keyEquivalent: "")
+        cloudItem.isEnabled = false
+        menu.addItem(cloudItem)
 
-        let rtStr = isRtRunning ? "🟢 TG ➔ Threads кросспост: АКТИВЕН" : "⏸️ TG ➔ Threads кросспост: НЕ ЗАПУЩЕН"
+        let rtStr = isRtRunning ? "🟢 TG ➔ Threads & 𝕏 кросспост: АКТИВЕН (локально)" : "⏸️ TG ➔ Threads & 𝕏 кросспост: НЕ ЗАПУЩЕН"
         let rtItem = NSMenuItem(title: rtStr, action: nil, keyEquivalent: "")
         rtItem.isEnabled = false
         menu.addItem(rtItem)
 
-        let twStr = twConfigured ? "🟢 Twitter (X) интеграция: ПОДКЛЮЧЕНА" : "⚪ Twitter (X) интеграция: ОЖИДАЕТ КЛЮЧЕЙ"
+        let twStr = twConfigured ? "🟢 Twitter (X) интеграция: ПОДКЛЮЧЕНА" : "⚪ Twitter (X) интеграция: ОЖИДАЕТ КУКИ"
         let twItem = NSMenuItem(title: twStr, action: nil, keyEquivalent: "")
         twItem.isEnabled = false
         menu.addItem(twItem)
@@ -186,31 +192,37 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
-        // Actions
-        if isArchiveRunning {
-            let pauseItem = NSMenuItem(title: "⏸️ Приостановить автопостинг", action: #selector(toggleArchiveService), keyEquivalent: "")
-            pauseItem.target = self
-            menu.addItem(pauseItem)
-        } else {
-            let startItem = NSMenuItem(title: "▶️ Запустить автопостинг (раз в час)", action: #selector(toggleArchiveService), keyEquivalent: "")
-            startItem.target = self
-            menu.addItem(startItem)
-        }
+        // Cloud & Local Actions
+        let gitSyncItem = NSMenuItem(title: "🔄 Синхронизировать с GitHub прямо сейчас", action: #selector(manualGitSync), keyEquivalent: "g")
+        gitSyncItem.target = self
+        menu.addItem(gitSyncItem)
+
+        let triggerActionsItem = NSMenuItem(title: "⚡ Опубликовать 1 пост в облаке (GitHub Actions)", action: #selector(openGitHubActions), keyEquivalent: "")
+        triggerActionsItem.target = self
+        menu.addItem(triggerActionsItem)
+
+        let publishLocalItem = NSMenuItem(title: "⚡ Опубликовать 1 пост прямо на этом Mac", action: #selector(publishLocal), keyEquivalent: "p")
+        publishLocalItem.target = self
+        menu.addItem(publishLocalItem)
         
-        let publishNowItem = NSMenuItem(title: "⚡ Опубликовать 1 пост прямо сейчас", action: #selector(publishNow), keyEquivalent: "p")
-        publishNowItem.target = self
-        menu.addItem(publishNowItem)
-        
-        let syncItem = NSMenuItem(title: "🔄 Синхронизировать архив из Telegram", action: #selector(syncArchive), keyEquivalent: "s")
-        syncItem.target = self
-        menu.addItem(syncItem)
+        let syncTgItem = NSMenuItem(title: "🔄 Синхронизировать архив из Telegram", action: #selector(syncArchiveFromTelegram), keyEquivalent: "s")
+        syncTgItem.target = self
+        menu.addItem(syncTgItem)
         
         menu.addItem(NSMenuItem.separator())
         
-        // Logs & Folders
-        let logItem = NSMenuItem(title: "📋 Открыть лог архива (archive_stdout.log)", action: #selector(openArchiveLog), keyEquivalent: "")
-        logItem.target = self
-        menu.addItem(logItem)
+        // Quick Links & Logs
+        let ghActionsLink = NSMenuItem(title: "🌐 Открыть страницу GitHub Actions", action: #selector(openGitHubActions), keyEquivalent: "")
+        ghActionsLink.target = self
+        menu.addItem(ghActionsLink)
+
+        let threadsLink = NSMenuItem(title: "🌐 Открыть профиль Threads (@m_dremin)", action: #selector(openThreadsProfile), keyEquivalent: "")
+        threadsLink.target = self
+        menu.addItem(threadsLink)
+
+        let twitterLink = NSMenuItem(title: "🌐 Открыть профиль Twitter/X (@m_dremin)", action: #selector(openTwitterProfile), keyEquivalent: "")
+        twitterLink.target = self
+        menu.addItem(twitterLink)
         
         let rtLogItem = NSMenuItem(title: "📋 Открыть лог реалтайма (stdout.log)", action: #selector(openRtLog), keyEquivalent: "")
         rtLogItem.target = self
@@ -228,28 +240,66 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(quitItem)
     }
     
-    @objc func toggleArchiveService() {
-        let isRunning = isArchiveServiceRunning()
-        let script = isRunning ? "./stop_archive_service.sh" : "./setup_archive_service.sh"
-        executeShellAsync(script)
+    @objc func manualGitSync() {
+        syncWithGitHub(showLoading: true)
     }
     
-    @objc func publishNow() {
+    func syncWithGitHub(showLoading: Bool) {
+        if isSyncingGit { return }
+        isSyncingGit = true
+        if showLoading, let button = statusItem.button {
+            button.title = "🧵 🔄 ..."
+        }
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            let p = Process()
+            p.executableURL = URL(fileURLWithPath: "/usr/bin/git")
+            p.arguments = ["pull", "--rebase", "origin", "main"]
+            p.currentDirectoryURL = URL(fileURLWithPath: self.projectDir)
+            try? p.run()
+            p.waitUntilExit()
+            
+            DispatchQueue.main.async {
+                self.isSyncingGit = false
+                self.updateUI()
+                if let menu = self.statusItem.menu, menu.numberOfItems > 0 {
+                    self.rebuildMenu()
+                }
+            }
+        }
+    }
+    
+    @objc func publishLocal() {
         if let button = statusItem.button {
             button.title = "🧵 Публикую..."
         }
-        executeShellAsync("./archive_poster.py --publish-one")
+        executeShellAsync("/opt/homebrew/bin/python3 ./archive_poster.py --publish-one")
     }
     
-    @objc func syncArchive() {
+    @objc func syncArchiveFromTelegram() {
         if let button = statusItem.button {
-            button.title = "🧵 Синхр..."
+            button.title = "🧵 Синхр TG..."
         }
-        executeShellAsync("./archive_poster.py --sync")
+        executeShellAsync("/opt/homebrew/bin/python3 ./archive_poster.py --sync")
     }
     
-    @objc func openArchiveLog() {
-        NSWorkspace.shared.open(URL(fileURLWithPath: "\(projectDir)/archive_stdout.log"))
+    @objc func openGitHubActions() {
+        if let url = URL(string: "https://github.com/DreminMS/tg-to-threads-x/actions/workflows/archive_poster.yml") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @objc func openThreadsProfile() {
+        if let url = URL(string: "https://www.threads.net/@m_dremin") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @objc func openTwitterProfile() {
+        if let url = URL(string: "https://x.com/m_dremin") {
+            NSWorkspace.shared.open(url)
+        }
     }
     
     @objc func openRtLog() {
@@ -273,6 +323,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             p.currentDirectoryURL = URL(fileURLWithPath: self.projectDir)
             try? p.run()
             p.waitUntilExit()
+            
+            // Push changes if any to GitHub so cloud stays in sync
+            let pushP = Process()
+            pushP.executableURL = URL(fileURLWithPath: "/bin/bash")
+            pushP.arguments = ["-c", "git add crosspost.db && git diff --quiet && git diff --staged --quiet || (git commit -m 'Sync local progress' && git push origin main)"]
+            pushP.currentDirectoryURL = URL(fileURLWithPath: self.projectDir)
+            try? pushP.run()
+            pushP.waitUntilExit()
             
             DispatchQueue.main.async {
                 self.updateUI()
