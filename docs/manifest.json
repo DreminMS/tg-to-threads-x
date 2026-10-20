@@ -1,0 +1,18 @@
+{
+  "name": "Threads & 𝕏 Poster",
+  "short_name": "Poster",
+  "description": "Мониторинг и управление автономным постингом Threads & 𝕏",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

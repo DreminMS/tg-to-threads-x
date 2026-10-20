@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Poster">
+  <title>Threads & 𝕏 Cloud Poster</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(22, 27, 34, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-pink: #f43f5e;
+      --text: #f0f6fc;
+      --text-muted: #8b949e;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 16px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 16px);
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 24px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 4px 6px 4px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand-title {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      background: linear-gradient(90deg, #38bdf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 18px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .badge-cloud {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* Stats Section */
+    .stats-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .stat-main-num {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    .stat-main-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
+      border-radius: 8px;
+      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .stat-box-title {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .stat-box-val {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #e2e8f0;
+    }
+
+    /* Workflow Cards */
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 4px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .wf-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .wf-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .wf-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .wf-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .wf-schedule-pill {
+      font-size: 11px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+    }
+
+    .btn-secondary:active {
+      transform: scale(0.97);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Recent Posts Feed */
+    .post-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .post-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .post-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .post-id-badge {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+
+    .post-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .post-links {
+      display: flex;
+      gap: 6px;
+    }
+
+    .post-link-pill {
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .pill-threads {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+
+    .pill-twitter {
+      background: rgba(29, 155, 240, 0.15);
+      color: #38bdf8;
+      border-color: rgba(29, 155, 240, 0.3);
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: calc(20px + env(safe-area-inset-bottom, 20px));
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 999;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: #161b22;
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 22px;
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 14px;
+      font-family: monospace;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent);
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 512 512">
+            <path d="M 210 170 Q 256 120 300 170 Q 330 210 330 260 C 330 320 290 350 245 350 C 190 350 160 300 160 250 C 160 180 210 140 280 140 C 340 140 380 180 380 250 C 380 340 300 400 230 400" fill="none" stroke="#38bdf8" stroke-width="36" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">Threads & 𝕏 Cloud</div>
+          <div class="brand-subtitle" id="lastUpdated">Загрузка...</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="refreshBtn" onclick="loadStatus(true)" title="Обновить">🔄</button>
+        <button class="icon-btn" id="settingsBtn" onclick="openSettings()" title="Настройки API">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Main Stats Card -->
+    <div class="card">
+      <div class="stats-header">
+        <div>
+          <div class="stat-main-num" id="statPublished">—</div>
+          <div class="stat-main-label" id="statSubLabel">Опубликовано постов</div>
+        </div>
+        <div class="badge-cloud">
+          <span class="dot"></span> Облако 24/7
+        </div>
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-box-title">В очереди архива</div>
+          <div class="stat-box-val" id="statPending">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-title">Расчетное время</div>
+          <div class="stat-box-val" id="statDays">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Next Post Card -->
+    <div class="card" id="nextPostCard" style="display: none;">
+      <div class="stat-box-title">📸 Следующий архивный пост</div>
+      <div class="stat-box-val" style="font-size: 15px; margin-top: 6px;" id="nextPostDetails">—</div>
+    </div>
+
+    <!-- Workflows (Daemons) Controls -->
+    <div class="section-title">
+      <span>Управление облачными демонами</span>
+    </div>
+
+    <!-- Archive Workflow -->
+    <div class="card wf-card">
+      <div class="wf-top">
+        <div>
+          <div class="wf-name">📦 Архивный автопостер</div>
+          <div class="wf-desc">Публикация фотоархива (с 2022 года)</div>
+        </div>
+        <div class="wf-schedule-pill">Раз в час</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="triggerWorkflow('archive_poster.yml')">
+          ⚡ Опубликовать 1 пост сейчас
+        </button>
+        <button class="btn btn-secondary" onclick="openWorkflowPage('archive_poster.yml')">
+          🌐 Страница
+        </button>
+      </div>
+    </div>
+
+    <!-- Crosspost Workflow -->
+    <div class="card wf-card">
+      <div class="wf-top">
+        <div>
+          <div class="wf-name">⚡ Telegram Кросспостер</div>
+          <div class="wf-desc">Новые посты из канала @dremin_live</div>
+        </div>
+        <div class="wf-schedule-pill">Каждые 10 мин</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="triggerWorkflow('crosspost.yml')">
+          ⚡ Проверить Telegram сейчас
+        </button>
+        <button class="btn btn-secondary" onclick="openWorkflowPage('crosspost.yml')">
+          🌐 Страница
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section-title">
+      <span>Недавние публикации</span>
+    </div>
+
+    <div class="card" id="recentPostsCard">
+      <div id="recentPostsList">
+        <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0;">Загрузка истории...</div>
+      </div>
+    </div>
+
+    <!-- Links Card -->
+    <div class="card" style="display: flex; gap: 8px; justify-content: space-around; padding: 14px;">
+      <a href="https://www.threads.net/@m_dremin" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">🧵 Threads</a>
+      <span style="color: var(--card-border)">•</span>
+      <a href="https://x.com/m_dremin" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">𝕏 Twitter</a>
+      <span style="color: var(--card-border)">•</span>
+      <a href="https://t.me/dremin_live" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">✈️ Telegram</a>
+      <span style="color: var(--card-border)">•</span>
+      <a href="https://github.com/DreminMS/tg-to-threads-x/actions" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">⚙️ Actions</a>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="modalBackdrop" onclick="closeSettings(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title">
+        <span>🔑 Токен GitHub (PAT)</span>
+        <button class="icon-btn" style="width: 30px; height: 30px;" onclick="closeSettings()">✕</button>
+      </div>
+      <p class="help-text">
+        Для запуска и управления воркфлоу прямо с телефона укажите ваш Personal Access Token с правами <b>Actions (Read and Write)</b>.
+      </p>
+      <input type="password" class="input-field" id="patInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveToken()">Сохранить токен</button>
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 4px;">
+        Токен сохраняется только в браузере этого устройства (localStorage).
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const REPO_OWNER = 'DreminMS';
+    const REPO_NAME = 'tg-to-threads-x';
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    function openSettings() {
+      document.getElementById('patInput').value = localStorage.getItem('gh_pat') || '';
+      document.getElementById('modalBackdrop').classList.add('open');
+    }
+
+    function closeSettings(e) {
+      if (!e || e.target.id === 'modalBackdrop' || e.target.tagName === 'BUTTON') {
+        document.getElementById('modalBackdrop').classList.remove('open');
+      }
+    }
+
+    function saveToken() {
+      const val = document.getElementById('patInput').value.trim();
+      if (val) {
+        localStorage.setItem('gh_pat', val);
+        showToast('✅ Токен сохранен');
+      } else {
+        localStorage.removeItem('gh_pat');
+        showToast('ℹ️ Токен очищен');
+      }
+      closeSettings();
+    }
+
+    async function loadStatus(manual = false) {
+      const btn = document.getElementById('refreshBtn');
+      if (manual) btn.style.transform = 'rotate(180deg)';
+
+      try {
+        const resp = await fetch(`status.json?t=${Date.now()}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+
+        // Stats
+        document.getElementById('statPublished').innerText = `${data.published} / ${data.total}`;
+        document.getElementById('statSubLabel').innerText = `Опубликовано (${data.percent}%)`;
+        document.getElementById('progressBar').style.width = `${data.percent}%`;
+        document.getElementById('statPending').innerText = `${data.pending} постов`;
+        document.getElementById('statDays').innerText = `~${data.days_left} дн.`;
+
+        // Next post
+        if (data.next_post) {
+          document.getElementById('nextPostCard').style.display = 'block';
+          document.getElementById('nextPostDetails').innerText = `#${data.next_post.id} (${data.next_post.date}, ${data.next_post.photos_count} фото)`;
+        }
+
+        // Updated time
+        const dt = new Date(data.updated_at);
+        document.getElementById('lastUpdated').innerText = `Обновлено: ${dt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+
+        // Recent posts
+        if (data.recent_posts && data.recent_posts.length > 0) {
+          const listHtml = data.recent_posts.map(p => {
+            const timeStr = p.published_at ? p.published_at.slice(5, 16) : '';
+            return `
+              <div class="post-item">
+                <div class="post-left">
+                  <div class="post-id-badge">Пост #${p.post_id}</div>
+                  <div class="post-time">${timeStr}</div>
+                </div>
+                <div class="post-links">
+                  ${p.threads_id ? `<a class="post-link-pill pill-threads" href="https://www.threads.net/@m_dremin" target="_blank">🧵 Threads</a>` : ''}
+                  ${p.twitter_id ? `<a class="post-link-pill pill-twitter" href="https://x.com/m_dremin/status/${p.twitter_id}" target="_blank">𝕏 Tweet</a>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+          document.getElementById('recentPostsList').innerHTML = listHtml;
+        }
+
+        if (manual) showToast('✅ Данные обновлены');
+      } catch (err) {
+        console.warn('Could not load status.json:', err);
+        if (manual) showToast('⚠️ Ошибка загрузки status.json');
+      } finally {
+        setTimeout(() => btn.style.transform = 'none', 300);
+      }
+    }
+
+    async function triggerWorkflow(workflowFile) {
+      const pat = localStorage.getItem('gh_pat');
+      if (!pat) {
+        showToast('⚠️ Укажите токен GitHub в ⚙️ Настройках');
+        openSettings();
+        return;
+      }
+
+      showToast('🚀 Отправка запроса в GitHub Actions...');
+      try {
+        const resp = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${workflowFile}/dispatches`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${pat}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ ref: 'main' })
+        });
+
+        if (resp.status === 204 || resp.ok) {
+          showToast('✅ Воркфлоу запущен в облаке!');
+        } else {
+          const errData = await resp.json().catch(() => ({}));
+          showToast(`❌ Ошибка (${resp.status}): ${errData.message || 'Проверьте токен'}`);
+        }
+      } catch (e) {
+        showToast(`❌ Ошибка сети: ${e.message}`);
+      }
+    }
+
+    function openWorkflowPage(workflowFile) {
+      window.open(`https://github.com/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${workflowFile}`, '_blank');
+    }
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+
+    // Initial load and recurring auto-refresh every 20s
+    loadStatus();
+    setInterval(() => loadStatus(false), 20000);
+  </script>
+</body>
+</html>

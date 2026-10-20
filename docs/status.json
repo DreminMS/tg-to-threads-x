@@ -1,0 +1,65 @@
+{
+  "updated_at": "2026-10-20T22:18:02.389332+00:00",
+  "published": 17,
+  "pending": 649,
+  "total": 666,
+  "percent": 2.6,
+  "days_left": 27.0,
+  "next_post": {
+    "id": 2205,
+    "date": "2022-01-28",
+    "photos_count": 10
+  },
+  "recent_posts": [
+    {
+      "post_id": 4615,
+      "threads_id": "18077211374757698",
+      "twitter_id": "2112664794289598923",
+      "published_at": "2026-10-20 21:58:34"
+    },
+    {
+      "post_id": 4616,
+      "threads_id": "18077211374757698",
+      "twitter_id": "2112664794289598923",
+      "published_at": "2026-10-20 21:58:34"
+    },
+    {
+      "post_id": 4617,
+      "threads_id": "18077211374757698",
+      "twitter_id": "2112664794289598923",
+      "published_at": "2026-10-20 21:58:34"
+    },
+    {
+      "post_id": 4618,
+      "threads_id": "18077211374757698",
+      "twitter_id": "2112664794289598923",
+      "published_at": "2026-10-20 21:58:34"
+    },
+    {
+      "post_id": 4619,
+      "threads_id": "18077211374757698",
+      "twitter_id": "2112664794289598923",
+      "published_at": "2026-10-20 21:58:34"
+    },
+    {
+      "post_id": 4620,
+      "threads_id": "18077211374757698",
+      "twitter_id": "2112664794289598923",
+      "published_at": "2026-10-20 21:58:34"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "archive_poster.yml",
+      "name": "Hourly Archive Poster",
+      "schedule": "Раз в час (XX:00)",
+      "description": "Публикация архива с 2022 года"
+    },
+    {
+      "id": "crosspost.yml",
+      "name": "Realtime Telegram Crossposter",
+      "schedule": "Каждые 10 минут",
+      "description": "Проверка новых постов в @dremin_live"
+    }
+  ]
+}
