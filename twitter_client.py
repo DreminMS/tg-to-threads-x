@@ -124,31 +124,47 @@ async def _async_post_to_twitter(
             downloaded_files.append(tmp_path)
 
         async with async_playwright() as p:
-            launch_args = {"headless": True}
+            launch_args = {
+                "headless": True,
+                "args": [
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-infobars",
+                    "--window-size=1280,800"
+                ]
+            }
             if os.path.exists(CHROME_PATH):
                 launch_args["executable_path"] = CHROME_PATH
 
             browser = await p.chromium.launch(**launch_args)
             context = await browser.new_context(
-                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+                viewport={"width": 1280, "height": 800},
+                locale="en-US"
             )
-            await context.add_cookies([
-                {
-                    "name": "auth_token",
-                    "value": cookies["auth_token"],
-                    "domain": ".x.com",
-                    "path": "/",
-                    "httpOnly": True,
-                    "secure": True
-                },
-                {
-                    "name": "ct0",
-                    "value": cookies["ct0"],
-                    "domain": ".x.com",
-                    "path": "/",
-                    "secure": True
-                }
-            ])
+            await context.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+            """)
+
+            for domain in [".x.com", ".twitter.com"]:
+                await context.add_cookies([
+                    {
+                        "name": "auth_token",
+                        "value": cookies["auth_token"],
+                        "domain": domain,
+                        "path": "/",
+                        "httpOnly": True,
+                        "secure": True
+                    },
+                    {
+                        "name": "ct0",
+                        "value": cookies["ct0"],
+                        "domain": domain,
+                        "path": "/",
+                        "secure": True
+                    }
+                ])
 
             page = await context.new_page()
 
@@ -162,9 +178,14 @@ async def _async_post_to_twitter(
 
             page.on("response", on_response)
 
-            logger.info("Navigating to x.com/home in headless browser...")
-            await page.goto("https://x.com/home", wait_until="domcontentloaded", timeout=45000)
-            await page.wait_for_timeout(2500)
+            logger.info("Navigating to x.com/compose/post in headless browser...")
+            try:
+                await page.goto("https://x.com/compose/post", wait_until="domcontentloaded", timeout=45000)
+            except Exception:
+                logger.info("Compose fallback: navigating to x.com/home...")
+                await page.goto("https://x.com/home", wait_until="domcontentloaded", timeout=45000)
+
+            await page.wait_for_timeout(3000)
 
             # Check if login redirected or not logged in
             if "/login" in page.url or "/i/flow/login" in page.url:
@@ -174,14 +195,14 @@ async def _async_post_to_twitter(
             if downloaded_files:
                 file_input = await page.wait_for_selector(
                     'input[type="file"][data-testid="fileInput"]',
-                    timeout=15000
+                    timeout=20000
                 )
                 logger.info(f"Uploading {len(downloaded_files)} photos to Twitter...")
                 await file_input.set_input_files(downloaded_files)
 
                 # Wait for attachments preview
-                await page.wait_for_selector('[data-testid="attachments"]', timeout=20000)
-                await page.wait_for_timeout(1500)
+                await page.wait_for_selector('[data-testid="attachments"]', timeout=25000)
+                await page.wait_for_timeout(2000)
 
             # 3. Enter text if any
             if text:
@@ -192,9 +213,9 @@ async def _async_post_to_twitter(
                 await textbox.fill(text)
                 await page.wait_for_timeout(500)
 
-            # 4. Click Tweet button
+            # 4. Click Tweet button (either modal 'tweetButton' or inline 'tweetButtonInline')
             btn = await page.wait_for_selector(
-                '[data-testid="tweetButtonInline"]',
+                '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]',
                 timeout=15000
             )
 
