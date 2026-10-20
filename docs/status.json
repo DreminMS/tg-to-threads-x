@@ -1,53 +1,16 @@
 {
-  "updated_at": "2026-10-20T23:32:14.825771+00:00",
-  "published": 18,
-  "pending": 648,
+  "updated_at": "2026-10-20T23:32:55.103929+00:00",
+  "published": 0,
+  "pending": 666,
   "total": 666,
-  "percent": 2.7,
-  "days_left": 27.0,
+  "percent": 0.0,
+  "days_left": 27.8,
   "next_post": {
-    "id": 2215,
-    "date": "2022-01-28",
-    "photos_count": 10
+    "id": 2168,
+    "date": "2022-01-01",
+    "photos_count": 1
   },
-  "recent_posts": [
-    {
-      "post_id": 2205,
-      "threads_id": "18131690113830560",
-      "twitter_id": "2112674958988218406",
-      "published_at": "2026-10-20 22:38:57"
-    },
-    {
-      "post_id": 4615,
-      "threads_id": "18077211374757698",
-      "twitter_id": "2112664794289598923",
-      "published_at": "2026-10-20 21:58:34"
-    },
-    {
-      "post_id": 4616,
-      "threads_id": "18077211374757698",
-      "twitter_id": "2112664794289598923",
-      "published_at": "2026-10-20 21:58:34"
-    },
-    {
-      "post_id": 4617,
-      "threads_id": "18077211374757698",
-      "twitter_id": "2112664794289598923",
-      "published_at": "2026-10-20 21:58:34"
-    },
-    {
-      "post_id": 4618,
-      "threads_id": "18077211374757698",
-      "twitter_id": "2112664794289598923",
-      "published_at": "2026-10-20 21:58:34"
-    },
-    {
-      "post_id": 4619,
-      "threads_id": "18077211374757698",
-      "twitter_id": "2112664794289598923",
-      "published_at": "2026-10-20 21:58:34"
-    }
-  ],
+  "recent_posts": [],
   "workflows": [
     {
       "id": "archive_poster.yml",
