@@ -1,16 +1,23 @@
 {
-  "updated_at": "2026-10-20T23:32:55.103929+00:00",
-  "published": 0,
-  "pending": 666,
+  "updated_at": "2026-10-20T23:46:39.747501+00:00",
+  "published": 1,
+  "pending": 665,
   "total": 666,
-  "percent": 0.0,
-  "days_left": 27.8,
+  "percent": 0.2,
+  "days_left": 27.7,
   "next_post": {
     "id": 2168,
     "date": "2022-01-01",
     "photos_count": 1
   },
-  "recent_posts": [],
+  "recent_posts": [
+    {
+      "post_id": 4615,
+      "threads_id": "18141469717717451",
+      "twitter_id": "2112691676418552267",
+      "published_at": "2026-10-20 23:46:33"
+    }
+  ],
   "workflows": [
     {
       "id": "archive_poster.yml",
