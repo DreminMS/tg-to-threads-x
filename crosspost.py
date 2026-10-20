@@ -412,16 +412,17 @@ def process_channel_post(config: Dict[str, Any], messages: List[Dict[str, Any]],
     return (threads_id, twitter_id)
 
 
-def run_poller(config: Dict[str, Any], dry_run: bool = False):
+def run_poller(config: Dict[str, Any], dry_run: bool = False, once: bool = False) -> int:
     conn = init_db()
     bot_token = config["telegram_bot_token"]
     target_channel = str(config.get("telegram_channel_id", "")).strip().lower()
 
     offset = get_stored_offset(conn)
-    logger.info(f"Starting poller for Telegram channel {target_channel} (offset: {offset})...")
+    logger.info(f"Checking Telegram updates for channel {target_channel} (offset: {offset}, once={once})...")
 
     media_groups: Dict[str, MediaGroupBuffer] = {}
     last_refresh_check = 0.0
+    published_count = 0
 
     while True:
         try:
@@ -433,7 +434,7 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False):
                     refresh_threads_token(config)
 
             # 1. Check for ready media groups
-            ready_groups = [gid for gid, buf in media_groups.items() if buf.is_ready()]
+            ready_groups = [gid for gid, buf in media_groups.items() if buf.is_ready(wait_seconds=0.0 if once else 3.0)]
             for gid in ready_groups:
                 buf = media_groups[gid]
                 msg_ids = [m["message_id"] for m in buf.messages]
@@ -444,9 +445,12 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False):
                     for mid in msg_ids:
                         mark_post_processed(conn, mid, gid, threads_id, twitter_id)
                     logger.info(f"Media group {gid} published with Threads: {threads_id}, Twitter: {twitter_id}")
+                    published_count += 1
                     media_groups.pop(gid, None)
                 except Exception as err:
                     logger.error(f"Error publishing media group {gid}: {err}", exc_info=True)
+                    if once:
+                        raise
                     buf.retries = getattr(buf, "retries", 0) + 1
                     if buf.retries > 5:
                         logger.error(f"Media group {gid} exceeded max retries. Dropping.")
@@ -455,11 +459,16 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False):
                         buf.first_seen = time.time() + 10  # retry in 10 seconds
 
             # 2. Fetch Telegram updates
+            timeout_sec = 2 if once else 15
             updates = tg_request(bot_token, "getUpdates", {
                 "offset": offset,
-                "timeout": 15,
+                "timeout": timeout_sec,
                 "allowed_updates": ["channel_post"]
             })
+
+            if not updates and once and not media_groups:
+                logger.info(f"Finished one-shot check. New posts published: {published_count}.")
+                return published_count
 
             for u in updates:
                 update_id = u["update_id"]
@@ -495,9 +504,27 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False):
                     threads_id, twitter_id = process_channel_post(config, [post], dry_run=dry_run)
                     mark_post_processed(conn, msg_id, None, threads_id, twitter_id)
                     logger.info(f"Message {msg_id} published with Threads: {threads_id}, Twitter: {twitter_id}")
+                    published_count += 1
+
+            if once:
+                # Flush and process any media groups from the received batch
+                for gid, buf in list(media_groups.items()):
+                    msg_ids = [m["message_id"] for m in buf.messages]
+                    logger.info(f"Processing media group {gid} (messages: {msg_ids})")
+                    threads_id, twitter_id = process_channel_post(config, buf.messages, dry_run=dry_run)
+                    for mid in msg_ids:
+                        mark_post_processed(conn, mid, gid, threads_id, twitter_id)
+                    logger.info(f"Media group {gid} published with Threads: {threads_id}, Twitter: {twitter_id}")
+                    published_count += 1
+                    media_groups.pop(gid, None)
+
+                logger.info(f"Finished one-shot check. New posts published: {published_count}.")
+                return published_count
 
         except Exception as e:
             logger.error(f"Error in poller cycle: {e}", exc_info=True)
+            if once:
+                raise
             time.sleep(5)
 
         time.sleep(1)
@@ -554,6 +581,7 @@ def main():
     parser.add_argument("--test-all", action="store_true", help="Test Telegram, Threads and Twitter")
     parser.add_argument("--dry-run", action="store_true", help="Run without posting")
     parser.add_argument("--daemon", action="store_true", help="Run continuously in background")
+    parser.add_argument("--once", action="store_true", help="Check for pending updates once and exit")
     args = parser.parse_args()
 
     config = load_config()
@@ -568,7 +596,7 @@ def main():
     if args.test_tg or args.test_threads or args.test_twitter or args.test_all:
         return
 
-    run_poller(config, dry_run=args.dry_run)
+    run_poller(config, dry_run=args.dry_run, once=args.once)
 
 
 if __name__ == "__main__":

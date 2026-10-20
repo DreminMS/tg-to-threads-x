@@ -53,15 +53,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // Pull latest updates when user clicks status bar icon
         syncWithGitHub(showLoading: false)
     }
-    
-    func isRealtimeServiceRunning() -> Bool {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
-        process.arguments = ["-f", "crosspost.py --daemon"]
-        try? process.run()
-        process.waitUntilExit()
-        return process.terminationStatus == 0
-    }
 
     func fetchStats() -> Stats {
         var stats = Stats()
@@ -116,7 +107,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func updateUI() {
         let stats = fetchStats()
-        let isRtRunning = isRealtimeServiceRunning()
         let twConfigured = isTwitterConfigured()
         
         DispatchQueue.main.async { [weak self] in
@@ -126,11 +116,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 return
             }
             let twIcon = twConfigured ? " | 𝕏" : ""
-            let rtIcon = isRtRunning ? "" : " ⚠️"
             if stats.total > 0 {
-                button.title = "🧵\(twIcon) \(stats.published)/\(stats.total)\(rtIcon)"
+                button.title = "🧵\(twIcon) \(stats.published)/\(stats.total)"
             } else {
-                button.title = "🧵\(twIcon) Poster\(rtIcon)"
+                button.title = "🧵\(twIcon) Poster"
             }
         }
     }
@@ -140,7 +129,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.removeAllItems()
         
         let stats = fetchStats()
-        let isRtRunning = isRealtimeServiceRunning()
         let twConfigured = isTwitterConfigured()
         
         // Header
@@ -153,15 +141,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(headerItem)
         
         // Status rows
-        let cloudStr = "☁️ Архив на GitHub Actions: АКТИВЕН (каждый час)"
-        let cloudItem = NSMenuItem(title: cloudStr, action: nil, keyEquivalent: "")
-        cloudItem.isEnabled = false
-        menu.addItem(cloudItem)
+        let cloudHeader = NSMenuItem(title: "☁️ Всё в облаке (GitHub Actions 24/7):", action: nil, keyEquivalent: "")
+        cloudHeader.isEnabled = false
+        menu.addItem(cloudHeader)
 
-        let rtStr = isRtRunning ? "🟢 TG ➔ Threads & 𝕏 кросспост: АКТИВЕН (локально)" : "⏸️ TG ➔ Threads & 𝕏 кросспост: НЕ ЗАПУЩЕН"
-        let rtItem = NSMenuItem(title: rtStr, action: nil, keyEquivalent: "")
-        rtItem.isEnabled = false
-        menu.addItem(rtItem)
+        let archiveRow = NSMenuItem(title: "   • 📦 Архив: публикуется раз в час", action: nil, keyEquivalent: "")
+        archiveRow.isEnabled = false
+        menu.addItem(archiveRow)
+
+        let crosspostRow = NSMenuItem(title: "   • ⚡ Новые посты TG: каждые 10 мин", action: nil, keyEquivalent: "")
+        crosspostRow.isEnabled = false
+        menu.addItem(crosspostRow)
+
+        let localStatus = NSMenuItem(title: "💻 Локальный сервер: ОТКЛЮЧЕН (автономно в облаке)", action: nil, keyEquivalent: "")
+        localStatus.isEnabled = false
+        menu.addItem(localStatus)
 
         let twStr = twConfigured ? "🟢 Twitter (X) интеграция: ПОДКЛЮЧЕНА" : "⚪ Twitter (X) интеграция: ОЖИДАЕТ КУКИ"
         let twItem = NSMenuItem(title: twStr, action: nil, keyEquivalent: "")
@@ -177,14 +171,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(progItem)
         
         let daysLeft = Double(stats.pending) / 24.0
-        let leftStr = String(format: "⏳ В очереди: %d постов (~%.1f дней)", stats.pending, daysLeft)
+        let leftStr = String(format: "⏳ В очереди архива: %d постов (~%.1f дней)", stats.pending, daysLeft)
         let leftItem = NSMenuItem(title: leftStr, action: nil, keyEquivalent: "")
         leftItem.isEnabled = false
         menu.addItem(leftItem)
         
         if let nextId = stats.nextId {
             let cleanDate = stats.nextDate.prefix(10)
-            let nextStr = "📸 Следующий: #\(nextId) (\(cleanDate), \(stats.nextPhotoCount) фото)"
+            let nextStr = "📸 Следующий архивный: #\(nextId) (\(cleanDate), \(stats.nextPhotoCount) фото)"
             let nextItem = NSMenuItem(title: nextStr, action: nil, keyEquivalent: "")
             nextItem.isEnabled = false
             menu.addItem(nextItem)
@@ -192,26 +186,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
-        // Cloud & Local Actions
+        // Actions
         let gitSyncItem = NSMenuItem(title: "🔄 Синхронизировать с GitHub прямо сейчас", action: #selector(manualGitSync), keyEquivalent: "g")
         gitSyncItem.target = self
         menu.addItem(gitSyncItem)
 
-        let triggerActionsItem = NSMenuItem(title: "⚡ Опубликовать 1 пост в облаке (GitHub Actions)", action: #selector(openGitHubActions), keyEquivalent: "")
-        triggerActionsItem.target = self
-        menu.addItem(triggerActionsItem)
+        let triggerArchiveItem = NSMenuItem(title: "⚡ Опубликовать 1 архивный пост в облаке", action: #selector(openArchiveActions), keyEquivalent: "")
+        triggerArchiveItem.target = self
+        menu.addItem(triggerArchiveItem)
 
-        let publishLocalItem = NSMenuItem(title: "⚡ Опубликовать 1 пост прямо на этом Mac", action: #selector(publishLocal), keyEquivalent: "p")
-        publishLocalItem.target = self
-        menu.addItem(publishLocalItem)
-        
-        let syncTgItem = NSMenuItem(title: "🔄 Синхронизировать архив из Telegram", action: #selector(syncArchiveFromTelegram), keyEquivalent: "s")
-        syncTgItem.target = self
-        menu.addItem(syncTgItem)
+        let triggerCrosspostItem = NSMenuItem(title: "⚡ Проверить новые посты Telegram в облаке", action: #selector(openCrosspostActions), keyEquivalent: "")
+        triggerCrosspostItem.target = self
+        menu.addItem(triggerCrosspostItem)
         
         menu.addItem(NSMenuItem.separator())
         
-        // Quick Links & Logs
+        // Quick Links
         let ghActionsLink = NSMenuItem(title: "🌐 Открыть страницу GitHub Actions", action: #selector(openGitHubActions), keyEquivalent: "")
         ghActionsLink.target = self
         menu.addItem(ghActionsLink)
@@ -224,11 +214,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         twitterLink.target = self
         menu.addItem(twitterLink)
         
-        let rtLogItem = NSMenuItem(title: "📋 Открыть лог реалтайма (stdout.log)", action: #selector(openRtLog), keyEquivalent: "")
-        rtLogItem.target = self
-        menu.addItem(rtLogItem)
-        
-        let folderItem = NSMenuItem(title: "📂 Открыть папку скрипта в Finder", action: #selector(openFolder), keyEquivalent: "")
+        let folderItem = NSMenuItem(title: "📂 Открыть папку проекта в Finder", action: #selector(openFolder), keyEquivalent: "")
         folderItem.target = self
         menu.addItem(folderItem)
         
@@ -270,22 +256,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
     
-    @objc func publishLocal() {
-        if let button = statusItem.button {
-            button.title = "🧵 Публикую..."
-        }
-        executeShellAsync("/opt/homebrew/bin/python3 ./archive_poster.py --publish-one")
-    }
-    
-    @objc func syncArchiveFromTelegram() {
-        if let button = statusItem.button {
-            button.title = "🧵 Синхр TG..."
-        }
-        executeShellAsync("/opt/homebrew/bin/python3 ./archive_poster.py --sync")
-    }
-    
-    @objc func openGitHubActions() {
+    @objc func openArchiveActions() {
         if let url = URL(string: "https://github.com/DreminMS/tg-to-threads-x/actions/workflows/archive_poster.yml") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @objc func openCrosspostActions() {
+        if let url = URL(string: "https://github.com/DreminMS/tg-to-threads-x/actions/workflows/crosspost.yml") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @objc func openGitHubActions() {
+        if let url = URL(string: "https://github.com/DreminMS/tg-to-threads-x/actions") {
             NSWorkspace.shared.open(url)
         }
     }
@@ -302,43 +286,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
     
-    @objc func openRtLog() {
-        NSWorkspace.shared.open(URL(fileURLWithPath: "\(projectDir)/stdout.log"))
-    }
-    
     @objc func openFolder() {
         NSWorkspace.shared.open(URL(fileURLWithPath: projectDir))
     }
     
     @objc func quitApp() {
         NSApplication.shared.terminate(nil)
-    }
-    
-    func executeShellAsync(_ command: String) {
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self else { return }
-            let p = Process()
-            p.executableURL = URL(fileURLWithPath: "/bin/bash")
-            p.arguments = ["-c", command]
-            p.currentDirectoryURL = URL(fileURLWithPath: self.projectDir)
-            try? p.run()
-            p.waitUntilExit()
-            
-            // Push changes if any to GitHub so cloud stays in sync
-            let pushP = Process()
-            pushP.executableURL = URL(fileURLWithPath: "/bin/bash")
-            pushP.arguments = ["-c", "git add crosspost.db && git diff --quiet && git diff --staged --quiet || (git commit -m 'Sync local progress' && git push origin main)"]
-            pushP.currentDirectoryURL = URL(fileURLWithPath: self.projectDir)
-            try? pushP.run()
-            pushP.waitUntilExit()
-            
-            DispatchQueue.main.async {
-                self.updateUI()
-                if let menu = self.statusItem.menu, menu.numberOfItems > 0 {
-                    self.rebuildMenu()
-                }
-            }
-        }
     }
 }
 
