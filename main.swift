@@ -141,21 +141,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(headerItem)
         
         // Status rows
-        let cloudHeader = NSMenuItem(title: "☁️ Всё в облаке (GitHub Actions 24/7):", action: nil, keyEquivalent: "")
+        let cloudHeader = NSMenuItem(title: "☁️ Облачные воркфлоу (GitHub Actions):", action: nil, keyEquivalent: "")
         cloudHeader.isEnabled = false
         menu.addItem(cloudHeader)
 
-        let archiveRow = NSMenuItem(title: "   • 📦 Архив: публикуется раз в час", action: nil, keyEquivalent: "")
+        let archiveRow = NSMenuItem(title: "   • 📦 Архивный постер: раз в час", action: nil, keyEquivalent: "")
         archiveRow.isEnabled = false
         menu.addItem(archiveRow)
 
-        let crosspostRow = NSMenuItem(title: "   • ⚡ Новые посты TG: каждые 10 мин", action: nil, keyEquivalent: "")
+        let crosspostRow = NSMenuItem(title: "   • ⚡ Telegram кросспостер: каждые 10 мин", action: nil, keyEquivalent: "")
         crosspostRow.isEnabled = false
         menu.addItem(crosspostRow)
-
-        let localStatus = NSMenuItem(title: "💻 Локальный сервер: ОТКЛЮЧЕН (автономно в облаке)", action: nil, keyEquivalent: "")
-        localStatus.isEnabled = false
-        menu.addItem(localStatus)
 
         let twStr = twConfigured ? "🟢 Twitter (X) интеграция: ПОДКЛЮЧЕНА" : "⚪ Twitter (X) интеграция: ОЖИДАЕТ КУКИ"
         let twItem = NSMenuItem(title: twStr, action: nil, keyEquivalent: "")
