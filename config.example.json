@@ -1,0 +1,9 @@
+{
+  "telegram_bot_token": "YOUR_TELEGRAM_BOT_TOKEN",
+  "telegram_channel_id": "@dremin_live",
+  "threads_user_id": "YOUR_THREADS_USER_ID",
+  "threads_access_token": "YOUR_THREADS_LONG_LIVED_ACCESS_TOKEN",
+  "append_signature": true,
+  "signature_text": "\n\nDremin live | t.me/dremin_live",
+  "poll_interval_seconds": 20
+}

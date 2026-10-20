@@ -1,0 +1,448 @@
+#!/usr/bin/env python3
+"""
+Archive Poster: Telegram (@dremin_live) -> Meta Threads (@dremin)
+Extracts historical photo posts starting from 2022-01-01 (post ID 2168+)
+and publishes them to Threads in chronological order with a 1-hour interval.
+Posts are published as pure photos/carousels (NO captions/signatures), as requested.
+"""
+
+import sys
+import os
+import json
+import time
+import sqlite3
+import logging
+import argparse
+import urllib.request
+import urllib.parse
+import urllib.error
+import subprocess
+import re
+from typing import Optional, Dict, Any, List
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(SCRIPT_DIR, "config.json")
+DB_FILE = os.path.join(SCRIPT_DIR, "crosspost.db")
+LOG_FILE = os.path.join(SCRIPT_DIR, "archive_poster.log")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler(LOG_FILE, encoding="utf-8")
+    ]
+)
+logger = logging.getLogger("archive_poster")
+
+
+def load_config() -> Dict[str, Any]:
+    cfg: Dict[str, Any] = {}
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                cfg = json.load(f)
+        except Exception as e:
+            logger.warning(f"Could not read config.json: {e}")
+
+    # Fallback to Environment Variables (for GitHub Actions, Docker, Cloud)
+    if os.environ.get("THREADS_USER_ID"):
+        cfg["threads_user_id"] = os.environ["THREADS_USER_ID"]
+    if os.environ.get("THREADS_ACCESS_TOKEN"):
+        cfg["threads_access_token"] = os.environ["THREADS_ACCESS_TOKEN"]
+    if os.environ.get("TELEGRAM_BOT_TOKEN"):
+        cfg["telegram_bot_token"] = os.environ["TELEGRAM_BOT_TOKEN"]
+    if os.environ.get("TWITTER_AUTH_TOKEN") and os.environ.get("TWITTER_CT0"):
+        cfg["twitter_enabled"] = True
+        cfg["twitter_cookies"] = {
+            "auth_token": os.environ["TWITTER_AUTH_TOKEN"],
+            "ct0": os.environ["TWITTER_CT0"]
+        }
+
+    if not cfg.get("threads_access_token"):
+        logger.error("Missing threads_access_token in config or environment variables.")
+        sys.exit(1)
+
+    return cfg
+
+
+def init_db() -> sqlite3.Connection:
+    conn = sqlite3.connect(DB_FILE)
+    with conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS archive_posts (
+                post_id INTEGER PRIMARY KEY,
+                post_date TEXT,
+                photos_json TEXT,
+                status TEXT DEFAULT 'pending',
+                threads_id TEXT,
+                published_at TIMESTAMP,
+                error_message TEXT
+            )
+        """)
+    return conn
+
+
+# ==========================================
+# Telegram Archive Scraper
+# ==========================================
+
+def fetch_page_html(url: str, max_retries: int = 3) -> Optional[str]:
+    cmd = [
+        "curl", "-4", "-s", "-L",
+        "--connect-timeout", "10",
+        "--max-time", "20",
+        "-A", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        url
+    ]
+    for attempt in range(max_retries):
+        try:
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=25)
+            if res.returncode == 0 and res.stdout:
+                return res.stdout
+            logger.warning(f"Curl returned code {res.returncode} for {url}")
+        except Exception as e:
+            logger.warning(f"Fetch failed for {url} (attempt {attempt+1}/{max_retries}): {e}")
+        time.sleep(1)
+    return None
+
+
+def sync_archive(start_after: int = 2167) -> int:
+    """
+    Crawls https://t.me/s/dremin_live starting after start_after (2022-01-01)
+    and saves all photo posts into archive_posts table.
+    """
+    conn = init_db()
+    cur = conn.cursor()
+    cur.execute("SELECT max(post_id) FROM archive_posts")
+    max_stored = cur.fetchone()[0]
+    if max_stored and max_stored > start_after:
+        logger.info(f"Resuming sync from already indexed max post {max_stored}...")
+        start_after = max_stored
+
+    current_url = f"https://t.me/s/dremin_live?after={start_after}"
+    total_added = 0
+    pages_crawled = 0
+
+    logger.info(f"Starting archive sync from post {start_after} (2022-01-01 onwards)...")
+
+    while current_url:
+        pages_crawled += 1
+        html = fetch_page_html(current_url)
+        if not html:
+            logger.error(f"Failed to fetch {current_url}, stopping sync.")
+            break
+
+        # Parse message blocks
+        chunks = html.split('<div class="tgme_widget_message_wrap')
+        for chunk in chunks[1:]:
+            post_m = re.search(r'data-post="dremin_live/([0-9]+)"', chunk)
+            if not post_m:
+                continue
+            post_id = int(post_m.group(1))
+            if post_id <= start_after:
+                continue
+
+            # Extract photos (telesco.pe CDN or .jpg, exclude emojis and icons)
+            raw_photos = re.findall(r'background-image:url\(\'([^\']+)\'\)', chunk)
+            photos = [p for p in raw_photos if ("telesco.pe" in p or p.endswith(".jpg")) and "emoji" not in p]
+
+            if not photos:
+                continue
+
+            time_m = re.search(r'<time datetime="([^"]+)"', chunk)
+            post_date = time_m.group(1) if time_m else ""
+
+            # Check if already in db
+            cur = conn.cursor()
+            cur.execute("SELECT 1 FROM archive_posts WHERE post_id = ?", (post_id,))
+            if not cur.fetchone():
+                with conn:
+                    conn.execute("""
+                        INSERT INTO archive_posts (post_id, post_date, photos_json, status)
+                        VALUES (?, ?, ?, 'pending')
+                    """, (post_id, post_date, json.dumps(photos)))
+                total_added += 1
+
+        # Check next pagination link
+        next_m = re.search(r'<link rel="next" href="([^"]+)"', html)
+        if next_m:
+            next_path = next_m.group(1)
+            # Avoid infinite loop if next_path doesn't change
+            new_url = f"https://t.me{next_path}" if next_path.startswith("/") else next_path
+            if new_url == current_url:
+                break
+            current_url = new_url
+            time.sleep(0.3)
+        else:
+            break
+
+    logger.info(f"Sync complete! Crawled {pages_crawled} pages. Added {total_added} new photo posts to archive.")
+    return total_added
+
+
+# ==========================================
+# Meta Threads Publishing
+# ==========================================
+
+def threads_api_post(endpoint: str, data: Dict[str, str], access_token: str) -> Dict[str, Any]:
+    url = f"https://graph.threads.net/v1.0/{endpoint}"
+    data_with_token = dict(data)
+    data_with_token["access_token"] = access_token
+    encoded_data = urllib.parse.urlencode(data_with_token).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=encoded_data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"Threads API Error ({e.code}) on {endpoint}: {err_body}")
+
+
+def threads_api_get(endpoint: str, params: Dict[str, str], access_token: str) -> Dict[str, Any]:
+    query_params = dict(params)
+    query_params["access_token"] = access_token
+    url = f"https://graph.threads.net/v1.0/{endpoint}?{urllib.parse.urlencode(query_params)}"
+    req = urllib.request.Request(url)
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"Threads API GET Error ({e.code}) on {endpoint}: {err_body}")
+
+
+def wait_for_container(creation_id: str, access_token: str, max_retries: int = 15, delay: float = 2.0) -> bool:
+    for _ in range(max_retries):
+        try:
+            info = threads_api_get(creation_id, {"fields": "status,error_message"}, access_token)
+            status = info.get("status")
+            if status == "FINISHED":
+                return True
+            if status == "ERROR":
+                err = info.get("error_message", "Unknown container error")
+                raise RuntimeError(f"Container {creation_id} failed with error: {err}")
+        except Exception as e:
+            logger.warning(f"Waiting for container {creation_id}... ({e})")
+        time.sleep(delay)
+    return True
+
+
+def publish_threads_container(user_id: str, creation_id: str, access_token: str) -> str:
+    wait_for_container(creation_id, access_token)
+    res = threads_api_post(
+        f"{user_id}/threads_publish",
+        {"creation_id": creation_id},
+        access_token
+    )
+    post_id = res.get("id")
+    if not post_id:
+        raise RuntimeError(f"Failed to publish container: {res}")
+    return post_id
+
+
+def refresh_threads_token_if_needed(config: Dict[str, Any]):
+    now = time.time()
+    last_refresh = config.get("last_token_refresh", 0)
+    if now - last_refresh > 30 * 86400:
+        token = config.get("threads_access_token")
+        if not token:
+            return
+        try:
+            url = f"https://graph.threads.net/refresh_access_token?grant_type=th_refresh_token&access_token={token}"
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                new_token = data.get("access_token")
+                if new_token:
+                    config["threads_access_token"] = new_token
+                    config["last_token_refresh"] = int(time.time())
+                    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+                        json.dump(config, f, indent=2, ensure_ascii=False)
+                    logger.info("Threads access token refreshed successfully.")
+        except Exception as e:
+            logger.warning(f"Failed to refresh token: {e}")
+
+
+def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
+    """
+    Fetches the oldest pending post and publishes it to Threads without captions.
+    """
+    refresh_threads_token_if_needed(config)
+    conn = init_db()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT post_id, post_date, photos_json
+        FROM archive_posts
+        WHERE status = 'pending'
+        ORDER BY post_id ASC
+        LIMIT 1
+    """)
+    row = cur.fetchone()
+    if not row:
+        logger.info("No pending archive posts found in queue.")
+        return None
+
+    post_id, post_date, photos_json = row
+    photos = json.loads(photos_json)
+
+    logger.info(f"Publishing archive post {post_id} ({post_date}) with {len(photos)} photos...")
+
+    if dry_run:
+        logger.info(f"[DRY RUN] Would publish post {post_id} with {len(photos)} photos.")
+        return post_id
+
+    user_id = config["threads_user_id"]
+    access_token = config["threads_access_token"]
+
+    try:
+        # Case 1: Carousel (2-10 photos)
+        if len(photos) > 1:
+            carousel_item_ids = []
+            for i, photo_url in enumerate(photos[:10]):
+                res = threads_api_post(
+                    f"{user_id}/threads",
+                    {
+                        "media_type": "IMAGE",
+                        "image_url": photo_url,
+                        "is_carousel_item": "true"
+                    },
+                    access_token
+                )
+                item_id = res["id"]
+                carousel_item_ids.append(item_id)
+                logger.info(f"Carousel item {i+1}/{len(photos)} created: {item_id}")
+
+            for item_id in carousel_item_ids:
+                wait_for_container(item_id, access_token)
+
+            # Create carousel container (NO text caption!)
+            carousel_data = {
+                "media_type": "CAROUSEL",
+                "children": ",".join(carousel_item_ids)
+            }
+            res = threads_api_post(f"{user_id}/threads", carousel_data, access_token)
+            creation_id = res["id"]
+            threads_id = publish_threads_container(user_id, creation_id, access_token)
+
+        # Case 2: Single Photo
+        else:
+            post_data = {
+                "media_type": "IMAGE",
+                "image_url": photos[0]
+            }
+            res = threads_api_post(f"{user_id}/threads", post_data, access_token)
+            creation_id = res["id"]
+            threads_id = publish_threads_container(user_id, creation_id, access_token)
+
+        # Twitter Posting (if enabled in config)
+        twitter_id = None
+        if config.get("twitter_enabled"):
+            try:
+                from twitter_client import post_photos_to_twitter
+                logger.info(f"Publishing post {post_id} to Twitter...")
+                twitter_id = post_photos_to_twitter(photos, text=None, config=config)
+                logger.info(f"✅ Successfully published post {post_id} to Twitter! Tweet ID: {twitter_id}")
+            except Exception as tw_err:
+                logger.error(f"❌ Failed to publish post {post_id} to Twitter: {tw_err}")
+
+        with conn:
+            conn.execute("""
+                UPDATE archive_posts
+                SET status = 'published', threads_id = ?, twitter_id = ?, published_at = CURRENT_TIMESTAMP
+                WHERE post_id = ?
+            """, (threads_id, twitter_id, post_id))
+
+        logger.info(f"✅ Successfully published post {post_id}! Threads: {threads_id}, Twitter: {twitter_id}")
+        return post_id
+
+    except Exception as e:
+        logger.error(f"❌ Failed to publish post {post_id}: {e}", exc_info=True)
+        with conn:
+            conn.execute("""
+                UPDATE archive_posts
+                SET status = 'failed', error_message = ?
+                WHERE post_id = ?
+            """, (str(e), post_id))
+        return None
+
+
+def get_queue_status() -> Dict[str, Any]:
+    conn = init_db()
+    cur = conn.cursor()
+    cur.execute("SELECT status, count(*) FROM archive_posts GROUP BY status")
+    counts = dict(cur.fetchall())
+    cur.execute("SELECT post_id, post_date, photos_json FROM archive_posts WHERE status = 'pending' ORDER BY post_id ASC LIMIT 1")
+    next_post = cur.fetchone()
+    return {
+        "pending": counts.get("pending", 0),
+        "published": counts.get("published", 0),
+        "failed": counts.get("failed", 0),
+        "next_post_id": next_post[0] if next_post else None,
+        "next_post_date": next_post[1] if next_post else None,
+        "next_post_photos": len(json.loads(next_post[2])) if next_post else 0
+    }
+
+
+def run_daemon(interval_seconds: int = 3600):
+    config = load_config()
+    logger.info(f"Starting Archive Poster daemon (interval: {interval_seconds}s / {interval_seconds // 60}m)...")
+    while True:
+        try:
+            published_id = publish_next_archive_post(config)
+            if not published_id:
+                logger.info("No pending posts. Checking again in 10 minutes...")
+                time.sleep(600)
+                continue
+        except Exception as e:
+            logger.error(f"Error in daemon cycle: {e}", exc_info=True)
+
+        logger.info(f"Sleeping for {interval_seconds} seconds until next post...")
+        time.sleep(interval_seconds)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Archive Poster for Telegram to Threads")
+    parser.add_argument("--sync", action="store_true", help="Sync archive from Telegram channel")
+    parser.add_argument("--status", action="store_true", help="Show current queue status")
+    parser.add_argument("--publish-one", action="store_true", help="Publish 1 post right now")
+    parser.add_argument("--dry-run", action="store_true", help="Simulate publishing without posting to Threads")
+    parser.add_argument("--daemon", action="store_true", help="Run continuously with 1-hour interval")
+    parser.add_argument("--interval", type=int, default=3600, help="Interval in seconds (default: 3600)")
+    args = parser.parse_args()
+
+    if args.sync:
+        sync_archive()
+        return
+
+    if args.status:
+        st = get_queue_status()
+        print("\n📊 Текущий статус очереди архива:")
+        print(f"  Ожидают публикации: {st['pending']}")
+        print(f"  Опубликовано:        {st['published']}")
+        print(f"  Ошибок:              {st['failed']}")
+        if st['next_post_id']:
+            print(f"  Следующий пост:      dremin_live/{st['next_post_id']} (дата: {st['next_post_date']}, фото: {st['next_post_photos']})\n")
+        else:
+            print("  Следующий пост:      нет (очередь пуста)\n")
+        return
+
+    config = load_config()
+
+    if args.publish_one:
+        publish_next_archive_post(config, dry_run=args.dry_run)
+        return
+
+    if args.daemon:
+        run_daemon(interval_seconds=args.interval)
+        return
+
+    parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

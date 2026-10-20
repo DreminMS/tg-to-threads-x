@@ -1,0 +1,18 @@
+# Secrets & Local Config
+config.json
+
+# Local Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# macOS
+.DS_Store
+ThreadsPoster.app/
+
+# Logs
+*.log
+
+# Temp
+/tmp/
