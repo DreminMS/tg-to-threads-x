@@ -1,10 +1,10 @@
-name: Test High-Res Telegram Telethon
+name: Test High-Res Telegram Images
 
 on:
   workflow_dispatch:
 
 jobs:
-  test_telethon:
+  test_images:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12,9 +12,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: |
-          pip install telethon
-      - name: Run test_telethon_bot
+          pip install Pillow
+      - name: Run test_check_images
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
-          python test_telethon_bot.py
+          python test_check_images.py
