@@ -110,18 +110,25 @@ async def _async_post_to_twitter(
 ) -> str:
     """
     Internal async worker using Playwright to post photos and text to Twitter/X.
+    If photos > 4, creates a thread on Twitter with the remaining photos.
     """
     from playwright.async_api import async_playwright
 
     downloaded_files = []
-    # 1. Download images to temporary local files
+    # 1. Download images to temporary local files or use local paths
     try:
-        for i, url in enumerate(photos[:4]):
-            tmp_path = f"/tmp/tw_post_{int(time.time())}_{i}_{os.getpid()}.jpg"
-            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req, timeout=30) as resp, open(tmp_path, "wb") as f:
-                f.write(resp.read())
-            downloaded_files.append(tmp_path)
+        for i, item in enumerate(photos):
+            if os.path.exists(item):
+                downloaded_files.append(item)
+            else:
+                tmp_path = f"/tmp/tw_post_{int(time.time())}_{i}_{os.getpid()}.jpg"
+                req = urllib.request.Request(item, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req, timeout=30) as resp, open(tmp_path, "wb") as f:
+                    f.write(resp.read())
+                downloaded_files.append(tmp_path)
+
+        # Split into batches of at most 4 photos (Twitter's max per tweet)
+        batches = [downloaded_files[i : i + 4] for i in range(0, len(downloaded_files), 4)] if downloaded_files else [[]]
 
         async with async_playwright() as p:
             launch_args = {
@@ -178,6 +185,7 @@ async def _async_post_to_twitter(
 
             page.on("response", on_response)
 
+            # Step A: Post first batch (root tweet) via composer
             logger.info("Navigating to x.com/compose/post in headless browser...")
             try:
                 await page.goto("https://x.com/compose/post", wait_until="domcontentloaded", timeout=45000)
@@ -191,20 +199,17 @@ async def _async_post_to_twitter(
             if "/login" in page.url or "/i/flow/login" in page.url:
                 raise RuntimeError("Twitter session expired or cookies invalid.")
 
-            # 2. Attach photos if any
-            if downloaded_files:
+            root_batch = batches[0]
+            if root_batch:
                 file_input = await page.wait_for_selector(
                     'input[type="file"][data-testid="fileInput"]',
                     timeout=20000
                 )
-                logger.info(f"Uploading {len(downloaded_files)} photos to Twitter...")
-                await file_input.set_input_files(downloaded_files)
-
-                # Wait for attachments preview
+                logger.info(f"Uploading batch 1/{len(batches)} ({len(root_batch)} photos) to Twitter...")
+                await file_input.set_input_files(root_batch)
                 await page.wait_for_selector('[data-testid="attachments"]', timeout=25000)
                 await page.wait_for_timeout(2000)
 
-            # 3. Enter text if any
             if text:
                 textbox = await page.wait_for_selector(
                     '[data-testid="tweetTextarea_0"]',
@@ -213,13 +218,11 @@ async def _async_post_to_twitter(
                 await textbox.fill(text)
                 await page.wait_for_timeout(500)
 
-            # 4. Click Tweet button (either modal 'tweetButton' or inline 'tweetButtonInline')
             btn = await page.wait_for_selector(
                 '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]',
                 timeout=15000
             )
 
-            # Wait until button is enabled
             for _ in range(30):
                 if not await btn.is_disabled():
                     break
@@ -228,22 +231,20 @@ async def _async_post_to_twitter(
             if await btn.is_disabled():
                 raise RuntimeError("Twitter 'Post' button remained disabled.")
 
-            logger.info("Clicking Twitter 'Post' button...")
+            logger.info("Clicking Twitter 'Post' button for root tweet...")
             await btn.click()
 
-            # 5. Wait for CreateTweet response
             for _ in range(40):
                 if tweet_response_data.get("data"):
                     break
                 await page.wait_for_timeout(500)
 
-            tweet_id = None
+            root_tweet_id = None
             if tweet_response_data.get("data"):
                 res = tweet_response_data["data"].get("data", {}).get("create_tweet", {}).get("tweet_results", {}).get("result", {})
-                tweet_id = res.get("rest_id") or res.get("legacy", {}).get("id_str")
+                root_tweet_id = res.get("rest_id") or res.get("legacy", {}).get("id_str")
 
-            if not tweet_id:
-                # Fallback: check profile for newly published tweet ID
+            if not root_tweet_id:
                 logger.info("CreateTweet JSON parsing fallback; checking profile...")
                 await page.goto("https://x.com/m_dremin", wait_until="domcontentloaded")
                 await page.wait_for_timeout(3000)
@@ -254,19 +255,80 @@ async def _async_post_to_twitter(
                         href = await l.get_attribute("href")
                         if href and "/status/" in href:
                             t_id = href.split("/status/")[1].split("/")[0]
-                            if t_id and t_id != "1499833377683349507":  # Not pinned tweet
-                                tweet_id = t_id
+                            if t_id and t_id != "1499833377683349507":
+                                root_tweet_id = t_id
                                 break
-                    if tweet_id:
+                    if root_tweet_id:
                         break
 
-            await browser.close()
-
-            if not tweet_id:
+            if not root_tweet_id:
                 raise RuntimeError("Failed to capture created tweet ID from Twitter.")
 
-            logger.info(f"✅ Tweet published successfully! Tweet ID: {tweet_id}")
-            return tweet_id
+            logger.info(f"✅ Root tweet published successfully! Tweet ID: {root_tweet_id}")
+
+            # Step B: If there are additional batches, post them as replies in a thread
+            if len(batches) > 1:
+                current_parent_id = root_tweet_id
+                for batch_idx, batch_files in enumerate(batches[1:], start=2):
+                    logger.info(f"Posting thread reply {batch_idx}/{len(batches)} with {len(batch_files)} photos to parent {current_parent_id}...")
+                    tweet_response_data.clear()
+
+                    await page.goto(f"https://x.com/m_dremin/status/{current_parent_id}", wait_until="domcontentloaded", timeout=45000)
+                    await page.wait_for_timeout(3000)
+
+                    # Focus reply textarea
+                    reply_textbox = await page.wait_for_selector(
+                        '[data-testid="tweetTextarea_0"]',
+                        timeout=15000
+                    )
+                    await reply_textbox.click()
+                    await page.wait_for_timeout(1000)
+
+                    # Find file input and upload images
+                    reply_file_input = await page.wait_for_selector(
+                        'input[type="file"][data-testid="fileInput"]',
+                        timeout=15000
+                    )
+                    await reply_file_input.set_input_files(batch_files)
+                    await page.wait_for_selector('[data-testid="attachments"]', timeout=25000)
+                    await page.wait_for_timeout(2000)
+
+                    # Click inline reply button
+                    reply_btn = await page.wait_for_selector(
+                        '[data-testid="tweetButtonInline"]',
+                        timeout=15000
+                    )
+                    for _ in range(30):
+                        if not await reply_btn.is_disabled():
+                            break
+                        await page.wait_for_timeout(500)
+
+                    if await reply_btn.is_disabled():
+                        logger.warning(f"Thread reply button disabled for batch {batch_idx}; stopping thread.")
+                        break
+
+                    logger.info(f"Clicking reply button for batch {batch_idx}...")
+                    await reply_btn.click()
+
+                    for _ in range(40):
+                        if tweet_response_data.get("data"):
+                            break
+                        await page.wait_for_timeout(500)
+
+                    reply_tweet_id = None
+                    if tweet_response_data.get("data"):
+                        r_res = tweet_response_data["data"].get("data", {}).get("create_tweet", {}).get("tweet_results", {}).get("result", {})
+                        reply_tweet_id = r_res.get("rest_id") or r_res.get("legacy", {}).get("id_str")
+
+                    if reply_tweet_id:
+                        logger.info(f"✅ Thread reply {batch_idx}/{len(batches)} posted! Tweet ID: {reply_tweet_id}")
+                        current_parent_id = reply_tweet_id
+                    else:
+                        logger.warning(f"Could not extract tweet ID for thread reply {batch_idx}")
+                    await page.wait_for_timeout(3000)
+
+            await browser.close()
+            return root_tweet_id
 
     finally:
         for fpath in downloaded_files:

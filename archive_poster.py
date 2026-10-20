@@ -281,7 +281,14 @@ def refresh_threads_token_if_needed(config: Dict[str, Any]):
 def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
     """
     Fetches the oldest pending post and publishes it to Threads and Twitter without captions.
+    Starts posting strictly from 07:00 AM MSK onwards.
     """
+    from datetime import datetime, timezone, timedelta
+    msk_now = datetime.now(timezone(timedelta(hours=3)))
+    if msk_now.hour < 7:
+        logger.info(f"Archive posting is scheduled to start at 07:00 MSK (currently {msk_now.strftime('%H:%M')} MSK). Skipping archive post for now.")
+        return None
+
     refresh_threads_token_if_needed(config)
     conn = init_db()
     cur = conn.cursor()
