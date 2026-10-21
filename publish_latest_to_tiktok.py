@@ -11,7 +11,7 @@ import sqlite3
 import logging
 from crosspost import load_config, threads_api_get, init_db
 from tiktok_client import post_photos_to_tiktok
-from update_status import generate_status
+from update_status import update_status_json
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("publish_latest_to_tiktok")
@@ -64,7 +64,7 @@ def publish_latest():
     logger.info("Updated crosspost.db with TikTok post reference.")
 
     # Refresh status.json
-    generate_status()
+    update_status_json()
     logger.info("Refreshed status.json and docs/status.json.")
 
 
