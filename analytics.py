@@ -177,8 +177,11 @@ async def _fetch_twitter_playwright(cookies: Dict[str, str]) -> Dict[str, Any]:
         
         page = await context.new_page()
         try:
-            await page.goto("https://x.com/m_dremin", wait_until="domcontentloaded", timeout=20000)
-            await page.wait_for_selector('article[data-testid="tweet"]', timeout=15000)
+            await page.goto("https://x.com/m_dremin", wait_until="domcontentloaded", timeout=15000)
+            try:
+                await page.wait_for_selector('article[data-testid="tweet"]', timeout=6000)
+            except Exception:
+                pass
             
             # Follower count from profile link
             followers_el = await page.query_selector('a[href*="/verified_followers"], a[href*="/followers"]')

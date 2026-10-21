@@ -14,6 +14,84 @@ DOCS_DIR = os.path.join(SCRIPT_DIR, "docs")
 STATUS_FILE = os.path.join(DOCS_DIR, "status.json")
 
 
+def format_msk(dt_val: str) -> str:
+    if not dt_val:
+        return ""
+    try:
+        if "UTC+03:00" in dt_val or "MSK" in dt_val or "МСК" in dt_val:
+            base = dt_val.split(" UTC")[0].split(" MSK")[0].split(" МСК")[0].strip()
+            parts = base.split(":")
+            if len(parts) == 3:
+                base = f"{parts[0]}:{parts[1]}"
+            return f"{base} МСК"
+        clean = dt_val.replace("Z", "+00:00")
+        if "T" not in clean and "+" not in clean and "-" in clean:
+            dt = datetime.datetime.fromisoformat(clean).replace(tzinfo=datetime.timezone.utc)
+        else:
+            dt = datetime.datetime.fromisoformat(clean)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=datetime.timezone.utc)
+        msk_tz = datetime.timezone(datetime.timedelta(hours=3))
+        dt_msk = dt.astimezone(msk_tz)
+        return dt_msk.strftime("%d.%m.%Y %H:%M МСК")
+    except Exception:
+        return str(dt_val)
+
+
+def compute_schedule_slots(last_pub_raw: str, count: int = 5):
+    msk_tz = datetime.timezone(datetime.timedelta(hours=3))
+    now = datetime.datetime.now(msk_tz)
+
+    min_time = now
+    if last_pub_raw:
+        try:
+            clean = last_pub_raw.replace("Z", "+00:00")
+            if "T" not in clean and "+" not in clean and "-" in clean:
+                last_dt = datetime.datetime.fromisoformat(clean).replace(tzinfo=datetime.timezone.utc)
+            else:
+                last_dt = datetime.datetime.fromisoformat(clean)
+                if last_dt.tzinfo is None:
+                    last_dt = last_dt.replace(tzinfo=datetime.timezone.utc)
+            last_msk = last_dt.astimezone(msk_tz)
+            earliest = last_msk + datetime.timedelta(minutes=50)
+            if earliest > min_time:
+                min_time = earliest
+        except Exception:
+            pass
+
+    candidate = now.replace(minute=0, second=0, microsecond=0) + datetime.timedelta(hours=1)
+    if candidate < min_time:
+        candidate = min_time.replace(minute=0, second=0, microsecond=0) + datetime.timedelta(hours=1)
+
+    slots = []
+    curr = candidate
+    while len(slots) < count:
+        h = curr.hour
+        # Schedule pause: 01:00 to 06:59 MSK
+        if 1 <= h < 7:
+            curr = curr.replace(hour=7, minute=0, second=0, microsecond=0)
+            h = 7
+
+        day_diff = (curr.date() - now.date()).days
+        if day_diff == 0:
+            prefix = "Сегодня"
+        elif day_diff == 1:
+            prefix = "Завтра"
+        else:
+            prefix = curr.strftime("%d.%m")
+
+        time_str = curr.strftime("%H:%M")
+        slots.append({
+            "iso": curr.isoformat(),
+            "time_msk": f"{time_str} МСК",
+            "full_label": f"{prefix} в {time_str} МСК",
+            "short_label": f"~{time_str} МСК"
+        })
+        curr = curr + datetime.timedelta(hours=1)
+
+    return slots
+
+
 def update_status_json():
     if not os.path.exists(DB_FILE):
         return
@@ -36,6 +114,10 @@ def update_status_json():
     total = published + pending + failed + skipped
     percent = round((published / total * 100), 1) if total > 0 else 0.0
 
+    c.execute("SELECT max(published_at) FROM archive_posts WHERE status = 'published'")
+    last_pub_row = c.fetchone()
+    last_pub = last_pub_row[0] if last_pub_row else None
+
     # Fetch next upcoming posts (e.g. 5 upcoming posts for preview)
     c.execute("""
         SELECT post_id, post_date, photos_json, text, is_meme
@@ -45,17 +127,25 @@ def update_status_json():
         LIMIT 5
     """)
     upcoming_rows = c.fetchall()
+
+    slots = compute_schedule_slots(last_pub, max(len(upcoming_rows), 1))
+
     upcoming_posts = []
-    for r in upcoming_rows:
+    for idx, r in enumerate(upcoming_rows):
         photos = json.loads(r[2]) if r[2] else []
+        slot = slots[idx] if idx < len(slots) else None
         upcoming_posts.append({
             "id": r[0],
             "date": r[1][:10] if r[1] else "",
+            "date_msk": format_msk(r[1]),
             "photos_count": len(photos),
             "photos": photos[:4],  # first 4 photos for gallery preview
             "text": (r[3] or "").strip(),
             "is_meme": bool(r[4]),
-            "tg_url": f"https://t.me/dremin_live/{r[0]}"
+            "tg_url": f"https://t.me/dremin_live/{r[0]}",
+            "eta_msk": slot["time_msk"] if slot else "",
+            "eta_label": slot["full_label"] if slot else "",
+            "eta_iso": slot["iso"] if slot else ""
         })
 
     next_post = upcoming_posts[0] if upcoming_posts else None
@@ -82,7 +172,9 @@ def update_status_json():
             "threads_id": r[1],
             "twitter_id": r[2],
             "published_at": r[3],
+            "published_at_msk": format_msk(r[3]),
             "date": r[6][:10] if r[6] else "",
+            "date_msk": format_msk(r[6]),
             "photos_count": len(photos),
             "photos": photos[:4],
             "text": (r[5] or "").strip(),
@@ -97,8 +189,12 @@ def update_status_json():
     except Exception as e:
         analytics_data = {}
 
+    msk_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=3)))
     status_data = {
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "updated_at_msk": msk_now.strftime("%H:%M МСК"),
+        "timezone": "Europe/Moscow (МСК, UTC+3)",
+        "next_publication": slots[0] if slots else None,
         "published": published,
         "pending": pending,
         "failed": failed,
@@ -114,8 +210,9 @@ def update_status_json():
             {
                 "id": "archive_poster.yml",
                 "name": "Hourly Archive Poster",
-                "schedule": "Раз в час (XX:00)",
-                "description": "Публикация архива с 2022 года"
+                "schedule": "Раз в час (07:00 - 00:00 МСК)",
+                "description": f"Следующая публикация: {slots[0]['full_label']}" if slots else "Публикация архива с 2022 года",
+                "next_run_msk": slots[0]["full_label"] if slots else ""
             },
             {
                 "id": "crosspost.yml",
