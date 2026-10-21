@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T06:15:16.111604+00:00",
+  "updated_at": "2026-10-21T06:29:01.125625+00:00",
   "published": 11,
   "pending": 482,
   "failed": 0,
@@ -9,8 +9,8 @@
   "days_left": 20.1,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 1,
-    "total_views": 101,
+    "total_reactions": 16,
+    "total_views": 247,
     "total_growth": 0,
     "threads": {
       "username": "dremin",
@@ -21,7 +21,7 @@
       "likes": 0,
       "replies": 0,
       "reposts": 0,
-      "views": 83
+      "views": 86
     },
     "twitter": {
       "username": "m_dremin",
@@ -29,17 +29,17 @@
       "followers": 526,
       "baseline": 526,
       "growth": 0,
-      "likes": 1,
-      "replies": 0,
+      "likes": 14,
+      "replies": 2,
       "retweets": 0,
-      "views": 18
+      "views": 161
     },
     "totals": {
-      "likes": 1,
-      "replies": 0,
+      "likes": 14,
+      "replies": 2,
       "reposts": 0,
-      "views": 101,
-      "published_photos": 10,
+      "views": 247,
+      "published_photos": 12,
       "total_archive_photos": 1940
     }
   },
@@ -132,7 +132,7 @@
   "recent_posts": [
     {
       "post_id": 2170,
-      "threads_id": "18137995003624202",
+      "threads_id": "17916526821468159",
       "twitter_id": "2112787925843038500",
       "published_at": "2026-10-21 06:04:47"
     },
