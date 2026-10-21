@@ -1,19 +1,19 @@
 {
-  "updated_at": "2026-10-21T14:05:29.227601+00:00",
-  "updated_at_msk": "17:05 МСК",
+  "updated_at": "2026-10-21T14:29:53.800173+00:00",
+  "updated_at_msk": "17:29 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "next_publication": {
-    "iso": "2026-10-21T18:00:00+03:00",
-    "time_msk": "18:00 МСК",
-    "full_label": "Сегодня в 18:00 МСК",
-    "short_label": "~18:00 МСК"
+    "iso": "2026-10-21T19:00:00+03:00",
+    "time_msk": "19:00 МСК",
+    "full_label": "Сегодня в 19:00 МСК",
+    "short_label": "~19:00 МСК"
   },
-  "published": 9,
-  "pending": 475,
+  "published": 10,
+  "pending": 474,
   "failed": 0,
   "skipped": 42,
   "total": 526,
-  "percent": 1.7,
+  "percent": 1.9,
   "days_left": 19.8,
   "analytics": {
     "start_date": "2026-10-21",
@@ -56,47 +56,29 @@
       "replies": 0,
       "reposts": 0,
       "views": 99,
-      "published_photos": 76,
+      "published_photos": 85,
       "total_archive_photos": 1940
     }
   },
   "next_post": {
-    "id": 2286,
-    "date": "09.02.2022",
-    "date_msk": "09.02.2022 22:42 МСК",
-    "photos_count": 9,
+    "id": 2295,
+    "date": "11.02.2022",
+    "date_msk": "11.02.2022 19:12 МСК",
+    "photos_count": 5,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_0.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_1.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_2.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_3.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2295_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2295_1.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2295_2.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2295_3.jpg"
     ],
-    "text": "А у меня в гостях космическая собака!",
+    "text": "",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/2286",
-    "eta_msk": "18:00 МСК",
-    "eta_label": "Сегодня в 18:00 МСК",
-    "eta_iso": "2026-10-21T18:00:00+03:00"
+    "tg_url": "https://t.me/dremin_live/2295",
+    "eta_msk": "19:00 МСК",
+    "eta_label": "Сегодня в 19:00 МСК",
+    "eta_iso": "2026-10-21T19:00:00+03:00"
   },
   "upcoming_posts": [
-    {
-      "id": 2286,
-      "date": "09.02.2022",
-      "date_msk": "09.02.2022 22:42 МСК",
-      "photos_count": 9,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_3.jpg"
-      ],
-      "text": "А у меня в гостях космическая собака!",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2286",
-      "eta_msk": "18:00 МСК",
-      "eta_label": "Сегодня в 18:00 МСК",
-      "eta_iso": "2026-10-21T18:00:00+03:00"
-    },
     {
       "id": 2295,
       "date": "11.02.2022",
@@ -168,9 +150,46 @@
       "eta_msk": "22:00 МСК",
       "eta_label": "Сегодня в 22:00 МСК",
       "eta_iso": "2026-10-21T22:00:00+03:00"
+    },
+    {
+      "id": 2337,
+      "date": "20.02.2022",
+      "date_msk": "20.02.2022 11:00 МСК",
+      "photos_count": 1,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2337_0.jpg"
+      ],
+      "text": "",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2337",
+      "eta_msk": "23:00 МСК",
+      "eta_label": "Сегодня в 23:00 МСК",
+      "eta_iso": "2026-10-21T23:00:00+03:00"
     }
   ],
   "recent_posts": [
+    {
+      "post_id": 2286,
+      "threads_id": "18200097148385353",
+      "twitter_id": "2112914135998759400",
+      "tiktok_id": null,
+      "published_at": "2026-10-21 14:29:43",
+      "published_at_msk": "21.10.2026 17:29 МСК",
+      "date": "09.02.2022",
+      "date_msk": "09.02.2022 22:42 МСК",
+      "photos_count": 9,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_3.jpg"
+      ],
+      "text": "А у меня в гостях космическая собака!",
+      "threads_url": "https://www.threads.com/@dremin/post/Dewn8ewG2OZ",
+      "twitter_url": "https://x.com/m_dremin/status/2112914135998759400",
+      "tiktok_url": "",
+      "tg_url": "https://t.me/dremin_live/2286"
+    },
     {
       "post_id": 2279,
       "threads_id": "17910708117491596",
@@ -373,8 +392,8 @@
       "id": "archive_poster.yml",
       "name": "Hourly Archive Poster",
       "schedule": "Раз в час (07:00 - 00:00 МСК)",
-      "description": "Следующая публикация: Сегодня в 18:00 МСК",
-      "next_run_msk": "Сегодня в 18:00 МСК"
+      "description": "Следующая публикация: Сегодня в 19:00 МСК",
+      "next_run_msk": "Сегодня в 19:00 МСК"
     },
     {
       "id": "crosspost.yml",
