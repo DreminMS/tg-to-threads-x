@@ -363,39 +363,72 @@ async def _async_post_to_tiktok(
                 except Exception as text_err:
                     logger.warning(f"Could not fill TikTok description: {text_err}")
 
+            # Clear any pre-post responses and listen specifically for publish API responses
+            publish_response_data = {}
+            async def on_publish_response(response):
+                url = response.url
+                if response.request.method == "POST" and any(x in url for x in ["publish", "commit", "item/create"]):
+                    try:
+                        data = await response.json()
+                        publish_response_data["data"] = data
+                        logger.info(f"Captured publish API response from {url[:80]}: {str(data)[:200]}")
+                    except Exception:
+                        pass
+
+            page.on("response", on_publish_response)
+
             # Click Post button
             logger.info("Clicking Post button...")
+            await post_btn.scroll_into_view_if_needed()
             await post_btn.click()
 
             # Wait for post to complete (modal or redirect)
             item_id = None
             post_url = None
-            for _ in range(15):
-                await asyncio.sleep(1.5)
-                # Check captured network responses
-                if post_response_data.get("data"):
-                    d = post_response_data["data"]
-                    item_id = d.get("item_id") or d.get("data", {}).get("item_id") or d.get("project_id")
+            logger.info("Waiting up to 45 seconds for post confirmation / modal...")
+            for sec in range(1, 46):
+                await asyncio.sleep(1)
 
-                # Check if success modal appeared with "View post"
+                # 1. Check if success modal appeared with "View post" or "Manage your posts"
                 view_link = page.locator('a[href*="/photo/"], a[href*="/video/"]').first
                 if await view_link.count() > 0:
                     href = await view_link.get_attribute("href")
-                    if href:
-                        post_url = href
-                        if "/photo/" in href:
-                            item_id = href.split("/photo/")[1].split("?")[0].strip("/")
-                        elif "/video/" in href:
-                            item_id = href.split("/video/")[1].split("?")[0].strip("/")
+                    if href and href.strip():
+                        post_url = href.strip()
+                        if "/photo/" in post_url:
+                            item_id = post_url.split("/photo/")[1].split("?")[0].strip("/")
+                        elif "/video/" in post_url:
+                            item_id = post_url.split("/video/")[1].split("?")[0].strip("/")
+                        logger.info(f"Found publish success view link at second {sec}: {post_url} (ID: {item_id})")
                         break
 
+                # 2. Check publish API response
+                if publish_response_data.get("data"):
+                    d = publish_response_data["data"]
+                    real_item = d.get("item_id") or d.get("data", {}).get("item_id") or d.get("aweme_id")
+                    if real_item:
+                        item_id = str(real_item)
+                        logger.info(f"Captured real published item_id from API: {item_id}")
+                        break
+
+                # Check if modal "uploaded" appeared
+                modal_text = await page.eval_on_selector_all(
+                    'div[role="dialog"], [class*="modal"], [class*="dialog"]',
+                    'els => els.map(e => e.innerText.trim())'
+                )
+                if modal_text and any("upload" in t.lower() or "manage" in t.lower() for t in modal_text):
+                    logger.info(f"Detected post-publish modal at second {sec}: {modal_text}")
+
+                if sec % 5 == 0:
+                    logger.info(f"Publish waiting at second {sec}, current URL: {page.url}")
+
             # Fallback: check profile page for the newly published post
-            if not item_id:
+            if not item_id or not post_url:
                 try:
                     logger.info("Checking user profile for newest published post...")
                     prof_page = await context.new_page()
                     await prof_page.goto(f"https://www.tiktok.com/@{username}", wait_until="domcontentloaded", timeout=20000)
-                    await asyncio.sleep(3)
+                    await asyncio.sleep(4)
                     links = await prof_page.eval_on_selector_all(
                         'a[href*="/photo/"], a[href*="/video/"]',
                         'els => els.map(e => e.href)'
@@ -406,16 +439,24 @@ async def _async_post_to_tiktok(
                             item_id = post_url.split("/photo/")[1].split("?")[0].strip("/")
                         elif "/video/" in post_url:
                             item_id = post_url.split("/video/")[1].split("?")[0].strip("/")
+                        logger.info(f"Found published post on profile: {post_url}")
                     await prof_page.close()
                 except Exception as prof_err:
                     logger.warning(f"Could not check profile page: {prof_err}")
 
+            # Take diagnostic screenshot of current state
+            try:
+                await page.screenshot(path="/tmp/tt_post_final_state.png")
+            except Exception:
+                pass
+
             await browser.close()
 
-            if not item_id and not post_url:
-                # If Post button was clicked successfully, fallback to timestamp ID
-                item_id = f"tt_{int(time.time())}"
-                post_url = f"https://www.tiktok.com/@{username}"
+            if not item_id:
+                raise RuntimeError(
+                    "TikTok post could not be confirmed. "
+                    "The Post button was clicked, but no published item_id or post link was returned."
+                )
 
             if not post_url:
                 post_url = f"https://www.tiktok.com/@{username}/photo/{item_id}"

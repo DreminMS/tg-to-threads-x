@@ -38,6 +38,14 @@ jobs:
         run: |
           python publish_latest_to_tiktok.py
 
+      - name: Upload diagnostic screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiktok-post-screenshot
+          path: /tmp/tt_*.png
+          if-no-files-found: ignore
+
       - name: Commit and push state
         run: |
           python update_status.py
