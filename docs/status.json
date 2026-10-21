@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T08:02:15.204851+00:00",
+  "updated_at": "2026-10-21T08:13:08.838386+00:00",
   "published": 12,
   "pending": 481,
   "failed": 0,
@@ -10,7 +10,7 @@
   "analytics": {
     "start_date": "2026-10-21",
     "total_reactions": 19,
-    "total_views": 385,
+    "total_views": 410,
     "total_growth": 0,
     "threads": {
       "username": "dremin",
@@ -32,13 +32,13 @@
       "likes": 19,
       "replies": 0,
       "retweets": 0,
-      "views": 253
+      "views": 278
     },
     "totals": {
       "likes": 19,
       "replies": 0,
       "reposts": 0,
-      "views": 385,
+      "views": 410,
       "published_photos": 22,
       "total_archive_photos": 1940
     }
