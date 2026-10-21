@@ -436,15 +436,38 @@ def run_daemon(interval_seconds: int = 3600):
         time.sleep(interval_seconds)
 
 
+def skip_archive_post(post_id: int, reason: str = "manual_skip") -> bool:
+    conn = init_db()
+    with conn:
+        cursor = conn.execute("UPDATE archive_posts SET status = 'skipped', skip_reason = ? WHERE post_id = ?", (reason, post_id))
+        updated = cursor.rowcount > 0
+    if updated:
+        logger.info(f"⏭ Post #{post_id} marked as skipped (reason: {reason})")
+        try:
+            from update_status import update_status_json
+            update_status_json()
+        except Exception as e:
+            logger.warning(f"Failed to update status.json after skip: {e}")
+    else:
+        logger.warning(f"Post #{post_id} not found in archive_posts")
+    return updated
+
+
 def main():
     parser = argparse.ArgumentParser(description="Archive Poster for Telegram to Threads")
     parser.add_argument("--sync", action="store_true", help="Sync archive from Telegram channel")
     parser.add_argument("--status", action="store_true", help="Show current queue status")
     parser.add_argument("--publish-one", action="store_true", help="Publish 1 post right now")
+    parser.add_argument("--skip", type=int, help="Skip a specific post ID")
+    parser.add_argument("--skip-reason", type=str, default="manual_skip", help="Reason for skipping")
     parser.add_argument("--dry-run", action="store_true", help="Simulate publishing without posting to Threads")
     parser.add_argument("--daemon", action="store_true", help="Run continuously with 1-hour interval")
     parser.add_argument("--interval", type=int, default=3600, help="Interval in seconds (default: 3600)")
     args = parser.parse_args()
+
+    if args.skip:
+        skip_archive_post(args.skip, reason=args.skip_reason)
+        return
 
     if args.sync:
         sync_archive()

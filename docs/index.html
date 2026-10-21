@@ -382,6 +382,157 @@
       border-color: rgba(29, 155, 240, 0.3);
     }
 
+    /* Upcoming Posts Queue */
+    .upcoming-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .upcoming-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .upcoming-card.skipping {
+      opacity: 0.3;
+      transform: scale(0.96);
+      pointer-events: none;
+    }
+
+    .upcoming-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .upcoming-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .upcoming-id {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      padding: 3px 8px;
+      border-radius: 8px;
+    }
+
+    .upcoming-date {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .upcoming-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-meme {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .badge-photos {
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    .upcoming-photos {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .upcoming-photos::-webkit-scrollbar {
+      display: none;
+    }
+
+    .upcoming-img {
+      height: 110px;
+      width: auto;
+      min-width: 80px;
+      max-width: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #1e293b;
+    }
+
+    .upcoming-text {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .upcoming-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 2px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-skip {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      color: #fb7185;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-skip:active {
+      transform: scale(0.94);
+      background: rgba(244, 63, 94, 0.22);
+    }
+
+    .btn-tg-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     /* Toast */
     #toast {
       position: fixed;
@@ -528,22 +679,30 @@
         <div class="progress-bar-fill" id="progressBar"></div>
       </div>
 
-      <div class="stats-grid">
+      <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
         <div class="stat-box">
-          <div class="stat-box-title">В очереди архива</div>
+          <div class="stat-box-title">В очереди</div>
           <div class="stat-box-val" id="statPending">—</div>
         </div>
         <div class="stat-box">
-          <div class="stat-box-title">Расчетное время</div>
+          <div class="stat-box-title">Пропущено</div>
+          <div class="stat-box-val" id="statSkipped" style="color: #fb7185;">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-title">Расчетное</div>
           <div class="stat-box-val" id="statDays">—</div>
         </div>
       </div>
     </div>
 
-    <!-- Next Post Card -->
-    <div class="card" id="nextPostCard" style="display: none;">
-      <div class="stat-box-title">📸 Следующий архивный пост</div>
-      <div class="stat-box-val" style="font-size: 15px; margin-top: 6px;" id="nextPostDetails">—</div>
+    <!-- Upcoming Posts Queue Preview with Skip -->
+    <div class="section-title">
+      <span>Ближайшие публикации очереди</span>
+      <span style="font-size: 11px; color: var(--accent); font-weight: 600;" id="upcomingCount"></span>
+    </div>
+
+    <div id="upcomingContainer" class="upcoming-container">
+      <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0;">Загрузка очереди...</div>
     </div>
 
     <!-- Workflows (Daemons) Controls -->
@@ -684,12 +843,57 @@
         document.getElementById('statSubLabel').innerText = `Опубликовано (${data.percent}%)`;
         document.getElementById('progressBar').style.width = `${data.percent}%`;
         document.getElementById('statPending').innerText = `${data.pending} постов`;
+        const skEl = document.getElementById('statSkipped');
+        if (skEl) skEl.innerText = data.skipped || 0;
         document.getElementById('statDays').innerText = `~${data.days_left} дн.`;
 
-        // Next post
-        if (data.next_post) {
-          document.getElementById('nextPostCard').style.display = 'block';
-          document.getElementById('nextPostDetails').innerText = `#${data.next_post.id} (${data.next_post.date}, ${data.next_post.photos_count} фото)`;
+        // Upcoming posts preview with skip button
+        if (data.upcoming_posts && data.upcoming_posts.length > 0) {
+          const upCountEl = document.getElementById('upcomingCount');
+          if (upCountEl) upCountEl.innerText = `${data.upcoming_posts.length} в очереди`;
+          
+          const upcomingHtml = data.upcoming_posts.map(post => {
+            const photosHtml = (post.photos || []).map(url => `
+              <img class="upcoming-img" src="${url}" loading="lazy" alt="Photo" onerror="this.style.display='none'">
+            `).join('');
+
+            return `
+              <div class="upcoming-card" id="upcoming-card-${post.id}">
+                <div class="upcoming-header">
+                  <div class="upcoming-meta">
+                    <span class="upcoming-id">#${post.id}</span>
+                    <span class="upcoming-date">${post.date}</span>
+                  </div>
+                  <div class="upcoming-badges">
+                    ${post.is_meme ? `<span class="badge-meme">⚠️ Возможно мем</span>` : ''}
+                    <span class="badge-photos">📸 ${post.photos_count} фото</span>
+                  </div>
+                </div>
+
+                ${photosHtml ? `<div class="upcoming-photos">${photosHtml}</div>` : ''}
+
+                ${post.text ? `<div class="upcoming-text">${escapeHtml(post.text)}</div>` : ''}
+
+                <div class="upcoming-actions">
+                  <a class="btn-tg-link" href="${post.tg_url}" target="_blank">
+                    ✈️ Пост в TG ↗
+                  </a>
+                  <button class="btn-skip" onclick="skipPost(${post.id})">
+                    ⏭ Пропустить пост
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('');
+          document.getElementById('upcomingContainer').innerHTML = upcomingHtml;
+        } else {
+          const upCountEl = document.getElementById('upcomingCount');
+          if (upCountEl) upCountEl.innerText = '0 постов';
+          document.getElementById('upcomingContainer').innerHTML = `
+            <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 16px 0;">
+              🎉 Очередь архива пуста или все посты опубликованы!
+            </div>
+          `;
         }
 
         // Updated time
@@ -725,16 +929,48 @@
       }
     }
 
-    async function triggerWorkflow(workflowFile) {
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    async function skipPost(postId) {
+      if (!confirm(`Пропустить пост #${postId} из очереди архива? Он не будет опубликован.`)) {
+        return;
+      }
+
+      const card = document.getElementById(`upcoming-card-${postId}`);
+      if (card) card.classList.add('skipping');
+
+      const success = await triggerWorkflow('archive_poster.yml', { action: 'skip', post_id: String(postId) });
+      if (success) {
+        showToast(`⏭ Пост #${postId} помечен как пропущенный`);
+        if (card) {
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.9)';
+          setTimeout(() => card.remove(), 300);
+        }
+        const skEl = document.getElementById('statSkipped');
+        if (skEl) skEl.innerText = parseInt(skEl.innerText || 0) + 1;
+        setTimeout(() => loadStatus(false), 4500);
+      } else {
+        if (card) card.classList.remove('skipping');
+      }
+    }
+
+    async function triggerWorkflow(workflowFile, inputs = null) {
       const pat = localStorage.getItem('gh_pat');
       if (!pat) {
         showToast('⚠️ Укажите токен GitHub в ⚙️ Настройках');
         openSettings();
-        return;
+        return false;
       }
 
       showToast('🚀 Отправка запроса в GitHub Actions...');
       try {
+        const payload = { ref: 'main' };
+        if (inputs) payload.inputs = inputs;
         const resp = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${workflowFile}/dispatches`, {
           method: 'POST',
           headers: {
@@ -742,17 +978,20 @@
             'Accept': 'application/vnd.github.v3+json',
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ ref: 'main' })
+          body: JSON.stringify(payload)
         });
 
         if (resp.status === 204 || resp.ok) {
-          showToast('✅ Воркфлоу запущен в облаке!');
+          showToast('✅ Команда успешно отправлена в облако!');
+          return true;
         } else {
           const errData = await resp.json().catch(() => ({}));
           showToast(`❌ Ошибка (${resp.status}): ${errData.message || 'Проверьте токен'}`);
+          return false;
         }
       } catch (e) {
         showToast(`❌ Ошибка сети: ${e.message}`);
+        return false;
       }
     }
 

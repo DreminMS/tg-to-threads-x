@@ -30,25 +30,35 @@ def update_status_json():
     c.execute("SELECT count(*) FROM archive_posts WHERE status = 'failed'")
     failed = c.fetchone()[0]
 
-    total = published + pending + failed
+    c.execute("SELECT count(*) FROM archive_posts WHERE status = 'skipped'")
+    skipped = c.fetchone()[0]
+
+    total = published + pending + failed + skipped
     percent = round((published / total * 100), 1) if total > 0 else 0.0
 
+    # Fetch next upcoming posts (e.g. 5 upcoming posts for preview)
     c.execute("""
-        SELECT post_id, post_date, photos_json 
+        SELECT post_id, post_date, photos_json, text, is_meme
         FROM archive_posts 
         WHERE status = 'pending' 
         ORDER BY post_id ASC 
-        LIMIT 1
+        LIMIT 5
     """)
-    next_row = c.fetchone()
-    next_post = None
-    if next_row:
-        photos = json.loads(next_row[2]) if next_row[2] else []
-        next_post = {
-            "id": next_row[0],
-            "date": next_row[1][:10] if next_row[1] else "",
-            "photos_count": len(photos)
-        }
+    upcoming_rows = c.fetchall()
+    upcoming_posts = []
+    for r in upcoming_rows:
+        photos = json.loads(r[2]) if r[2] else []
+        upcoming_posts.append({
+            "id": r[0],
+            "date": r[1][:10] if r[1] else "",
+            "photos_count": len(photos),
+            "photos": photos[:4],  # first 4 photos for gallery preview
+            "text": (r[3] or "").strip(),
+            "is_meme": bool(r[4]),
+            "tg_url": f"https://t.me/dremin_live/{r[0]}"
+        })
+
+    next_post = upcoming_posts[0] if upcoming_posts else None
 
     c.execute("""
         SELECT post_id, threads_id, twitter_id, published_at 
@@ -71,10 +81,13 @@ def update_status_json():
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "published": published,
         "pending": pending,
+        "failed": failed,
+        "skipped": skipped,
         "total": total,
         "percent": percent,
         "days_left": round(pending / 24, 1),
         "next_post": next_post,
+        "upcoming_posts": upcoming_posts,
         "recent_posts": recent,
         "workflows": [
             {
