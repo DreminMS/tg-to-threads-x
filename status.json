@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-21T16:24:39.781427+00:00",
-  "updated_at_msk": "19:24 МСК",
+  "updated_at": "2026-10-21T16:31:47.177372+00:00",
+  "updated_at_msk": "19:31 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "next_publication": {
     "iso": "2026-10-21T20:00:00+03:00",
@@ -17,8 +17,8 @@
   "days_left": 19.7,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 0,
-    "total_views": 125,
+    "total_reactions": 5,
+    "total_views": 235,
     "total_growth": 0,
     "threads": {
       "username": "dremin",
@@ -29,7 +29,7 @@
       "likes": 0,
       "replies": 0,
       "reposts": 0,
-      "views": 125
+      "views": 127
     },
     "twitter": {
       "username": "m_dremin",
@@ -37,10 +37,10 @@
       "followers": 526,
       "baseline": 526,
       "growth": 0,
-      "likes": 0,
+      "likes": 5,
       "replies": 0,
       "retweets": 0,
-      "views": 0
+      "views": 108
     },
     "tiktok": {
       "username": "dremin_m",
@@ -52,10 +52,10 @@
       "views": 0
     },
     "totals": {
-      "likes": 0,
+      "likes": 5,
       "replies": 0,
       "reposts": 0,
-      "views": 125,
+      "views": 235,
       "published_photos": 100,
       "total_archive_photos": 1940
     }
@@ -169,7 +169,7 @@
       "post_id": 4624,
       "threads_id": "18141469717717451",
       "twitter_id": "2112691676418552267",
-      "tiktok_id": "7699151156437783572",
+      "tiktok_id": null,
       "published_at": "2026-10-21T16:02:59.618559+00:00",
       "published_at_msk": "21.10.2026 19:02 МСК",
       "date": "2026-10-20",
@@ -184,7 +184,7 @@
       "text": "",
       "threads_url": "https://www.threads.com/@dremin/post/DevCxxYj1sf",
       "twitter_url": "https://x.com/m_dremin/status/2112691676418552267",
-      "tiktok_url": "https://www.tiktok.com/@dremin_m/photo/7699151156437783572",
+      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/4624"
     },
     {
