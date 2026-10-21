@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-10-21T09:20:24.713313+00:00",
-  "published": 4,
-  "pending": 480,
+  "updated_at": "2026-10-21T09:29:12.125169+00:00",
+  "published": 5,
+  "pending": 479,
   "failed": 0,
   "skipped": 42,
   "total": 526,
-  "percent": 0.8,
+  "percent": 1.0,
   "days_left": 20.0,
   "analytics": {
     "start_date": "2026-10-21",
@@ -39,39 +39,25 @@
       "replies": 0,
       "reposts": 0,
       "views": 195,
-      "published_photos": 32,
+      "published_photos": 39,
       "total_archive_photos": 1940
     }
   },
   "next_post": {
-    "id": 2227,
+    "id": 2234,
     "date": "30.01.2022",
-    "photos_count": 7,
+    "photos_count": 10,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_0.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_1.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_2.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_3.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2234_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2234_1.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2234_2.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2234_3.jpg"
     ],
-    "text": "Пешком до работы? Почему бы и да!",
+    "text": "Традиционное воскресное",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/2227"
+    "tg_url": "https://t.me/dremin_live/2234"
   },
   "upcoming_posts": [
-    {
-      "id": 2227,
-      "date": "30.01.2022",
-      "photos_count": 7,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_3.jpg"
-      ],
-      "text": "Пешком до работы? Почему бы и да!",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2227"
-    },
     {
       "id": 2234,
       "date": "30.01.2022",
@@ -127,9 +113,41 @@
       "text": "Вышел за хлебом",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/2279"
+    },
+    {
+      "id": 2286,
+      "date": "09.02.2022",
+      "photos_count": 9,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2286_3.jpg"
+      ],
+      "text": "А у меня в гостях космическая собака!",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2286"
     }
   ],
   "recent_posts": [
+    {
+      "post_id": 2227,
+      "threads_id": "18105694181001925",
+      "twitter_id": "2112838475783561233",
+      "published_at": "2026-10-21 09:28:53",
+      "date": "30.01.2022",
+      "photos_count": 7,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_3.jpg"
+      ],
+      "text": "Пешком до работы? Почему бы и да!",
+      "threads_url": "https://www.threads.com/@dremin/post/DewFiHnG9A0",
+      "twitter_url": "https://x.com/m_dremin/status/2112838475783561233",
+      "tg_url": "https://t.me/dremin_live/2227"
+    },
     {
       "post_id": 2205,
       "threads_id": "17992599393098977",
