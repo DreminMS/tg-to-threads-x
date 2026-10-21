@@ -1,24 +1,24 @@
 {
-  "updated_at": "2026-10-21T17:36:14.562819+00:00",
-  "updated_at_msk": "20:36 МСК",
+  "updated_at": "2026-10-21T18:09:35.619023+00:00",
+  "updated_at_msk": "21:09 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "next_publication": {
-    "iso": "2026-10-21T21:00:00+03:00",
-    "time_msk": "21:00 МСК",
-    "full_label": "Сегодня в 21:00 МСК",
-    "short_label": "~21:00 МСК"
+    "iso": "2026-10-21T22:00:00+03:00",
+    "time_msk": "22:00 МСК",
+    "full_label": "Сегодня в 22:00 МСК",
+    "short_label": "~22:00 МСК"
   },
-  "published": 13,
-  "pending": 472,
+  "published": 14,
+  "pending": 471,
   "failed": 0,
   "skipped": 41,
   "total": 526,
-  "percent": 2.5,
-  "days_left": 19.7,
+  "percent": 2.7,
+  "days_left": 19.6,
   "analytics": {
     "start_date": "2026-10-21",
     "total_reactions": 0,
-    "total_views": 129,
+    "total_views": 136,
     "total_growth": 0,
     "threads": {
       "username": "dremin",
@@ -29,7 +29,7 @@
       "likes": 0,
       "replies": 0,
       "reposts": 0,
-      "views": 129
+      "views": 136
     },
     "twitter": {
       "username": "m_dremin",
@@ -55,48 +55,30 @@
       "likes": 0,
       "replies": 0,
       "reposts": 0,
-      "views": 129,
-      "published_photos": 105,
+      "views": 136,
+      "published_photos": 115,
       "total_archive_photos": 1940
     }
   },
   "next_post": {
-    "id": 2305,
+    "id": 2323,
     "date": "13.02.2022",
-    "date_msk": "13.02.2022 17:28 МСК",
+    "date_msk": "13.02.2022 19:32 МСК",
     "photos_count": 10,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_0.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_1.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_2.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_3.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2323_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2323_1.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2323_2.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2323_3.jpg"
     ],
-    "text": "Традиционный воскресный фотогулять прошел успешно!",
+    "text": "",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/2305",
-    "eta_msk": "21:00 МСК",
-    "eta_label": "Сегодня в 21:00 МСК",
-    "eta_iso": "2026-10-21T21:00:00+03:00"
+    "tg_url": "https://t.me/dremin_live/2323",
+    "eta_msk": "22:00 МСК",
+    "eta_label": "Сегодня в 22:00 МСК",
+    "eta_iso": "2026-10-21T22:00:00+03:00"
   },
   "upcoming_posts": [
-    {
-      "id": 2305,
-      "date": "13.02.2022",
-      "date_msk": "13.02.2022 17:28 МСК",
-      "photos_count": 10,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_3.jpg"
-      ],
-      "text": "Традиционный воскресный фотогулять прошел успешно!",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2305",
-      "eta_msk": "21:00 МСК",
-      "eta_label": "Сегодня в 21:00 МСК",
-      "eta_iso": "2026-10-21T21:00:00+03:00"
-    },
     {
       "id": 2323,
       "date": "13.02.2022",
@@ -162,6 +144,24 @@
       "eta_msk": "07:00 МСК",
       "eta_label": "Завтра в 07:00 МСК",
       "eta_iso": "2026-10-22T07:00:00+03:00"
+    },
+    {
+      "id": 2360,
+      "date": "20.02.2022",
+      "date_msk": "20.02.2022 23:43 МСК",
+      "photos_count": 9,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2360_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2360_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2360_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2360_3.jpg"
+      ],
+      "text": "На улице сейчас кайф",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2360",
+      "eta_msk": "08:00 МСК",
+      "eta_label": "Завтра в 08:00 МСК",
+      "eta_iso": "2026-10-22T08:00:00+03:00"
     }
   ],
   "recent_posts": [
@@ -186,6 +186,28 @@
       "twitter_url": "https://x.com/m_dremin/status/2112691676418552267",
       "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/4624"
+    },
+    {
+      "post_id": 2305,
+      "threads_id": "18140261869618568",
+      "twitter_id": "2112969155691663450",
+      "tiktok_id": null,
+      "published_at": "2026-10-21 18:09:23",
+      "published_at_msk": "21.10.2026 21:09 МСК",
+      "date": "13.02.2022",
+      "date_msk": "13.02.2022 17:28 МСК",
+      "photos_count": 10,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2305_3.jpg"
+      ],
+      "text": "Традиционный воскресный фотогулять прошел успешно!",
+      "threads_url": "https://www.threads.com/@dremin/post/DexA9x_lNDl",
+      "twitter_url": "https://x.com/m_dremin/status/2112969155691663450",
+      "tiktok_url": "",
+      "tg_url": "https://t.me/dremin_live/2305"
     },
     {
       "post_id": 2300,
@@ -362,28 +384,6 @@
       "twitter_url": "https://x.com/m_dremin/status/2112838475783561233",
       "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2227"
-    },
-    {
-      "post_id": 2205,
-      "threads_id": "17992599393098977",
-      "twitter_id": "2112821851340537965",
-      "tiktok_id": null,
-      "published_at": "2026-10-21 08:23:02",
-      "published_at_msk": "21.10.2026 11:23 МСК",
-      "date": "28.01.2022",
-      "date_msk": "28.01.2022 10:37 МСК",
-      "photos_count": 10,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_3.jpg"
-      ],
-      "text": "Вчера внезапно получилось прогуляться часик по району, даже что-то нажалось.",
-      "threads_url": "https://www.threads.com/@dremin/post/Dev9-YZlk5u",
-      "twitter_url": "https://x.com/m_dremin/status/2112821851340537965",
-      "tiktok_url": "",
-      "tg_url": "https://t.me/dremin_live/2205"
     }
   ],
   "workflows": [
@@ -391,8 +391,8 @@
       "id": "archive_poster.yml",
       "name": "Hourly Archive Poster",
       "schedule": "Раз в час (07:00 - 00:00 МСК)",
-      "description": "Следующая публикация: Сегодня в 21:00 МСК",
-      "next_run_msk": "Сегодня в 21:00 МСК"
+      "description": "Следующая публикация: Сегодня в 22:00 МСК",
+      "next_run_msk": "Сегодня в 22:00 МСК"
     },
     {
       "id": "crosspost.yml",
