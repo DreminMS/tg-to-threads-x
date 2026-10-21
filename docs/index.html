@@ -1007,7 +1007,20 @@
 
     async function loadStatus(manual = false) {
       const btn = document.getElementById('refreshBtn');
-      if (manual) btn.style.transform = 'rotate(180deg)';
+      if (manual) {
+        btn.style.transform = 'rotate(360deg)';
+        if (!document.getElementById('metricLikes')) {
+          showToast('🔄 Обновление приложения...');
+          if ('serviceWorker' in navigator) {
+            caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).then(() => {
+              window.location.reload(true);
+            });
+          } else {
+            window.location.reload(true);
+          }
+          return;
+        }
+      }
 
       try {
         const resp = await fetch(`status.json?t=${Date.now()}`);
@@ -1262,7 +1275,12 @@
 
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=4').then((reg) => {
+        reg.update();
+      }).catch(() => {});
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      });
     }
 
     // Initial load and recurring auto-refresh every 20s
