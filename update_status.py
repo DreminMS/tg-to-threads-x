@@ -152,11 +152,13 @@ def update_status_json():
 
     try:
         c.execute("ALTER TABLE archive_posts ADD COLUMN threads_url TEXT")
+        c.execute("ALTER TABLE archive_posts ADD COLUMN tiktok_id TEXT")
+        c.execute("ALTER TABLE archive_posts ADD COLUMN tiktok_url TEXT")
     except Exception:
         pass
 
     c.execute("""
-        SELECT post_id, threads_id, twitter_id, published_at, photos_json, text, post_date, threads_url 
+        SELECT post_id, threads_id, twitter_id, published_at, photos_json, text, post_date, threads_url, tiktok_id, tiktok_url 
         FROM archive_posts 
         WHERE status = 'published' AND length(photos_json) > 2
         ORDER BY published_at DESC, post_id DESC 
@@ -171,6 +173,7 @@ def update_status_json():
             "post_id": r[0],
             "threads_id": r[1],
             "twitter_id": r[2],
+            "tiktok_id": r[8],
             "published_at": r[3],
             "published_at_msk": format_msk(r[3]),
             "date": r[6][:10] if r[6] else "",
@@ -180,6 +183,7 @@ def update_status_json():
             "text": (r[5] or "").strip(),
             "threads_url": th_url,
             "twitter_url": f"https://x.com/m_dremin/status/{r[2]}" if r[2] else "",
+            "tiktok_url": r[9] if r[9] else (f"https://www.tiktok.com/@dremin_m/photo/{r[8]}" if r[8] else ""),
             "tg_url": f"https://t.me/dremin_live/{r[0]}"
         })
 

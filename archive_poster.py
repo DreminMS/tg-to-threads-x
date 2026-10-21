@@ -58,6 +58,15 @@ def load_config() -> Dict[str, Any]:
             "auth_token": os.environ["TWITTER_AUTH_TOKEN"],
             "ct0": os.environ["TWITTER_CT0"]
         }
+    if os.environ.get("TIKTOK_COOKIES_JSON"):
+        try:
+            cfg["tiktok_cookies"] = json.loads(os.environ["TIKTOK_COOKIES_JSON"])
+            cfg["tiktok_enabled"] = True
+        except Exception:
+            pass
+    if os.environ.get("TIKTOK_SESSION_ID"):
+        cfg.setdefault("tiktok_cookies", {})["sessionid"] = os.environ["TIKTOK_SESSION_ID"]
+        cfg["tiktok_enabled"] = True
 
     if not cfg.get("threads_access_token"):
         logger.error("Missing threads_access_token in config or environment variables.")
@@ -77,7 +86,9 @@ def init_db() -> sqlite3.Connection:
                 status TEXT DEFAULT 'pending',
                 threads_id TEXT,
                 twitter_id TEXT,
+                tiktok_id TEXT,
                 threads_url TEXT,
+                tiktok_url TEXT,
                 published_at TIMESTAMP,
                 error_message TEXT,
                 text TEXT,
@@ -85,7 +96,7 @@ def init_db() -> sqlite3.Connection:
                 skip_reason TEXT
             )
         """)
-        for col, col_type in [("twitter_id", "TEXT"), ("threads_url", "TEXT"), ("text", "TEXT"), ("is_meme", "INTEGER DEFAULT 0"), ("skip_reason", "TEXT")]:
+        for col, col_type in [("twitter_id", "TEXT"), ("threads_url", "TEXT"), ("tiktok_id", "TEXT"), ("tiktok_url", "TEXT"), ("text", "TEXT"), ("is_meme", "INTEGER DEFAULT 0"), ("skip_reason", "TEXT")]:
             try:
                 conn.execute(f"ALTER TABLE archive_posts ADD COLUMN {col} {col_type}")
             except Exception:
@@ -455,6 +466,21 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
             except Exception as tw_err:
                 logger.error(f"❌ Failed to publish post {post_id} to Twitter: {tw_err}")
 
+        # TikTok Posting (if enabled in config)
+        tiktok_id = None
+        tiktok_url = None
+        if config.get("tiktok_enabled"):
+            try:
+                from tiktok_client import post_photos_to_tiktok
+                logger.info(f"Publishing post {post_id} to TikTok...")
+                tt_res = post_photos_to_tiktok(photos, text=None, config=config)
+                if tt_res:
+                    tiktok_id = tt_res.get("id")
+                    tiktok_url = tt_res.get("url")
+                    logger.info(f"✅ Successfully published post {post_id} to TikTok! ID: {tiktok_id} ({tiktok_url})")
+            except Exception as tt_err:
+                logger.error(f"❌ Failed to publish post {post_id} to TikTok: {tt_err}")
+
         threads_url = None
         if threads_id:
             try:
@@ -466,11 +492,11 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
         with conn:
             conn.execute("""
                 UPDATE archive_posts
-                SET status = 'published', threads_id = ?, twitter_id = ?, threads_url = ?, published_at = CURRENT_TIMESTAMP
+                SET status = 'published', threads_id = ?, twitter_id = ?, tiktok_id = ?, threads_url = ?, tiktok_url = ?, published_at = CURRENT_TIMESTAMP
                 WHERE post_id = ?
-            """, (threads_id, twitter_id, threads_url, post_id))
+            """, (threads_id, twitter_id, tiktok_id, threads_url, tiktok_url, post_id))
 
-        logger.info(f"✅ Successfully published post {post_id}! Threads: {threads_id} ({threads_url}), Twitter: {twitter_id}")
+        logger.info(f"✅ Successfully published post {post_id}! Threads: {threads_id} ({threads_url}), Twitter: {twitter_id}, TikTok: {tiktok_id} ({tiktok_url})")
         return post_id
 
     except Exception as e:
@@ -544,24 +570,26 @@ def delete_archive_post(post_id: int, config: Optional[Dict[str, Any]] = None) -
 
     conn = init_db()
     cur = conn.cursor()
-    cur.execute("SELECT threads_id, twitter_id, status FROM archive_posts WHERE post_id = ?", (post_id,))
+    cur.execute("SELECT threads_id, twitter_id, tiktok_id, status FROM archive_posts WHERE post_id = ?", (post_id,))
     row = cur.fetchone()
 
     threads_id = row[0] if row else None
     twitter_id = row[1] if row else None
+    tiktok_id = row[2] if row else None
 
     # Fallback to processed_posts if needed
-    cur.execute("SELECT threads_id, twitter_id FROM processed_posts WHERE message_id = ?", (post_id,))
+    cur.execute("SELECT threads_id, twitter_id, tiktok_id FROM processed_posts WHERE message_id = ?", (post_id,))
     p_row = cur.fetchone()
     if p_row:
         threads_id = threads_id or p_row[0]
         twitter_id = twitter_id or p_row[1]
+        tiktok_id = tiktok_id or p_row[2]
 
-    if not threads_id and not twitter_id and not row:
+    if not threads_id and not twitter_id and not tiktok_id and not row:
         logger.error(f"Post #{post_id} not found in database.")
         return False
 
-    logger.info(f"🗑 Initiating deletion of post #{post_id} (Threads: {threads_id}, Twitter: {twitter_id})...")
+    logger.info(f"🗑 Initiating deletion of post #{post_id} (Threads: {threads_id}, Twitter: {twitter_id}, TikTok: {tiktok_id})...")
 
     # 1. Delete from Threads
     threads_ok = True
@@ -586,7 +614,21 @@ def delete_archive_post(post_id: int, config: Optional[Dict[str, Any]] = None) -
             logger.error(f"❌ Error deleting tweet {twitter_id}: {tw_err}")
             twitter_ok = False
 
-    # 3. Update database records
+    # 3. Delete from TikTok
+    tiktok_ok = True
+    if tiktok_id and config.get("tiktok_enabled"):
+        try:
+            from tiktok_client import delete_post_from_tiktok
+            tiktok_ok = delete_post_from_tiktok(tiktok_id, config)
+            if tiktok_ok:
+                logger.info(f"✅ Deleted post #{post_id} from TikTok ({tiktok_id})")
+            else:
+                logger.warning(f"⚠️ Could not delete post #{post_id} from TikTok")
+        except Exception as tt_err:
+            logger.error(f"❌ Error deleting TikTok post {tiktok_id}: {tt_err}")
+            tiktok_ok = False
+
+    # 4. Update database records
     with conn:
         conn.execute("""
             UPDATE archive_posts 

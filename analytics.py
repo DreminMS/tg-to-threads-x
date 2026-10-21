@@ -34,6 +34,15 @@ def load_config() -> Dict[str, Any]:
         cfg.setdefault("twitter_cookies", {})["auth_token"] = os.environ["TWITTER_AUTH_TOKEN"]
     if os.environ.get("TWITTER_CT0"):
         cfg.setdefault("twitter_cookies", {})["ct0"] = os.environ["TWITTER_CT0"]
+    if os.environ.get("TIKTOK_COOKIES_JSON"):
+        try:
+            cfg["tiktok_cookies"] = json.loads(os.environ["TIKTOK_COOKIES_JSON"])
+            cfg["tiktok_enabled"] = True
+        except Exception:
+            pass
+    if os.environ.get("TIKTOK_SESSION_ID"):
+        cfg.setdefault("tiktok_cookies", {})["sessionid"] = os.environ["TIKTOK_SESSION_ID"]
+        cfg["tiktok_enabled"] = True
     return cfg
 
 
@@ -318,10 +327,20 @@ def fetch_twitter_insights(config: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def fetch_tiktok_insights(config: Dict[str, Any]) -> Dict[str, Any]:
+    try:
+        from tiktok_client import get_tiktok_analytics
+        return get_tiktok_analytics(config)
+    except Exception as e:
+        logger.warning(f"Error fetching TikTok insights: {e}")
+        return {"followers": 0, "following": 0, "likes": 0, "views": 0}
+
+
 def get_analytics_summary() -> Dict[str, Any]:
     config = load_config()
     threads_data = fetch_threads_insights(config)
     twitter_data = fetch_twitter_insights(config)
+    tiktok_data = fetch_tiktok_insights(config)
 
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
@@ -332,18 +351,22 @@ def get_analytics_summary() -> Dict[str, Any]:
 
     threads_base = baselines.get("threads", {}).get("initial", 1235)
     twitter_base = baselines.get("twitter", {}).get("initial", 526)
+    tiktok_base = baselines.get("tiktok", {}).get("initial", 0)
     start_date = baselines.get("threads", {}).get("date", "2026-10-21")
 
     th_followers = threads_data.get("followers", 1235)
     tw_followers = twitter_data.get("followers", 526)
+    tt_followers = tiktok_data.get("followers", 0)
 
     th_growth = th_followers - threads_base
     tw_growth = tw_followers - twitter_base
-    total_growth = th_growth + tw_growth
+    tt_growth = tt_followers - tiktok_base
+    total_growth = th_growth + tw_growth + tt_growth
 
     th_likes = threads_data.get("likes", 0)
     tw_likes = twitter_data.get("likes", 0)
-    total_likes = th_likes + tw_likes
+    tt_likes = tiktok_data.get("likes", 0)
+    total_likes = th_likes + tw_likes + tt_likes
 
     th_replies = threads_data.get("replies", 0)
     tw_replies = twitter_data.get("replies", 0)
@@ -355,7 +378,8 @@ def get_analytics_summary() -> Dict[str, Any]:
 
     th_views = threads_data.get("views", 0) + threads_data.get("post_views", 0)
     tw_views = twitter_data.get("views", 0)
-    total_views = th_views + tw_views
+    tt_views = tiktok_data.get("views", 0)
+    total_views = th_views + tw_views + tt_views
 
     total_reactions = total_likes + total_replies + total_reposts
 
@@ -373,14 +397,16 @@ def get_analytics_summary() -> Dict[str, Any]:
     try:
         c.execute("""
             INSERT INTO analytics_history (
-                threads_followers, twitter_followers,
+                threads_followers, twitter_followers, tiktok_followers,
                 threads_likes, threads_replies, threads_reposts, threads_views,
-                twitter_likes, twitter_retweets, twitter_replies, twitter_views
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                twitter_likes, twitter_retweets, twitter_replies, twitter_views,
+                tiktok_likes, tiktok_views
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
-            th_followers, tw_followers,
+            th_followers, tw_followers, tt_followers,
             th_likes, th_replies, th_reposts, th_views,
-            tw_likes, tw_reposts, tw_replies, tw_views
+            tw_likes, tw_reposts, tw_replies, tw_views,
+            tt_likes, tt_views
         ))
         conn.commit()
     except Exception as e:
@@ -412,6 +438,15 @@ def get_analytics_summary() -> Dict[str, Any]:
             "replies": tw_replies,
             "retweets": tw_reposts,
             "views": tw_views
+        },
+        "tiktok": {
+            "username": "dremin_m",
+            "url": "https://www.tiktok.com/@dremin_m",
+            "followers": tt_followers,
+            "baseline": tiktok_base,
+            "growth": tt_growth,
+            "likes": tt_likes,
+            "views": tt_views
         },
         "totals": {
             "likes": total_likes,

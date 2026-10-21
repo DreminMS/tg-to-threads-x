@@ -63,6 +63,15 @@ def load_config() -> Dict[str, Any]:
             "auth_token": os.environ["TWITTER_AUTH_TOKEN"],
             "ct0": os.environ["TWITTER_CT0"]
         }
+    if os.environ.get("TIKTOK_COOKIES_JSON"):
+        try:
+            cfg["tiktok_cookies"] = json.loads(os.environ["TIKTOK_COOKIES_JSON"])
+            cfg["tiktok_enabled"] = True
+        except Exception:
+            pass
+    if os.environ.get("TIKTOK_SESSION_ID"):
+        cfg.setdefault("tiktok_cookies", {})["sessionid"] = os.environ["TIKTOK_SESSION_ID"]
+        cfg["tiktok_enabled"] = True
 
     if not cfg.get("threads_user_id") or not cfg.get("threads_access_token"):
         logger.error("Missing threads_user_id or threads_access_token in config and environment!")
@@ -78,9 +87,16 @@ def init_db() -> sqlite3.Connection:
                 message_id INTEGER PRIMARY KEY,
                 media_group_id TEXT,
                 threads_id TEXT,
+                twitter_id TEXT,
+                tiktok_id TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        for col in ["twitter_id", "tiktok_id", "tiktok_url"]:
+            try:
+                conn.execute(f"ALTER TABLE processed_posts ADD COLUMN {col} TEXT")
+            except Exception:
+                pass
         conn.execute("""
             CREATE TABLE IF NOT EXISTS bot_state (
                 key TEXT PRIMARY KEY,
@@ -119,28 +135,30 @@ def mark_post_processed(
     message_id: int,
     media_group_id: Optional[str],
     threads_id: Optional[str],
-    twitter_id: Optional[str] = None
+    twitter_id: Optional[str] = None,
+    tiktok_id: Optional[str] = None
 ):
     with conn:
         conn.execute(
             """
-            INSERT OR REPLACE INTO processed_posts (message_id, media_group_id, threads_id, twitter_id)
-            VALUES (?, ?, ?, ?)
+            INSERT OR REPLACE INTO processed_posts (message_id, media_group_id, threads_id, twitter_id, tiktok_id)
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (message_id, media_group_id, threads_id, twitter_id)
+            (message_id, media_group_id, threads_id, twitter_id, tiktok_id)
         )
         # Crucial: mark as published in archive_posts too, so archive poster NEVER publishes it as an archive post
         conn.execute(
             """
-            INSERT INTO archive_posts (post_id, post_date, photos_json, status, threads_id, twitter_id, published_at)
-            VALUES (?, CURRENT_TIMESTAMP, '[]', 'published', ?, ?, CURRENT_TIMESTAMP)
+            INSERT INTO archive_posts (post_id, post_date, photos_json, status, threads_id, twitter_id, tiktok_id, published_at)
+            VALUES (?, CURRENT_TIMESTAMP, '[]', 'published', ?, ?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(post_id) DO UPDATE SET
                 status = 'published',
                 threads_id = COALESCE(excluded.threads_id, archive_posts.threads_id),
                 twitter_id = COALESCE(excluded.twitter_id, archive_posts.twitter_id),
+                tiktok_id = COALESCE(excluded.tiktok_id, archive_posts.tiktok_id),
                 published_at = CURRENT_TIMESTAMP
             """,
-            (message_id, threads_id, twitter_id)
+            (message_id, threads_id, twitter_id, tiktok_id)
         )
 
 
@@ -435,7 +453,18 @@ def process_channel_post(config: Dict[str, Any], messages: List[Dict[str, Any]],
         except Exception as tw_err:
             logger.error(f"Failed to post to Twitter: {tw_err}")
 
-    return (threads_id, twitter_id)
+    tiktok_id = None
+    if config.get("tiktok_enabled") and media_urls:
+        try:
+            from tiktok_client import post_photos_to_tiktok
+            tt_res = post_photos_to_tiktok(media_urls, text=text, config=config)
+            if tt_res:
+                tiktok_id = tt_res.get("id")
+                logger.info(f"Published to TikTok: {tiktok_id}")
+        except Exception as tt_err:
+            logger.error(f"Failed to post to TikTok: {tt_err}")
+
+    return (threads_id, twitter_id, tiktok_id)
 
 
 def run_poller(config: Dict[str, Any], dry_run: bool = False, once: bool = False) -> int:
@@ -467,10 +496,10 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False, once: bool = False
                 logger.info(f"Processing media group {gid} (messages: {msg_ids})")
 
                 try:
-                    threads_id, twitter_id = process_channel_post(config, buf.messages, dry_run=dry_run)
+                    threads_id, twitter_id, tiktok_id = process_channel_post(config, buf.messages, dry_run=dry_run)
                     for mid in msg_ids:
-                        mark_post_processed(conn, mid, gid, threads_id, twitter_id)
-                    logger.info(f"Media group {gid} published with Threads: {threads_id}, Twitter: {twitter_id}")
+                        mark_post_processed(conn, mid, gid, threads_id, twitter_id, tiktok_id)
+                    logger.info(f"Media group {gid} published with Threads: {threads_id}, Twitter: {twitter_id}, TikTok: {tiktok_id}")
                     published_count += 1
                     media_groups.pop(gid, None)
                 except Exception as err:
@@ -527,9 +556,9 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False, once: bool = False
                     logger.info(f"Buffered item for media group {media_group_id} (msg_id: {msg_id})")
                 else:
                     logger.info(f"Processing standalone message {msg_id}")
-                    threads_id, twitter_id = process_channel_post(config, [post], dry_run=dry_run)
-                    mark_post_processed(conn, msg_id, None, threads_id, twitter_id)
-                    logger.info(f"Message {msg_id} published with Threads: {threads_id}, Twitter: {twitter_id}")
+                    threads_id, twitter_id, tiktok_id = process_channel_post(config, [post], dry_run=dry_run)
+                    mark_post_processed(conn, msg_id, None, threads_id, twitter_id, tiktok_id)
+                    logger.info(f"Message {msg_id} published with Threads: {threads_id}, Twitter: {twitter_id}, TikTok: {tiktok_id}")
                     published_count += 1
 
             if once:
@@ -537,10 +566,10 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False, once: bool = False
                 for gid, buf in list(media_groups.items()):
                     msg_ids = [m["message_id"] for m in buf.messages]
                     logger.info(f"Processing media group {gid} (messages: {msg_ids})")
-                    threads_id, twitter_id = process_channel_post(config, buf.messages, dry_run=dry_run)
+                    threads_id, twitter_id, tiktok_id = process_channel_post(config, buf.messages, dry_run=dry_run)
                     for mid in msg_ids:
-                        mark_post_processed(conn, mid, gid, threads_id, twitter_id)
-                    logger.info(f"Media group {gid} published with Threads: {threads_id}, Twitter: {twitter_id}")
+                        mark_post_processed(conn, mid, gid, threads_id, twitter_id, tiktok_id)
+                    logger.info(f"Media group {gid} published with Threads: {threads_id}, Twitter: {twitter_id}, TikTok: {tiktok_id}")
                     published_count += 1
                     media_groups.pop(gid, None)
 
