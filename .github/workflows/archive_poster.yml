@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'Action to perform: publish or skip'
+        description: 'Action to perform: publish, skip, or delete'
         required: false
         default: 'publish'
       post_id:
-        description: 'Post ID to skip (when action=skip)'
+        description: 'Post ID to skip or delete'
         required: false
         default: ''
 
@@ -48,19 +48,27 @@ jobs:
           python archive_poster.py --skip ${{ inputs.post_id }}
           python update_status.py
 
+      - name: Handle Delete Post
+        if: ${{ inputs.action == 'delete' && inputs.post_id != '' }}
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium --with-deps
+          python archive_poster.py --delete ${{ inputs.post_id }}
+          python update_status.py
+
       - name: Install dependencies (Publishing)
-        if: ${{ !inputs.action || inputs.action != 'skip' }}
+        if: ${{ inputs.action != 'skip' && inputs.action != 'delete' }}
         run: |
           pip install -r requirements.txt
           playwright install chromium --with-deps
 
       - name: Check and Publish New Telegram Posts
-        if: ${{ !inputs.action || inputs.action != 'skip' }}
+        if: ${{ inputs.action != 'skip' && inputs.action != 'delete' }}
         run: |
           python crosspost.py --once
 
       - name: Publish Next Archive Post
-        if: ${{ !inputs.action || inputs.action != 'skip' }}
+        if: ${{ inputs.action != 'skip' && inputs.action != 'delete' }}
         run: |
           if [ "${{ inputs.action }}" = "publish" ]; then
             python archive_poster.py --publish-one

@@ -60,21 +60,35 @@ def update_status_json():
 
     next_post = upcoming_posts[0] if upcoming_posts else None
 
+    try:
+        c.execute("ALTER TABLE archive_posts ADD COLUMN threads_url TEXT")
+    except Exception:
+        pass
+
     c.execute("""
-        SELECT post_id, threads_id, twitter_id, published_at 
+        SELECT post_id, threads_id, twitter_id, published_at, photos_json, text, post_date, threads_url 
         FROM archive_posts 
-        WHERE status = 'published' 
-        ORDER BY published_at DESC 
-        LIMIT 6
+        WHERE status = 'published' AND length(photos_json) > 2
+        ORDER BY published_at DESC, post_id DESC 
+        LIMIT 10
     """)
     recent_rows = c.fetchall()
     recent = []
     for r in recent_rows:
+        photos = json.loads(r[4]) if r[4] else []
+        th_url = r[7] if r[7] else (f"https://www.threads.net/@dremin" if r[1] else "")
         recent.append({
             "post_id": r[0],
             "threads_id": r[1],
             "twitter_id": r[2],
-            "published_at": r[3]
+            "published_at": r[3],
+            "date": r[6][:10] if r[6] else "",
+            "photos_count": len(photos),
+            "photos": photos[:4],
+            "text": (r[5] or "").strip(),
+            "threads_url": th_url,
+            "twitter_url": f"https://x.com/m_dremin/status/{r[2]}" if r[2] else "",
+            "tg_url": f"https://t.me/dremin_live/{r[0]}"
         })
 
     try:

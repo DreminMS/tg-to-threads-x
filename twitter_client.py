@@ -381,6 +381,121 @@ def post_tweet(
     return {"data": {"id": tweet_id}}
 
 
+def delete_tweet_from_twitter(tweet_id: str, config: Dict[str, Any]) -> bool:
+    """
+    Deletes a tweet by ID using Playwright.
+    """
+    cookies = get_twitter_cookies(config)
+    if not cookies.get("auth_token") or not cookies.get("ct0"):
+        raise ValueError("Twitter cookies (auth_token, ct0) not found.")
+
+    return asyncio.run(_async_delete_tweet(tweet_id, cookies))
+
+
+async def _async_delete_tweet(
+    tweet_id: str,
+    cookies: Dict[str, str]
+) -> bool:
+    """
+    Navigates to the tweet and deletes it via UI actions (caret -> Delete -> Confirm).
+    """
+    from playwright.async_api import async_playwright
+
+    async with async_playwright() as p:
+        launch_args = {
+            "headless": True,
+            "args": [
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-infobars",
+                "--window-size=1280,800"
+            ]
+        }
+        if os.path.exists(CHROME_PATH):
+            launch_args["executable_path"] = CHROME_PATH
+
+        browser = await p.chromium.launch(**launch_args)
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+            viewport={"width": 1280, "height": 800},
+            locale="en-US"
+        )
+        await context.add_init_script("""
+            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+        """)
+
+        for domain in [".x.com", ".twitter.com"]:
+            await context.add_cookies([
+                {
+                    "name": "auth_token",
+                    "value": cookies["auth_token"],
+                    "domain": domain,
+                    "path": "/",
+                    "httpOnly": True,
+                    "secure": True
+                },
+                {
+                    "name": "ct0",
+                    "value": cookies["ct0"],
+                    "domain": domain,
+                    "path": "/",
+                    "secure": True
+                }
+            ])
+
+        page = await context.new_page()
+
+        target_url = f"https://x.com/m_dremin/status/{tweet_id}"
+        logger.info(f"Navigating to {target_url} to delete tweet...")
+        try:
+            await page.goto(target_url, wait_until="domcontentloaded", timeout=25000)
+        except Exception as e:
+            logger.warning(f"Goto warning: {e}")
+
+        await asyncio.sleep(2.5)
+
+        content = await page.content()
+        if "This Post was deleted" in content or "Hmm...this page doesn’t exist" in content or "Этот пост был удален" in content:
+            logger.info(f"Tweet {tweet_id} is already deleted.")
+            await browser.close()
+            return True
+
+        caret = page.locator('[data-testid="caret"]').first
+        if await caret.count() == 0:
+            logger.warning(f"Could not find caret on tweet {tweet_id}")
+            await browser.close()
+            return False
+
+        await caret.click()
+        await asyncio.sleep(1)
+
+        del_item = page.locator('div[role="menuitem"]:has-text("Delete"), div[role="menuitem"]:has-text("Удалить")').first
+        if await del_item.count() == 0:
+            logger.warning("Could not find Delete menu item in dropdown.")
+            await browser.close()
+            return False
+
+        await del_item.click()
+        await asyncio.sleep(1)
+
+        confirm_btn = page.locator('[data-testid="confirmationSheetConfirm"]').first
+        if await confirm_btn.count() == 0:
+            confirm_btn = page.locator('button:has-text("Delete"), button:has-text("Удалить")').first
+
+        if await confirm_btn.count() == 0:
+            logger.warning("Could not find confirmation confirm button.")
+            await browser.close()
+            return False
+
+        await confirm_btn.click()
+        logger.info(f"Confirmed deletion of tweet {tweet_id}.")
+        await asyncio.sleep(3)
+
+        await browser.close()
+        return True
+
+
 def verify_twitter(config: Dict[str, Any]) -> Dict[str, Any]:
     """
     Verifies Twitter session credentials.
@@ -407,3 +522,4 @@ if __name__ == "__main__":
         print("✅ Twitter connected:", user_info)
     except Exception as ex:
         print("❌ Twitter error:", ex)
+

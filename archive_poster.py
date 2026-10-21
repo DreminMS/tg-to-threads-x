@@ -76,10 +76,20 @@ def init_db() -> sqlite3.Connection:
                 photos_json TEXT,
                 status TEXT DEFAULT 'pending',
                 threads_id TEXT,
+                twitter_id TEXT,
+                threads_url TEXT,
                 published_at TIMESTAMP,
-                error_message TEXT
+                error_message TEXT,
+                text TEXT,
+                is_meme INTEGER DEFAULT 0,
+                skip_reason TEXT
             )
         """)
+        for col, col_type in [("twitter_id", "TEXT"), ("threads_url", "TEXT"), ("text", "TEXT"), ("is_meme", "INTEGER DEFAULT 0"), ("skip_reason", "TEXT")]:
+            try:
+                conn.execute(f"ALTER TABLE archive_posts ADD COLUMN {col} {col_type}")
+            except Exception:
+                pass
     return conn
 
 
@@ -224,6 +234,30 @@ def threads_api_get(endpoint: str, params: Dict[str, str], access_token: str) ->
     except urllib.error.HTTPError as e:
         err_body = e.read().decode("utf-8", errors="ignore")
         raise RuntimeError(f"Threads API GET Error ({e.code}) on {endpoint}: {err_body}")
+
+
+def threads_api_delete(endpoint: str, access_token: str) -> Dict[str, Any]:
+    url = f"https://graph.threads.net/v1.0/{endpoint}?access_token={access_token}"
+    req = urllib.request.Request(url, method="DELETE")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode("utf-8", errors="ignore")
+        if "does not exist" in err_body or e.code == 404:
+            logger.info(f"Threads post {endpoint} does not exist or was already deleted.")
+            return {"success": True}
+        raise RuntimeError(f"Threads API DELETE Error ({e.code}) on {endpoint}: {err_body}")
+
+
+def delete_threads_post(threads_id: str, access_token: str) -> bool:
+    try:
+        res = threads_api_delete(threads_id, access_token)
+        return bool(res.get("success", True))
+    except Exception as e:
+        logger.error(f"Failed to delete Threads post {threads_id}: {e}")
+        return False
+
 
 
 def wait_for_container(creation_id: str, access_token: str, max_retries: int = 15, delay: float = 2.0) -> bool:
@@ -421,14 +455,22 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
             except Exception as tw_err:
                 logger.error(f"❌ Failed to publish post {post_id} to Twitter: {tw_err}")
 
+        threads_url = None
+        if threads_id:
+            try:
+                p_info = threads_api_get(threads_id, {"fields": "permalink"}, access_token)
+                threads_url = p_info.get("permalink")
+            except Exception:
+                threads_url = f"https://www.threads.net/@dremin"
+
         with conn:
             conn.execute("""
                 UPDATE archive_posts
-                SET status = 'published', threads_id = ?, twitter_id = ?, published_at = CURRENT_TIMESTAMP
+                SET status = 'published', threads_id = ?, twitter_id = ?, threads_url = ?, published_at = CURRENT_TIMESTAMP
                 WHERE post_id = ?
-            """, (threads_id, twitter_id, post_id))
+            """, (threads_id, twitter_id, threads_url, post_id))
 
-        logger.info(f"✅ Successfully published post {post_id}! Threads: {threads_id}, Twitter: {twitter_id}")
+        logger.info(f"✅ Successfully published post {post_id}! Threads: {threads_id} ({threads_url}), Twitter: {twitter_id}")
         return post_id
 
     except Exception as e:
@@ -493,6 +535,78 @@ def skip_archive_post(post_id: int, reason: str = "manual_skip") -> bool:
     return updated
 
 
+def delete_archive_post(post_id: int, config: Optional[Dict[str, Any]] = None) -> bool:
+    """
+    Deletes a published post from Threads and Twitter/X, and marks it as deleted in DB.
+    """
+    if config is None:
+        config = load_config()
+
+    conn = init_db()
+    cur = conn.cursor()
+    cur.execute("SELECT threads_id, twitter_id, status FROM archive_posts WHERE post_id = ?", (post_id,))
+    row = cur.fetchone()
+
+    threads_id = row[0] if row else None
+    twitter_id = row[1] if row else None
+
+    # Fallback to processed_posts if needed
+    cur.execute("SELECT threads_id, twitter_id FROM processed_posts WHERE message_id = ?", (post_id,))
+    p_row = cur.fetchone()
+    if p_row:
+        threads_id = threads_id or p_row[0]
+        twitter_id = twitter_id or p_row[1]
+
+    if not threads_id and not twitter_id and not row:
+        logger.error(f"Post #{post_id} not found in database.")
+        return False
+
+    logger.info(f"🗑 Initiating deletion of post #{post_id} (Threads: {threads_id}, Twitter: {twitter_id})...")
+
+    # 1. Delete from Threads
+    threads_ok = True
+    if threads_id and config.get("threads_access_token"):
+        threads_ok = delete_threads_post(threads_id, config["threads_access_token"])
+        if threads_ok:
+            logger.info(f"✅ Deleted post #{post_id} from Threads ({threads_id})")
+        else:
+            logger.warning(f"⚠️ Could not delete post #{post_id} from Threads")
+
+    # 2. Delete from Twitter / X
+    twitter_ok = True
+    if twitter_id and config.get("twitter_enabled"):
+        try:
+            from twitter_client import delete_tweet_from_twitter
+            twitter_ok = delete_tweet_from_twitter(twitter_id, config)
+            if twitter_ok:
+                logger.info(f"✅ Deleted post #{post_id} from Twitter ({twitter_id})")
+            else:
+                logger.warning(f"⚠️ Could not delete post #{post_id} from Twitter")
+        except Exception as tw_err:
+            logger.error(f"❌ Error deleting tweet {twitter_id}: {tw_err}")
+            twitter_ok = False
+
+    # 3. Update database records
+    with conn:
+        conn.execute("""
+            UPDATE archive_posts 
+            SET status = 'deleted', error_message = 'Deleted by user via PWA'
+            WHERE post_id = ?
+        """, (post_id,))
+        conn.execute("DELETE FROM processed_posts WHERE message_id = ?", (post_id,))
+
+    logger.info(f"🗑 Post #{post_id} marked as 'deleted' in database.")
+
+    try:
+        from update_status import update_status_json
+        update_status_json()
+    except Exception as e:
+        logger.warning(f"Could not update status.json after deletion: {e}")
+
+    return True
+
+
+
 def publish_hourly(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
     """
     Checks if at least 50 minutes have elapsed since the last published archive post and current hour >= 7 MSK.
@@ -534,10 +648,16 @@ def main():
     parser.add_argument("--publish-hourly", action="store_true", help="Publish 1 post if hourly interval reached")
     parser.add_argument("--skip", type=int, help="Skip a specific post ID")
     parser.add_argument("--skip-reason", type=str, default="manual_skip", help="Reason for skipping")
+    parser.add_argument("--delete", type=int, help="Delete a published post by ID from Threads, Twitter, and database")
     parser.add_argument("--dry-run", action="store_true", help="Simulate publishing without posting to Threads")
     parser.add_argument("--daemon", action="store_true", help="Run continuously with 1-hour interval")
     parser.add_argument("--interval", type=int, default=3600, help="Interval in seconds (default: 3600)")
     args = parser.parse_args()
+
+    if args.delete:
+        config = load_config()
+        delete_archive_post(args.delete, config=config)
+        return
 
     if args.skip:
         skip_archive_post(args.skip, reason=args.skip_reason)
