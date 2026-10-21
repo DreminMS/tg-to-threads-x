@@ -1,53 +1,32 @@
 {
-  "updated_at": "2026-10-21T00:09:58.227860+00:00",
+  "updated_at": "2026-10-21T00:20:02.728527+00:00",
   "published": 1,
-  "pending": 665,
+  "pending": 492,
   "failed": 0,
-  "skipped": 0,
-  "total": 666,
+  "skipped": 33,
+  "total": 526,
   "percent": 0.2,
-  "days_left": 27.7,
+  "days_left": 20.5,
   "next_post": {
-    "id": 2168,
-    "date": "2022-01-01",
-    "photos_count": 1,
+    "id": 2170,
+    "date": "10.01.2022",
+    "photos_count": 2,
     "photos": [
-      "https://cdn4.telesco.pe/file/CKzXGjvY5ir1WYYLli8STRQNoGg2JMxRBDfyrWxFyRuJbrFqm-MZFUoYAJJC-w4TtcqQZMZdkiiQTRWCxTc8OlHcGSf8CAyToQ78b3mIUaeqHyfrXoigpdafTuj8drYIANeH4h82D4N_hbd5G5RD7igImGgmS-iGldPEduJmOLAwsoDnUJuzVvNOtZK9sqyqbKZXxIBRdgF0-P3fRPnu3rlPUSFkvwKa3oFN0TaZkWYKTOLoJXf3tc-vNWf-I1EO8k7peuW2oHhd--g1H5Pot-JjKAQfWq5ihqZEXKAyq9U9Si-7u4YJYSUlNvrz8vejwr5GRzqWPQxhXRu0AAfJrw"
+      "https://dreminms.github.io/tg-to-threads-x/media/archive/2170_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/media/archive/2170_1.jpg"
     ],
     "text": "",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/2168"
+    "tg_url": "https://t.me/dremin_live/2170"
   },
   "upcoming_posts": [
     {
-      "id": 2168,
-      "date": "2022-01-01",
-      "photos_count": 1,
-      "photos": [
-        "https://cdn4.telesco.pe/file/CKzXGjvY5ir1WYYLli8STRQNoGg2JMxRBDfyrWxFyRuJbrFqm-MZFUoYAJJC-w4TtcqQZMZdkiiQTRWCxTc8OlHcGSf8CAyToQ78b3mIUaeqHyfrXoigpdafTuj8drYIANeH4h82D4N_hbd5G5RD7igImGgmS-iGldPEduJmOLAwsoDnUJuzVvNOtZK9sqyqbKZXxIBRdgF0-P3fRPnu3rlPUSFkvwKa3oFN0TaZkWYKTOLoJXf3tc-vNWf-I1EO8k7peuW2oHhd--g1H5Pot-JjKAQfWq5ihqZEXKAyq9U9Si-7u4YJYSUlNvrz8vejwr5GRzqWPQxhXRu0AAfJrw"
-      ],
-      "text": "",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2168"
-    },
-    {
-      "id": 2169,
-      "date": "2022-01-01",
-      "photos_count": 1,
-      "photos": [
-        "https://cdn4.telesco.pe/file/C5tJHWGzsN6d2r7-6S_aNm_xyXc59yIYr5iV9dCtRtHrjrfHNhwoZzy2aHJhltlpzZGnMQTIPEPsjzZjfFPVNQ6hYQtBSG0eyGbmczFhflRAvxi3GbNa-c-WCT_eCbg6CGOwcybz4OJ6jMOo4dx9ZC2uE3lPCVQCHINeIjfIe7jwP_JzCCMnMhLBz1PVvbU-_m-PZEwH-2wOh5-WDEnwKBJOvt9ci3UsmG0cAPapDuUEIMC9eOKNaP7Sgx9kZYrAChMEvBtbd3q2tPrRXG5qex8yXeujJnKc6qEpWMBypTXisLAUQ2ZamLNxrr2irPmDqzF4i5Ok2SO3P62OeQ0XAQ"
-      ],
-      "text": "",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2169"
-    },
-    {
       "id": 2170,
-      "date": "2022-01-10",
+      "date": "10.01.2022",
       "photos_count": 2,
       "photos": [
-        "https://cdn4.telesco.pe/file/jd8cA5BXCUUQo0TUFnIeJBaVmXV94gONhsWFb4JJucTYknfprs0gT5Ped1ZeYigR-s_alc_OJzXYKBptTPFbMuPGrmsMOiUqJFscDWGqDI4qE5XonaqMXXbKZ47ws6ATAJd94pfSrYZJAYwxd8xVgs2QS1U764u-nqHBDvKjy3U9yBEYZaCHtkBPyc7Y1MRq3WwdQrMbjfdZ4eiCyjbWVF6_mLRfl5e_zy5-YNo8VMMFx50Us_tMAS5Q7cVc6zpaQOBVEFpChMAf7r0MG4VQWo0w67FE4ww7gI2WYyw73OEp9SqhC1LU6cXR2dOkBRB-0qCUdjnSOxR5Z-LRHlf7Gg.jpg",
-        "https://cdn4.telesco.pe/file/sN0CWxmPNRpcUmeETSZw6Hsw6pZd3rSZCqstPkBGCL5PLCl62SLUnjfQLLHKm1AVZ4x-e1DXaUt4ruZt_QUCoKrQb0UcAVrCD8prbrgsYiTYy9oHuk9PtJhyiwa-ha9BVcaQZKVR1TyblbgRHe4mryz9ZRh-5tru2beBb5PyepTxvQFNNmZ3GfJ-a_kgoguP6Hgg5PVr1YyVpiDD09HcAqgMbzVOmG_oiQJ7aSFU6U-GHS70vx2e-C7_xlEql4BGFmaNqbE-XK6FB7uxOYPH-FJZyimgB0WDWyi2IsLR0c2pkCmLZWK2sleIDmQ9q2RYMG0TQaZ5INKq5LrnpeaL6w.jpg"
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2170_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2170_1.jpg"
       ],
       "text": "",
       "is_meme": false,
@@ -55,31 +34,59 @@
     },
     {
       "id": 2172,
-      "date": "2022-01-24",
+      "date": "24.01.2022",
       "photos_count": 10,
       "photos": [
-        "https://cdn4.telesco.pe/file/o3jHopmoNiqYtFkPc7c2_MpOLI9_gGi9oRnsZDDZ49Jc965QwKWBFQiFsEHljHS8dc_cCLip2lEAeF4qtLyAqaiG6tUjwzFYKfctyRZcic3ONfihH-JmxGEdHGeyWH_wFrblkp0Y31MtRRCFuq-Wjc5W9dxwQHAve3ysyRqQCPOvDqC4kMvRhvod3-W1GYAmcPOiAhxn9gdYuiakgcwfcWCWmpTeHlSEu-afsTaR4JPcVi0Vr4wTuY2lW_nCj9BHPeNtuMQg4TCJNYpv0QbbJXL2G64qE8NiFkpAoMShTnTGe9iRBN9VbfJNOhI5qu89_YFW7cShYZl4sIcdvlMJkQ.jpg",
-        "https://cdn4.telesco.pe/file/IfH9dGQN4v382ToymjfXNU-bNCGdxOn-2KL4MeJBmeIYKzsLpeq9E94vUFX2mHHz-lvsJ4lSYqdN9C8BHpDz5ZB_a5lGWUYFktvVdM_YBwxnc_KqVkv_nwgQCSU7WMKxpDJyG6BciuIp_TIYfHRih1I2udfHU0yZdbrD_745AFVdw2wHkNu-mC5tMeQ4TyMrdDu0GY_wAkhaEY4eCW3qR6R6h0SrCqmldJvW73Mrs4ATGYXsYU51qkw9wjNxCne4Auz---BIAQ_1EKuL7GneNljXOoGDeAmU8AraptSXoLoRcnXZVC3j2Vsg_OuCWS2hxaQDO6PQDM_5SCSWZrh0Ww.jpg",
-        "https://cdn4.telesco.pe/file/AP_9DtH_WxEoo9GdD6e8sBliZCFE_F3C-7cIVg159M-yl5h0AIArOen-6hjoPKUWRCcq7pUIkJ1c7dL2jNezCYb1-ECOApisuEX7klsyrOvS4qlzLpJsPkAGoOmTaTTO4pia64cI5HZ3jYdfGgZRuLsO6lK4lmiqvXZ0lYZ57sOKW1MGczdqjnP3CCSlnXyCsFxkIUlaIv7vF8OYi5jBCYJ-fVkoe3YCqR4XYz501UopT77M7CjvUa7f2SXKeAnRTfEzZcCKddHdavZOD4VYiH0PVer0b8Wl2juOugPoo68dHc4GdWTn-Fe2Ud83d9nsHzH3KT0jL67SoyU9ZnrkGQ.jpg",
-        "https://cdn4.telesco.pe/file/PEPprlCmiEEy2TaT2Io-nEqtt_Rom1cNiGcXnsOObFtWdjacJbJ2oBIlU1hSTIksK8LOR3nLfolnS1GD8Ou2CRiKvZBOTiARe1TWHKv6a3CjzFwr1piGr30zyLrlgyccuw1UWIRassVUu1WXYbKSgPh9uj-8KqsPcpztt0dBlQ0dVi2B-EsxpqCqATE2fjOS3LYQfhndDG4PrZsbtA4z2rZD8bVmqArH7YJj2lncmlIDVwaHqvxQnTtkwQZVF4X5p-3NTIksC08g9F0_f7hipX-yIYh9KAHiZTvgikN6BPAOdCgphWmrvzzVY0rYhSjwAKDCZnW0Y7ge1P8tSKdSfQ.jpg"
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2172_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2172_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2172_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2172_3.jpg"
       ],
-      "text": "",
+      "text": "Кто вчера фотогулял - тот я",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/2172"
     },
     {
-      "id": 2182,
-      "date": "2022-01-24",
+      "id": 2205,
+      "date": "28.01.2022",
       "photos_count": 10,
       "photos": [
-        "https://cdn4.telesco.pe/file/i9UGChGONoox443eMsxQG0Nph7Rq86XwQC1ISowOXqPeaXOwbr4gJPqOgZHX_J42Q2toy15D56QxJP-8FRi7hd7zuE3PpFgAalX4qVHMvcP2ArHWlhXllZjV5KeLWSPh8U3rzBPfoNEreVbLbYIUMddwY8F3qv8cOTD88GDQvFC1dKPlyRaGQtdiF2iEFyyXMCa4tpQtkb0Ln13BTv5V7Bf11QjUoT80iO_GCCo6q4NEnjvxKbKIRRKFKYXlBMCZO_-CguBt1q3WWoNkiUsSeoqLas0hwn6iR266wGKNjyMoyWh1sDtRt1nsHEz__DjYDWfdrk3dAkUUOAG_jkTFUQ.jpg",
-        "https://cdn4.telesco.pe/file/O3M2pj5eMsjNNF8U6G8RXSRhsL-D2AhX7dJvjthjL8AuXFI3QjH_g9WUYjRiuase-AyvyjtA_xswTlvs8RPa7nFTAO2gv7yIxD6d4YisGA67Gs7WooQSCI02dvpdLjj7lJkMTdO5eiv8bHgZtvG74P3JTE2L83R65DlKx9eBsWJFmmH89ko7eZO4tAcv6H5a48zXh4cBpByrvENINBgbDqC6O2Aa4Xs0sKQ73E_b_Wr_Y-lijeUrmB1FW2CAU_-H6UgXtLo4DbmDJQPVjrlW-Usn8QreYWHu4DkZ76In6w5YAQ1XHDT4Uq80tMtmjDUfnE1x_c9pWLpg4hUwmn_wpA.jpg",
-        "https://cdn4.telesco.pe/file/My9VEB8yaXQtllNgIYOwkQeu-x8F-Z70JOg3Fev_uwXo4D58kGETFE75Crh04iPRZrQi0k51CBxZ6Zw7297l-4hcWUneIcqbrPiOTJFJbhcmPEaQTp3aWml4a6zam0tzsYRQsgKnH-PvB3W7Q2DrhRDazlI5E_W2pyqaybR3HWM_HlKJFcRDhHG9_Cco_vE33qmjkt3mibmkMNmco52FHNuyT5SiIKrvyM1ygFNQJQPnkLH0NTM3BuAStoYt6EXgVt56Rtq5seTfp9yIyX5ZaFfLH6hfUIK4foXHN3TodF9cgN2Mc5gjK-oFy44hP7FLA2pamQtwtGM2U-K2lbMGOg.jpg",
-        "https://cdn4.telesco.pe/file/oTcKdJK9RqFnvY9o9Mpkqtt7seBP6OMGDcRu_38-44vJRomw-x6PneXqti-msTIOcCRvSpxf4nvHF2QIs21L9u83IUqKozUxNqmsXf3WOJloeeawV85IXxX2fErxfEKsWp2N7GeugOII0efcSRiHOX89xgeRerbLkQ8QxW2xygLhx29fgck02v08vRuCYKD5r0_N4RVlthHGFkrc5n_0PI0qUH9MPDJPZL2zJXljBtYqY2n85iqyfEDklTDN6IfPwX00_Dj-8SMzgRXnhhQVyMgsOhYmE9-4qmiJ3-rhxvj6hTVEzeHE55SuQcAVequCrnHLfnz9HqUZQ4xbxpe8tg.jpg"
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2205_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2205_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2205_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2205_3.jpg"
       ],
-      "text": "",
+      "text": "Вчера внезапно получилось прогуляться часик по району, даже что-то нажалось.",
       "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2182"
+      "tg_url": "https://t.me/dremin_live/2205"
+    },
+    {
+      "id": 2227,
+      "date": "30.01.2022",
+      "photos_count": 7,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2227_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2227_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2227_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2227_3.jpg"
+      ],
+      "text": "Пешком до работы? Почему бы и да!",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2227"
+    },
+    {
+      "id": 2234,
+      "date": "30.01.2022",
+      "photos_count": 10,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2234_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2234_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2234_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/media/archive/2234_3.jpg"
+      ],
+      "text": "Традиционное воскресное",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2234"
     }
   ],
   "recent_posts": [
