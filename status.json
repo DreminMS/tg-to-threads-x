@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T00:20:02.728527+00:00",
+  "updated_at": "2026-10-21T00:26:33.097618+00:00",
   "published": 1,
   "pending": 492,
   "failed": 0,
@@ -7,6 +7,42 @@
   "total": 526,
   "percent": 0.2,
   "days_left": 20.5,
+  "analytics": {
+    "start_date": "2026-10-21",
+    "total_reactions": 1,
+    "total_views": 55,
+    "total_growth": 0,
+    "threads": {
+      "username": "dremin",
+      "url": "https://www.threads.net/@dremin",
+      "followers": 1235,
+      "baseline": 1235,
+      "growth": 0,
+      "likes": 0,
+      "replies": 0,
+      "reposts": 0,
+      "views": 37
+    },
+    "twitter": {
+      "username": "m_dremin",
+      "url": "https://x.com/m_dremin",
+      "followers": 526,
+      "baseline": 526,
+      "growth": 0,
+      "likes": 1,
+      "replies": 0,
+      "retweets": 0,
+      "views": 18
+    },
+    "totals": {
+      "likes": 1,
+      "replies": 0,
+      "reposts": 0,
+      "views": 55,
+      "published_photos": 10,
+      "total_archive_photos": 1940
+    }
+  },
   "next_post": {
     "id": 2170,
     "date": "10.01.2022",

@@ -77,6 +77,12 @@ def update_status_json():
             "published_at": r[3]
         })
 
+    try:
+        from analytics import get_analytics_summary
+        analytics_data = get_analytics_summary()
+    except Exception as e:
+        analytics_data = {}
+
     status_data = {
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "published": published,
@@ -86,6 +92,7 @@ def update_status_json():
         "total": total,
         "percent": percent,
         "days_left": round(pending / 24, 1),
+        "analytics": analytics_data,
         "next_post": next_post,
         "upcoming_posts": upcoming_posts,
         "recent_posts": recent,

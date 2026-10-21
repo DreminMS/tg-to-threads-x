@@ -382,6 +382,115 @@
       border-color: rgba(29, 155, 240, 0.3);
     }
 
+    /* Analytics Section */
+    .analytics-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .analytics-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .analytics-user-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .analytics-platform-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-th {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .badge-tw {
+      background: rgba(29, 155, 240, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(29, 155, 240, 0.3);
+    }
+
+    .analytics-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: #f8fafc;
+      letter-spacing: -0.5px;
+    }
+
+    .growth-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .growth-pill.zero {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .analytics-reactions-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .reaction-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 8px 6px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .reaction-icon {
+      font-size: 14px;
+    }
+
+    .reaction-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .reaction-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
     /* Upcoming Posts Queue */
     .upcoming-container {
       display: flex;
@@ -695,6 +804,73 @@
       </div>
     </div>
 
+    <!-- Social Analytics & Reactions -->
+    <div class="section-title">
+      <span>Аналитика и Реакции</span>
+      <span style="font-size: 11px; color: var(--accent); font-weight: 600;" id="analyticsStartDate">Старт: 21 окт</span>
+    </div>
+
+    <!-- Followers & Growth Cards -->
+    <div class="analytics-grid-2">
+      <!-- Threads Card -->
+      <div class="analytics-card">
+        <div class="analytics-user-row">
+          <a class="analytics-platform-badge badge-th" href="https://www.threads.net/@dremin" target="_blank">🧵 Threads</a>
+          <span class="growth-pill" id="threadsGrowth">+0</span>
+        </div>
+        <div class="analytics-num" id="threadsFollowers">—</div>
+        <div style="font-size: 11px; color: var(--text-muted);">
+          Подписчиков (база: <span id="threadsBaseline">1,235</span>)
+        </div>
+      </div>
+
+      <!-- Twitter / X Card -->
+      <div class="analytics-card">
+        <div class="analytics-user-row">
+          <a class="analytics-platform-badge badge-tw" href="https://x.com/m_dremin" target="_blank">𝕏 Twitter</a>
+          <span class="growth-pill" id="twitterGrowth">+0</span>
+        </div>
+        <div class="analytics-num" id="twitterFollowers">—</div>
+        <div style="font-size: 11px; color: var(--text-muted);">
+          Читателей (база: <span id="twitterBaseline">526</span>)
+        </div>
+      </div>
+    </div>
+
+    <!-- Engagement Reactions Card -->
+    <div class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="font-size: 13px; font-weight: 700; color: #fff;">📊 Активность публикаций архива</div>
+        <div style="font-size: 12px; color: #38bdf8; font-weight: 600;" id="totalReactionsLabel">—</div>
+      </div>
+      <div class="analytics-reactions-grid">
+        <div class="reaction-box">
+          <span class="reaction-icon">❤️</span>
+          <span class="reaction-val" id="metricLikes">—</span>
+          <span class="reaction-label">Лайки</span>
+        </div>
+        <div class="reaction-box">
+          <span class="reaction-icon">🔄</span>
+          <span class="reaction-val" id="metricReposts">—</span>
+          <span class="reaction-label">Репосты</span>
+        </div>
+        <div class="reaction-box">
+          <span class="reaction-icon">💬</span>
+          <span class="reaction-val" id="metricReplies">—</span>
+          <span class="reaction-label">Ответы</span>
+        </div>
+        <div class="reaction-box">
+          <span class="reaction-icon">👁️</span>
+          <span class="reaction-val" id="metricViews">—</span>
+          <span class="reaction-label">Охват</span>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.05);">
+        <span>📸 Выложено: <b id="statPhotosLive" style="color: #cbd5e1;">10</b> / 1,940 фото</span>
+        <span>Прирост: <b id="statTotalGrowth" style="color: #34d399;">+0</b></span>
+      </div>
+    </div>
+
     <!-- Upcoming Posts Queue Preview with Skip -->
     <div class="section-title">
       <span>Ближайшие публикации очереди</span>
@@ -846,6 +1022,42 @@
         const skEl = document.getElementById('statSkipped');
         if (skEl) skEl.innerText = data.skipped || 0;
         document.getElementById('statDays').innerText = `~${data.days_left} дн.`;
+
+        // Social Analytics & Reactions
+        if (data.analytics) {
+          const a = data.analytics;
+          if (a.start_date) {
+            document.getElementById('analyticsStartDate').innerText = `Старт: ${a.start_date.slice(5)}`;
+          }
+
+          if (a.threads) {
+            document.getElementById('threadsFollowers').innerText = Number(a.threads.followers).toLocaleString();
+            document.getElementById('threadsBaseline').innerText = Number(a.threads.baseline).toLocaleString();
+            const thGr = document.getElementById('threadsGrowth');
+            const grVal = a.threads.growth || 0;
+            thGr.innerText = grVal > 0 ? `+${grVal}` : (grVal < 0 ? `${grVal}` : '+0');
+            thGr.className = `growth-pill ${grVal === 0 ? 'zero' : ''}`;
+          }
+
+          if (a.twitter) {
+            document.getElementById('twitterFollowers').innerText = Number(a.twitter.followers).toLocaleString();
+            document.getElementById('twitterBaseline').innerText = Number(a.twitter.baseline).toLocaleString();
+            const twGr = document.getElementById('twitterGrowth');
+            const grVal = a.twitter.growth || 0;
+            twGr.innerText = grVal > 0 ? `+${grVal}` : (grVal < 0 ? `${grVal}` : '+0');
+            twGr.className = `growth-pill ${grVal === 0 ? 'zero' : ''}`;
+          }
+
+          const t = a.totals || {};
+          document.getElementById('metricLikes').innerText = t.likes ?? 0;
+          document.getElementById('metricReposts').innerText = t.reposts ?? 0;
+          document.getElementById('metricReplies').innerText = t.replies ?? 0;
+          document.getElementById('metricViews').innerText = t.views ?? 0;
+          document.getElementById('totalReactionsLabel').innerText = `${a.total_reactions || 0} реакций`;
+          document.getElementById('statPhotosLive').innerText = t.published_photos ?? 10;
+          const totGr = a.total_growth || 0;
+          document.getElementById('statTotalGrowth').innerText = totGr > 0 ? `+${totGr}` : '+0';
+        }
 
         // Upcoming posts preview with skip button
         if (data.upcoming_posts && data.upcoming_posts.length > 0) {
