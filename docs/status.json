@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T00:39:05.869579+00:00",
+  "updated_at": "2026-10-21T01:07:28.370543+00:00",
   "published": 1,
   "pending": 492,
   "failed": 0,
@@ -10,7 +10,7 @@
   "analytics": {
     "start_date": "2026-10-21",
     "total_reactions": 1,
-    "total_views": 55,
+    "total_views": 57,
     "total_growth": 0,
     "threads": {
       "username": "dremin",
@@ -21,7 +21,7 @@
       "likes": 0,
       "replies": 0,
       "reposts": 0,
-      "views": 37
+      "views": 39
     },
     "twitter": {
       "username": "m_dremin",
@@ -38,7 +38,7 @@
       "likes": 1,
       "replies": 0,
       "reposts": 0,
-      "views": 55,
+      "views": 57,
       "published_photos": 10,
       "total_archive_photos": 1940
     }
@@ -48,8 +48,8 @@
     "date": "10.01.2022",
     "photos_count": 2,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/media/archive/2170_0.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/media/archive/2170_1.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2170_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2170_1.jpg"
     ],
     "text": "",
     "is_meme": false,
@@ -61,8 +61,8 @@
       "date": "10.01.2022",
       "photos_count": 2,
       "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2170_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2170_1.jpg"
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2170_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2170_1.jpg"
       ],
       "text": "",
       "is_meme": false,
@@ -73,10 +73,10 @@
       "date": "24.01.2022",
       "photos_count": 10,
       "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2172_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2172_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2172_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2172_3.jpg"
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_3.jpg"
       ],
       "text": "Кто вчера фотогулял - тот я",
       "is_meme": false,
@@ -87,10 +87,10 @@
       "date": "28.01.2022",
       "photos_count": 10,
       "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2205_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2205_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2205_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2205_3.jpg"
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_3.jpg"
       ],
       "text": "Вчера внезапно получилось прогуляться часик по району, даже что-то нажалось.",
       "is_meme": false,
@@ -101,10 +101,10 @@
       "date": "30.01.2022",
       "photos_count": 7,
       "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2227_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2227_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2227_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2227_3.jpg"
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_3.jpg"
       ],
       "text": "Пешком до работы? Почему бы и да!",
       "is_meme": false,
@@ -115,10 +115,10 @@
       "date": "30.01.2022",
       "photos_count": 10,
       "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2234_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2234_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2234_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/media/archive/2234_3.jpg"
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2234_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2234_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2234_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2234_3.jpg"
       ],
       "text": "Традиционное воскресное",
       "is_meme": false,
