@@ -742,6 +742,44 @@
       color: var(--text-muted);
       line-height: 1.5;
     }
+
+    /* Top Statusbar */
+    .top-statusbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 0 2px 14px;
+      margin-top: -6px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .top-statusbar::-webkit-scrollbar {
+      display: none;
+    }
+    .sb-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 5px 11px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      color: #e2e8f0;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    .sb-item .sb-val {
+      font-weight: 700;
+      color: #38bdf8;
+    }
+    .sb-item .sb-label {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
   </style>
 </head>
 <body>
@@ -765,6 +803,33 @@
         <button class="icon-btn" id="settingsBtn" onclick="openSettings()" title="Настройки API">⚙️</button>
       </div>
     </header>
+
+    <!-- Top Live Stats Bar (Statusbar) -->
+    <div class="top-statusbar" id="topStatusbar">
+      <div class="sb-item">
+        <span>❤️</span>
+        <span class="sb-val" id="sbLikes">—</span>
+        <span class="sb-label">лайков</span>
+      </div>
+      <div class="sb-item">
+        <span>👁️</span>
+        <span class="sb-val" id="sbViews">—</span>
+        <span class="sb-label">просмотров</span>
+      </div>
+      <div class="sb-item">
+        <span>💬</span>
+        <span class="sb-val" id="sbReplies">—</span>
+        <span class="sb-label">ответов</span>
+      </div>
+      <div class="sb-item">
+        <span>🧵</span>
+        <span class="sb-val" id="sbThreads">—</span>
+      </div>
+      <div class="sb-item">
+        <span>𝕏</span>
+        <span class="sb-val" id="sbTwitter">—</span>
+      </div>
+    </div>
 
     <!-- Install PWA Banner (Android & Mobile) -->
     <div id="installBanner" class="install-banner" style="display: none;">
@@ -1076,6 +1141,20 @@
           document.getElementById('statPhotosLive').innerText = t.published_photos ?? 10;
           const totGr = a.total_growth || 0;
           document.getElementById('statTotalGrowth').innerText = totGr > 0 ? `+${totGr}` : '+0';
+
+          // Top Statusbar
+          const sbLikesEl = document.getElementById('sbLikes');
+          if (sbLikesEl) sbLikesEl.innerText = t.likes ?? 0;
+          const sbViewsEl = document.getElementById('sbViews');
+          if (sbViewsEl) sbViewsEl.innerText = t.views ?? 0;
+          const sbRepliesEl = document.getElementById('sbReplies');
+          if (sbRepliesEl) sbRepliesEl.innerText = t.replies ?? 0;
+          if (a.threads && document.getElementById('sbThreads')) {
+            document.getElementById('sbThreads').innerText = Number(a.threads.followers).toLocaleString();
+          }
+          if (a.twitter && document.getElementById('sbTwitter')) {
+            document.getElementById('sbTwitter').innerText = Number(a.twitter.followers).toLocaleString();
+          }
         }
 
         // Upcoming posts preview with skip button

@@ -119,6 +119,25 @@ def _parse_metric_number(label: Optional[str]) -> int:
     return int(m.group(1)) if m else 0
 
 
+async def _get_external_replies_count(page, tweet_id: str) -> int:
+    try:
+        await page.goto(f"https://x.com/m_dremin/status/{tweet_id}", wait_until="domcontentloaded", timeout=12000)
+        await page.wait_for_selector('article[data-testid="tweet"]', timeout=8000)
+        articles = await page.query_selector_all('article[data-testid="tweet"]')
+        external_count = 0
+        for i, a in enumerate(articles):
+            if i == 0:
+                continue
+            user_el = await a.query_selector('[data-testid="User-Name"]')
+            txt = await user_el.inner_text() if user_el else ""
+            if "@m_dremin" not in txt.lower():
+                external_count += 1
+        return external_count
+    except Exception as e:
+        logger.warning(f"Could not inspect replies for tweet {tweet_id}: {e}")
+        return 0
+
+
 async def _fetch_twitter_playwright(cookies: Dict[str, str]) -> Dict[str, Any]:
     from playwright.async_api import async_playwright
     
@@ -175,6 +194,7 @@ async def _fetch_twitter_playwright(cookies: Dict[str, str]) -> Dict[str, Any]:
             tot_replies = 0
             tot_retweets = 0
             tot_views = 0
+            tweets_to_check_replies = []
 
             for t in tweets:
                 # Check tweet timestamp
@@ -184,17 +204,16 @@ async def _fetch_twitter_playwright(cookies: Dict[str, str]) -> Dict[str, Any]:
                 if dt and dt < CAMPAIGN_START_ISO:
                     continue
 
+                link_el = await t.query_selector('a[href*="/status/"]')
+                href = await link_el.get_attribute('href') if link_el else ''
+                m_id = re.search(r'/status/(\d+)', href)
+                tid = m_id.group(1) if m_id else None
+
                 # Like button
                 like_el = await t.query_selector('[data-testid="like"], [data-testid="unlike"]')
                 if like_el:
                     lbl = await like_el.get_attribute("aria-label") or ""
                     tot_likes += _parse_metric_number(lbl)
-
-                # Reply button
-                reply_el = await t.query_selector('[data-testid="reply"]')
-                if reply_el:
-                    lbl = await reply_el.get_attribute("aria-label") or ""
-                    tot_replies += _parse_metric_number(lbl)
 
                 # Retweet button
                 rt_el = await t.query_selector('[data-testid="retweet"], [data-testid="unretweet"]')
@@ -207,6 +226,18 @@ async def _fetch_twitter_playwright(cookies: Dict[str, str]) -> Dict[str, Any]:
                 if view_el:
                     lbl = await view_el.get_attribute("aria-label") or ""
                     tot_views += _parse_metric_number(lbl)
+
+                # Reply button (collect tweet IDs for thread inspection to exclude author's own replies)
+                reply_el = await t.query_selector('[data-testid="reply"]')
+                if reply_el:
+                    lbl = await reply_el.get_attribute("aria-label") or ""
+                    raw_rep = _parse_metric_number(lbl)
+                    if raw_rep > 0 and tid:
+                        tweets_to_check_replies.append(tid)
+
+            # Inspect threads to count only audience replies (excluding @m_dremin)
+            for tid in tweets_to_check_replies:
+                tot_replies += await _get_external_replies_count(page, tid)
 
             results["likes"] = tot_likes
             results["replies"] = tot_replies

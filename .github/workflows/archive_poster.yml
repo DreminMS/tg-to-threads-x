@@ -62,7 +62,11 @@ jobs:
       - name: Publish Next Archive Post
         if: ${{ !inputs.action || inputs.action != 'skip' }}
         run: |
-          python archive_poster.py --publish-one
+          if [ "${{ inputs.action }}" = "publish" ]; then
+            python archive_poster.py --publish-one
+          else
+            python archive_poster.py --publish-hourly
+          fi
 
       - name: Commit and push queue state
         run: |

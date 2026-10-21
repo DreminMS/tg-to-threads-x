@@ -278,6 +278,34 @@ def refresh_threads_token_if_needed(config: Dict[str, Any]):
             logger.warning(f"Failed to refresh token: {e}")
 
 
+def check_remote_recent_publication(config: Dict[str, Any], min_minutes: int = 40) -> bool:
+    """
+    Checks remote Threads platform to see if a post was already made in the last min_minutes.
+    Returns True if a recent publication exists, meaning posting should be aborted to prevent duplicates.
+    """
+    from datetime import datetime, timezone
+    token = config.get("threads_access_token")
+    if token:
+        try:
+            url = f"https://graph.threads.net/v1.0/me/threads?fields=id,timestamp&access_token={token}&limit=1"
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode())
+                threads = data.get("data", [])
+                if threads:
+                    ts_str = threads[0].get("timestamp")
+                    if ts_str:
+                        dt = datetime.fromisoformat(ts_str.replace("+0000", "+00:00"))
+                        diff_mins = (datetime.now(timezone.utc) - dt).total_seconds() / 60
+                        if diff_mins < min_minutes:
+                            logger.warning(f"DUPLICATE GUARD: Threads post {threads[0]['id']} was published {diff_mins:.1f}m ago (<{min_minutes}m). Aborting to prevent duplicate!")
+                            return True
+        except Exception as e:
+            logger.warning(f"Could not verify remote Threads status: {e}")
+
+    return False
+
+
 def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
     """
     Fetches the oldest pending post and publishes it to Threads and Twitter without captions.
@@ -287,6 +315,11 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
     msk_now = datetime.now(timezone(timedelta(hours=3)))
     if msk_now.hour < 7:
         logger.info(f"Archive posting is scheduled to start at 07:00 MSK (currently {msk_now.strftime('%H:%M')} MSK). Skipping archive post for now.")
+        return None
+
+    # Check remote duplicate guard to prevent double-posting
+    if check_remote_recent_publication(config, min_minutes=40):
+        logger.info("Remote duplicate guard: a post was published < 40m ago. Aborting publication.")
         return None
 
     refresh_threads_token_if_needed(config)
@@ -320,6 +353,13 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
 
     post_id, post_date, photos_json = row
     photos = json.loads(photos_json)
+
+    # 3. Atomically claim the post so no concurrent runner can pick it up
+    with conn:
+        res = conn.execute("UPDATE archive_posts SET status = 'publishing' WHERE post_id = ? AND status = 'pending'", (post_id,))
+        if res.rowcount == 0:
+            logger.info(f"Post {post_id} is already claimed by another runner. Skipping.")
+            return None
 
     logger.info(f"Publishing archive post {post_id} ({post_date}) with {len(photos)} photos...")
 
