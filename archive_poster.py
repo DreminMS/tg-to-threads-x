@@ -453,11 +453,45 @@ def skip_archive_post(post_id: int, reason: str = "manual_skip") -> bool:
     return updated
 
 
+def publish_hourly(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
+    """
+    Checks if at least 50 minutes have elapsed since the last published archive post and current hour >= 7 MSK.
+    If so, publishes the next archive post.
+    """
+    from datetime import datetime, timezone, timedelta
+    msk_now = datetime.now(timezone(timedelta(hours=3)))
+    if msk_now.hour < 7:
+        logger.info(f"Archive posting is scheduled from 07:00 to 00:00 MSK (currently {msk_now.strftime('%H:%M')} MSK). Waiting.")
+        return None
+
+    conn = init_db()
+    cur = conn.cursor()
+    cur.execute("SELECT max(published_at) FROM archive_posts WHERE status = 'published'")
+    row = cur.fetchone()
+    last_pub = row[0] if row else None
+    if last_pub:
+        try:
+            dt = datetime.fromisoformat(last_pub)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            now = datetime.now(timezone.utc)
+            diff_mins = (now - dt).total_seconds() / 60
+            if diff_mins < 50:
+                logger.info(f"Last archive post was published {diff_mins:.1f}m ago (<50m). Waiting for next hour slot.")
+                return None
+        except Exception as e:
+            logger.warning(f"Could not parse last_pub '{last_pub}': {e}")
+
+    logger.info("Hourly archive slot available! Proceeding with publication...")
+    return publish_next_archive_post(config, dry_run=dry_run)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Archive Poster for Telegram to Threads")
     parser.add_argument("--sync", action="store_true", help="Sync archive from Telegram channel")
     parser.add_argument("--status", action="store_true", help="Show current queue status")
     parser.add_argument("--publish-one", action="store_true", help="Publish 1 post right now")
+    parser.add_argument("--publish-hourly", action="store_true", help="Publish 1 post if hourly interval reached")
     parser.add_argument("--skip", type=int, help="Skip a specific post ID")
     parser.add_argument("--skip-reason", type=str, default="manual_skip", help="Reason for skipping")
     parser.add_argument("--dry-run", action="store_true", help="Simulate publishing without posting to Threads")
@@ -486,6 +520,10 @@ def main():
         return
 
     config = load_config()
+
+    if args.publish_hourly:
+        publish_hourly(config, dry_run=args.dry_run)
+        return
 
     if args.publish_one:
         publish_next_archive_post(config, dry_run=args.dry_run)

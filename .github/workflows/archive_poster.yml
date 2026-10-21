@@ -33,19 +33,19 @@ jobs:
           cache: 'pip'
 
       - name: Handle Skip Post
-        if: ${{ github.event.inputs.action == 'skip' && github.event.inputs.post_id != '' }}
+        if: ${{ inputs.action == 'skip' && inputs.post_id != '' }}
         run: |
-          python archive_poster.py --skip ${{ github.event.inputs.post_id }}
+          python archive_poster.py --skip ${{ inputs.post_id }}
           python update_status.py
 
       - name: Install dependencies (Publishing)
-        if: ${{ github.event.inputs.action != 'skip' }}
+        if: ${{ !inputs.action || inputs.action != 'skip' }}
         run: |
           pip install -r requirements.txt
           playwright install chromium --with-deps
 
       - name: Check and Publish New Telegram Posts
-        if: ${{ github.event.inputs.action != 'skip' }}
+        if: ${{ !inputs.action || inputs.action != 'skip' }}
         env:
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
           THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
@@ -56,7 +56,7 @@ jobs:
           python crosspost.py --once
 
       - name: Publish Next Archive Post
-        if: ${{ github.event.inputs.action != 'skip' }}
+        if: ${{ !inputs.action || inputs.action != 'skip' }}
         env:
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
           THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
