@@ -222,9 +222,13 @@ async def _async_post_to_tiktok(
                 downloaded_files.append(local_check)
             else:
                 tmp_path = f"/tmp/tt_post_{int(time.time())}_{i}_{os.getpid()}.jpg"
-                req = urllib.request.Request(item, headers={"User-Agent": "Mozilla/5.0"})
-                with urllib.request.urlopen(req, timeout=30) as resp, open(tmp_path, "wb") as f:
-                    f.write(resp.read())
+                try:
+                    req = urllib.request.Request(item, headers={"User-Agent": "Mozilla/5.0"})
+                    with urllib.request.urlopen(req, timeout=15) as resp, open(tmp_path, "wb") as f:
+                        f.write(resp.read())
+                except Exception as dl_err:
+                    import subprocess
+                    subprocess.run(["curl", "-s", "-L", "--max-time", "20", "-A", "Mozilla/5.0", item, "-o", tmp_path], check=True)
                 downloaded_files.append(tmp_path)
 
         if not downloaded_files:
@@ -303,19 +307,45 @@ async def _async_post_to_tiktok(
             logger.info(f"Uploading {len(downloaded_files)} photos to TikTok...")
             await file_input.set_input_files(downloaded_files)
 
-            # Wait for TikTok to process images and load editor & Post button
-            logger.info("Waiting for TikTok image processing & editor to load...")
-            post_btn = page.locator('button:has-text("Post"), button:has-text("Опубликовать")').first
+            # Wait for TikTok to navigate to photo editor and process images
+            logger.info("Waiting for TikTok photo editor & form to load...")
             ready = False
-            for _ in range(35):
+            for sec in range(40):
                 await asyncio.sleep(1)
-                if await post_btn.count() > 0:
-                    if not await post_btn.is_disabled():
-                        ready = True
-                        break
+                primary_post_btn = page.locator('button.Button__root--type-primary:has-text("Post"), button.Button__root--type-primary:has-text("Опубликовать")').first
+                if await primary_post_btn.count() > 0:
+                    ready = True
+                    logger.info(f"TikTok photo editor ready at second {sec+1}.")
+                    break
 
             if not ready:
-                raise RuntimeError("TikTok photo editor did not become ready or Post button remained disabled.")
+                raise RuntimeError("TikTok photo editor did not load within timeout.")
+
+            await asyncio.sleep(2)
+
+            # Check if regional restriction / upload failure occurred
+            err_overlays = page.locator('.errorOverlay-QyzhSP, [class*="errorOverlay"]')
+            if await err_overlays.count() > 0:
+                raise RuntimeError(
+                    "TikTok rejected image upload (Code 30522: Policy requirements, request blocked). "
+                    "TikTok blocks new uploads from Russian IP addresses. "
+                    "To publish, switch your VPN to a foreign location (EU/US) or run via GitHub Actions."
+                )
+
+            # Find Post button (strictly target the primary action button, avoiding the sidebar navigation 'Posts')
+            post_btn = page.locator('button.Button__root--type-primary:has-text("Post"), button.Button__root--type-primary:has-text("Опубликовать")').first
+
+            if not post_btn or await post_btn.count() == 0:
+                raise RuntimeError("Could not find primary Post button on TikTok editor page.")
+
+            # Wait for Post button to become active
+            logger.info("Waiting for Post button to become enabled...")
+            for _ in range(20):
+                d_dis = await post_btn.get_attribute("data-disabled")
+                a_dis = await post_btn.get_attribute("aria-disabled")
+                if d_dis != "true" and a_dis != "true":
+                    break
+                await asyncio.sleep(1)
 
             # Optional: Add title or caption if text is provided
             if text and text.strip():
