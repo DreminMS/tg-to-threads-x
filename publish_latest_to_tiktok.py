@@ -55,7 +55,7 @@ def publish_latest():
         """
         UPDATE archive_posts
         SET tiktok_id = ?, tiktok_url = ?
-        WHERE tg_message_id IN (4620, 4621, 4622, 4623, 4624)
+        WHERE post_id IN (4620, 4621, 4622, 4623, 4624)
         """,
         (item_id, post_url),
     )
