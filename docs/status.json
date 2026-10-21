@@ -1,16 +1,16 @@
 {
-  "updated_at": "2026-10-21T06:29:01.125625+00:00",
-  "published": 11,
-  "pending": 482,
+  "updated_at": "2026-10-21T07:37:07.005801+00:00",
+  "published": 12,
+  "pending": 481,
   "failed": 0,
   "skipped": 33,
   "total": 526,
-  "percent": 2.1,
-  "days_left": 20.1,
+  "percent": 2.3,
+  "days_left": 20.0,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 16,
-    "total_views": 247,
+    "total_reactions": 23,
+    "total_views": 369,
     "total_growth": 0,
     "threads": {
       "username": "dremin",
@@ -21,7 +21,7 @@
       "likes": 0,
       "replies": 0,
       "reposts": 0,
-      "views": 86
+      "views": 132
     },
     "twitter": {
       "username": "m_dremin",
@@ -29,49 +29,35 @@
       "followers": 526,
       "baseline": 526,
       "growth": 0,
-      "likes": 14,
-      "replies": 2,
+      "likes": 19,
+      "replies": 4,
       "retweets": 0,
-      "views": 161
+      "views": 237
     },
     "totals": {
-      "likes": 14,
-      "replies": 2,
+      "likes": 19,
+      "replies": 4,
       "reposts": 0,
-      "views": 247,
-      "published_photos": 12,
+      "views": 369,
+      "published_photos": 22,
       "total_archive_photos": 1940
     }
   },
   "next_post": {
-    "id": 2172,
-    "date": "24.01.2022",
+    "id": 2205,
+    "date": "28.01.2022",
     "photos_count": 10,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_0.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_1.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_2.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_3.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_1.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_2.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_3.jpg"
     ],
-    "text": "Кто вчера фотогулял - тот я",
+    "text": "Вчера внезапно получилось прогуляться часик по району, даже что-то нажалось.",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/2172"
+    "tg_url": "https://t.me/dremin_live/2205"
   },
   "upcoming_posts": [
-    {
-      "id": 2172,
-      "date": "24.01.2022",
-      "photos_count": 10,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2172_3.jpg"
-      ],
-      "text": "Кто вчера фотогулял - тот я",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2172"
-    },
     {
       "id": 2205,
       "date": "28.01.2022",
@@ -127,9 +113,29 @@
       "text": "",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/2257"
+    },
+    {
+      "id": 2269,
+      "date": "07.02.2022",
+      "photos_count": 10,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2269_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2269_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2269_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2269_3.jpg"
+      ],
+      "text": "Проекционники мои проекционники",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2269"
     }
   ],
   "recent_posts": [
+    {
+      "post_id": 2172,
+      "threads_id": "18077516387731038",
+      "twitter_id": "2112793652070351279",
+      "published_at": "2026-10-21 07:06:42"
+    },
     {
       "post_id": 2170,
       "threads_id": "17916526821468159",
@@ -156,12 +162,6 @@
     },
     {
       "post_id": 4619,
-      "threads_id": "18141469717717451",
-      "twitter_id": "2112691676418552267",
-      "published_at": "2026-10-21 06:04:00"
-    },
-    {
-      "post_id": 4620,
       "threads_id": "18141469717717451",
       "twitter_id": "2112691676418552267",
       "published_at": "2026-10-21 06:04:00"
