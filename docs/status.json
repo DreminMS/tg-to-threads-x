@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-10-21T08:13:08.838386+00:00",
-  "published": 12,
-  "pending": 481,
+  "updated_at": "2026-10-21T08:23:22.640662+00:00",
+  "published": 13,
+  "pending": 480,
   "failed": 0,
   "skipped": 33,
   "total": 526,
-  "percent": 2.3,
+  "percent": 2.5,
   "days_left": 20.0,
   "analytics": {
     "start_date": "2026-10-21",
@@ -39,39 +39,25 @@
       "replies": 0,
       "reposts": 0,
       "views": 410,
-      "published_photos": 22,
+      "published_photos": 32,
       "total_archive_photos": 1940
     }
   },
   "next_post": {
-    "id": 2205,
-    "date": "28.01.2022",
-    "photos_count": 10,
+    "id": 2227,
+    "date": "30.01.2022",
+    "photos_count": 7,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_0.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_1.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_2.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_3.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_1.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_2.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2227_3.jpg"
     ],
-    "text": "Вчера внезапно получилось прогуляться часик по району, даже что-то нажалось.",
+    "text": "Пешком до работы? Почему бы и да!",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/2205"
+    "tg_url": "https://t.me/dremin_live/2227"
   },
   "upcoming_posts": [
-    {
-      "id": 2205,
-      "date": "28.01.2022",
-      "photos_count": 10,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2205_3.jpg"
-      ],
-      "text": "Вчера внезапно получилось прогуляться часик по району, даже что-то нажалось.",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2205"
-    },
     {
       "id": 2227,
       "date": "30.01.2022",
@@ -127,9 +113,29 @@
       "text": "Проекционники мои проекционники",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/2269"
+    },
+    {
+      "id": 2279,
+      "date": "07.02.2022",
+      "photos_count": 7,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2279_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2279_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2279_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2279_3.jpg"
+      ],
+      "text": "Вышел за хлебом",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2279"
     }
   ],
   "recent_posts": [
+    {
+      "post_id": 2205,
+      "threads_id": "17992599393098977",
+      "twitter_id": "2112821851340537965",
+      "published_at": "2026-10-21 08:23:02"
+    },
     {
       "post_id": 2172,
       "threads_id": "18077516387731038",
@@ -156,12 +162,6 @@
     },
     {
       "post_id": 4618,
-      "threads_id": "18141469717717451",
-      "twitter_id": "2112691676418552267",
-      "published_at": "2026-10-21 06:04:00"
-    },
-    {
-      "post_id": 4619,
       "threads_id": "18141469717717451",
       "twitter_id": "2112691676418552267",
       "published_at": "2026-10-21 06:04:00"
