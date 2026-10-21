@@ -16,3 +16,8 @@ ThreadsPoster.app/
 
 # Temp
 /tmp/
+detect_text
+detect_text.swift
+populate_highres_archive.py
+test_parse.py
+media/archive/

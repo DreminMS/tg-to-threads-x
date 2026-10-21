@@ -118,8 +118,18 @@ async def _async_post_to_twitter(
     # 1. Download images to temporary local files or use local paths
     try:
         for i, item in enumerate(photos):
-            if os.path.exists(item):
-                downloaded_files.append(item)
+            local_check = None
+            if item.startswith("http"):
+                fn = os.path.basename(urllib.parse.urlparse(item).path)
+                for candidate in [os.path.join("docs", "media", "archive", fn), os.path.join("media", "archive", fn), os.path.join("media", fn)]:
+                    if os.path.exists(candidate):
+                        local_check = candidate
+                        break
+            elif os.path.exists(item):
+                local_check = item
+
+            if local_check:
+                downloaded_files.append(local_check)
             else:
                 tmp_path = f"/tmp/tw_post_{int(time.time())}_{i}_{os.getpid()}.jpg"
                 req = urllib.request.Request(item, headers={"User-Agent": "Mozilla/5.0"})
