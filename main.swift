@@ -1,6 +1,15 @@
 import Cocoa
 import SQLite3
 
+extension Int {
+    func formattedWithSeparator() -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = " "
+        return formatter.string(from: NSNumber(value: self)) ?? "\(self)"
+    }
+}
+
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var statusItem: NSStatusItem!
     var timer: Timer?
@@ -17,6 +26,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         var nextId: Int? = nil
         var nextDate: String = ""
         var nextPhotoCount: Int = 0
+        var isPaused: Bool = false
+        var nextPubShort: String = ""
+        var nextPubLabel: String = ""
+        var totalViews: Int = 0
+        var totalLikes: Int = 0
+        var threadsFollowers: Int = 1236
+        var threadsGrowth: Int = 1
+        var twitterFollowers: Int = 526
         var percent: Double {
             total > 0 ? (Double(published) / Double(total) * 100.0) : 0.0
         }
@@ -54,6 +71,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         syncWithGitHub(showLoading: false)
     }
 
+    func formatCompact(_ num: Int) -> String {
+        if num >= 1_000_000 {
+            return String(format: "%.1fM", Double(num) / 1_000_000.0)
+        } else if num >= 1_000 {
+            return String(format: "%.1fK", Double(num) / 1_000.0)
+        }
+        return "\(num)"
+    }
+
     func fetchStats() -> Stats {
         var stats = Stats()
         var db: OpaquePointer?
@@ -65,7 +91,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
               (SELECT count(*) FROM archive_posts WHERE status = 'failed'),
               (SELECT post_id FROM archive_posts WHERE status = 'pending' ORDER BY post_id ASC LIMIT 1),
               (SELECT post_date FROM archive_posts WHERE status = 'pending' ORDER BY post_id ASC LIMIT 1),
-              (SELECT photos_json FROM archive_posts WHERE status = 'pending' ORDER BY post_id ASC LIMIT 1)
+              (SELECT photos_json FROM archive_posts WHERE status = 'pending' ORDER BY post_id ASC LIMIT 1),
+              (SELECT value FROM app_settings WHERE key = 'posting_paused' LIMIT 1)
             ;
             """
             var stmt: OpaquePointer?
@@ -87,10 +114,36 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                             stats.nextPhotoCount = arr.count
                         }
                     }
+                    if let p = sqlite3_column_text(stmt, 6) {
+                        stats.isPaused = String(cString: p) == "1"
+                    }
                 }
                 sqlite3_finalize(stmt)
             }
             sqlite3_close(db)
+        }
+
+        // Read status.json for analytics & schedule
+        if let data = try? Data(contentsOf: URL(fileURLWithPath: "\(projectDir)/status.json")),
+           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            if let paused = json["is_paused"] as? Bool {
+                stats.isPaused = paused
+            }
+            if let nextPub = json["next_publication"] as? [String: Any] {
+                stats.nextPubShort = nextPub["short_label"] as? String ?? ""
+                stats.nextPubLabel = nextPub["full_label"] as? String ?? ""
+            }
+            if let a = json["analytics"] as? [String: Any] {
+                stats.totalViews = a["total_views"] as? Int ?? 0
+                stats.totalLikes = a["total_reactions"] as? Int ?? ((a["totals"] as? [String: Any])?["likes"] as? Int ?? 0)
+                if let th = a["threads"] as? [String: Any] {
+                    stats.threadsFollowers = th["followers"] as? Int ?? 1236
+                    stats.threadsGrowth = th["growth"] as? Int ?? 1
+                }
+                if let tw = a["twitter"] as? [String: Any] {
+                    stats.twitterFollowers = tw["followers"] as? Int ?? 526
+                }
+            }
         }
         return stats
     }
@@ -107,7 +160,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func updateUI() {
         let stats = fetchStats()
-        let twConfigured = isTwitterConfigured()
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self, let button = self.statusItem.button else { return }
@@ -115,11 +167,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 button.title = "🧵 🔄 ..."
                 return
             }
-            let twIcon = twConfigured ? " | 𝕏" : ""
-            if stats.total > 0 {
-                button.title = "🧵\(twIcon) \(stats.published)/\(stats.total)"
+            if stats.isPaused {
+                button.title = "🧵 ⏸️ Пауза (\(stats.published)/\(stats.total))"
+            } else if stats.total > 0 {
+                let viewsStr = self.formatCompact(stats.totalViews)
+                let timeStr = stats.nextPubShort.isEmpty ? "" : " • \(stats.nextPubShort)"
+                button.title = "🧵 \(stats.published)/\(stats.total) • 👁️ \(viewsStr) ❤️ \(stats.totalLikes)\(timeStr)"
             } else {
-                button.title = "🧵\(twIcon) Poster"
+                button.title = "🧵 Poster"
             }
         }
     }
@@ -129,7 +184,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.removeAllItems()
         
         let stats = fetchStats()
-        let twConfigured = isTwitterConfigured()
         
         // Header
         let headerItem = NSMenuItem(title: "🧵 Threads & 𝕏 Auto-Poster", action: nil, keyEquivalent: "")
@@ -139,29 +193,36 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         headerItem.attributedTitle = NSAttributedString(string: "🧵 Threads & 𝕏 Auto-Poster", attributes: titleAttr)
         headerItem.isEnabled = false
         menu.addItem(headerItem)
-        
-        // Status rows
-        let cloudHeader = NSMenuItem(title: "☁️ Облачные воркфлоу (GitHub Actions):", action: nil, keyEquivalent: "")
-        cloudHeader.isEnabled = false
-        menu.addItem(cloudHeader)
 
-        let archiveRow = NSMenuItem(title: "   • 📦 Архивный постер: раз в час", action: nil, keyEquivalent: "")
-        archiveRow.isEnabled = false
-        menu.addItem(archiveRow)
-
-        let crosspostRow = NSMenuItem(title: "   • ⚡ Telegram кросспостер: каждые 10 мин", action: nil, keyEquivalent: "")
-        crosspostRow.isEnabled = false
-        menu.addItem(crosspostRow)
-
-        let twStr = twConfigured ? "🟢 Twitter (X) интеграция: ПОДКЛЮЧЕНА" : "⚪ Twitter (X) интеграция: ОЖИДАЕТ КУКИ"
-        let twItem = NSMenuItem(title: twStr, action: nil, keyEquivalent: "")
-        twItem.isEnabled = false
-        menu.addItem(twItem)
+        let statusText = stats.isPaused ? "⏸️ Статус постинга: НА ПАУЗЕ" : "🟢 Статус постинга: АКТИВЕН (24/7)"
+        let statusItemRow = NSMenuItem(title: statusText, action: nil, keyEquivalent: "")
+        statusItemRow.isEnabled = false
+        menu.addItem(statusItemRow)
         
         menu.addItem(NSMenuItem.separator())
+
+        // Analytics & Reactions Section
+        let anHeader = NSMenuItem(title: "📊 Охваты и реакции по всем опубликованным постам:", action: nil, keyEquivalent: "")
+        anHeader.isEnabled = false
+        menu.addItem(anHeader)
+
+        let viewsRow = NSMenuItem(title: "   • 👁️ Просмотры всех постов: \(stats.totalViews.formattedWithSeparator())", action: nil, keyEquivalent: "")
+        viewsRow.isEnabled = false
+        menu.addItem(viewsRow)
+
+        let likesRow = NSMenuItem(title: "   • ❤️ Лайки всех постов: \(stats.totalLikes.formattedWithSeparator())", action: nil, keyEquivalent: "")
+        likesRow.isEnabled = false
+        menu.addItem(likesRow)
+
+        let growthStr = stats.threadsGrowth > 0 ? "+\(stats.threadsGrowth)" : "\(stats.threadsGrowth)"
+        let audRow = NSMenuItem(title: "   • 👥 Подписчики: 🧵 \(stats.threadsFollowers) (\(growthStr))  |  𝕏 \(stats.twitterFollowers)", action: nil, keyEquivalent: "")
+        audRow.isEnabled = false
+        menu.addItem(audRow)
+
+        menu.addItem(NSMenuItem.separator())
         
-        // Progress statistics
-        let progressStr = String(format: "📊 Опубликовано: %d из %d (%.1f%%)", stats.published, stats.total, stats.percent)
+        // Queue Progress Section
+        let progressStr = String(format: "📦 Опубликовано: %d из %d (%.1f%%)", stats.published, stats.total, stats.percent)
         let progItem = NSMenuItem(title: progressStr, action: nil, keyEquivalent: "")
         progItem.isEnabled = false
         menu.addItem(progItem)
@@ -171,10 +232,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let leftItem = NSMenuItem(title: leftStr, action: nil, keyEquivalent: "")
         leftItem.isEnabled = false
         menu.addItem(leftItem)
+
+        let nextPubText = stats.isPaused ? "⏸️ След. публикация: На паузе" : "⏰ След. публикация: \(stats.nextPubLabel.isEmpty ? "Раз в час" : stats.nextPubLabel)"
+        let nextPubRow = NSMenuItem(title: nextPubText, action: nil, keyEquivalent: "")
+        nextPubRow.isEnabled = false
+        menu.addItem(nextPubRow)
         
         if let nextId = stats.nextId {
             let cleanDate = stats.nextDate.prefix(10)
-            let nextStr = "📸 Следующий архивный: #\(nextId) (\(cleanDate), \(stats.nextPhotoCount) фото)"
+            let nextStr = "📸 В очереди следующий: #\(nextId) (\(cleanDate), \(stats.nextPhotoCount) фото)"
             let nextItem = NSMenuItem(title: nextStr, action: nil, keyEquivalent: "")
             nextItem.isEnabled = false
             menu.addItem(nextItem)
@@ -182,7 +248,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
-        // Actions
+        // Pause / Resume Action
+        let pauseTitle = stats.isPaused ? "▶️ Возобновить автоматический постинг" : "⏸️ Поставить постинг на паузу"
+        let pauseItem = NSMenuItem(title: pauseTitle, action: #selector(togglePause), keyEquivalent: "p")
+        pauseItem.target = self
+        menu.addItem(pauseItem)
+
         let gitSyncItem = NSMenuItem(title: "🔄 Синхронизировать с GitHub прямо сейчас", action: #selector(manualGitSync), keyEquivalent: "g")
         gitSyncItem.target = self
         menu.addItem(gitSyncItem)
@@ -224,6 +295,60 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let quitItem = NSMenuItem(title: "✕ Закрыть статусбар", action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
+    }
+
+    @objc func togglePause() {
+        let stats = fetchStats()
+        let currentlyPaused = stats.isPaused
+        let action = currentlyPaused ? "--resume" : "--pause"
+        
+        // 1. Run local script
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/usr/bin/python3")
+        p.arguments = ["\(projectDir)/archive_poster.py", action]
+        p.currentDirectoryURL = URL(fileURLWithPath: projectDir)
+        try? p.run()
+        p.waitUntilExit()
+
+        let p2 = Process()
+        p2.executableURL = URL(fileURLWithPath: "/usr/bin/python3")
+        p2.arguments = ["\(projectDir)/update_status.py"]
+        p2.currentDirectoryURL = URL(fileURLWithPath: projectDir)
+        try? p2.run()
+        p2.waitUntilExit()
+
+        self.updateUI()
+        self.rebuildMenu()
+
+        // 2. Push to GitHub in background so cloud actions sync
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            let gitP = Process()
+            gitP.executableURL = URL(fileURLWithPath: "/usr/bin/git")
+            gitP.arguments = ["add", "crosspost.db", "status.json", "docs/status.json"]
+            gitP.currentDirectoryURL = URL(fileURLWithPath: self.projectDir)
+            try? gitP.run()
+            gitP.waitUntilExit()
+
+            let gitC = Process()
+            gitC.executableURL = URL(fileURLWithPath: "/usr/bin/git")
+            gitC.arguments = ["commit", "-m", currentlyPaused ? "Resume posting from macOS statusbar [skip ci]" : "Pause posting from macOS statusbar [skip ci]"]
+            gitC.currentDirectoryURL = URL(fileURLWithPath: self.projectDir)
+            try? gitC.run()
+            gitC.waitUntilExit()
+
+            let gitPush = Process()
+            gitPush.executableURL = URL(fileURLWithPath: "/usr/bin/git")
+            gitPush.arguments = ["push", "origin", "main"]
+            gitPush.currentDirectoryURL = URL(fileURLWithPath: self.projectDir)
+            try? gitPush.run()
+            gitPush.waitUntilExit()
+
+            DispatchQueue.main.async {
+                self.updateUI()
+                self.rebuildMenu()
+            }
+        }
     }
     
     @objc func manualGitSync() {
