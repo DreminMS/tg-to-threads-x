@@ -31,6 +31,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         var nextPubLabel: String = ""
         var totalViews: Int = 0
         var totalLikes: Int = 0
+        var totalReplies: Int = 0
+        var totalReposts: Int = 0
         var threadsFollowers: Int = 1236
         var threadsGrowth: Int = 1
         var twitterFollowers: Int = 526
@@ -135,7 +137,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
             if let a = json["analytics"] as? [String: Any] {
                 stats.totalViews = a["total_views"] as? Int ?? 0
-                stats.totalLikes = a["total_reactions"] as? Int ?? ((a["totals"] as? [String: Any])?["likes"] as? Int ?? 0)
+                if let totals = a["totals"] as? [String: Any] {
+                    stats.totalLikes = totals["likes"] as? Int ?? 0
+                    stats.totalReplies = totals["replies"] as? Int ?? 0
+                    stats.totalReposts = totals["reposts"] as? Int ?? 0
+                } else {
+                    stats.totalLikes = a["total_reactions"] as? Int ?? 0
+                }
                 if let th = a["threads"] as? [String: Any] {
                     stats.threadsFollowers = th["followers"] as? Int ?? 1236
                     stats.threadsGrowth = th["growth"] as? Int ?? 1
@@ -179,7 +187,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             🧵 Threads & 𝕏 Poster (\(stats.isPaused ? "На паузе ⏸" : "Активен 🟢"))
             • Прогресс: \(stats.published) / \(stats.total) (\(String(format: "%.1f", stats.percent))%)
             • Охват: \(stats.totalViews.formattedWithSeparator()) просмотров
-            • Лайки: \(stats.totalLikes.formattedWithSeparator())
+            • Лайки: \(stats.totalLikes.formattedWithSeparator()) • Ответы: \(stats.totalReplies) • Репосты: \(stats.totalReposts)
             • Следующий пост: \(stats.nextPubLabel.isEmpty ? "—" : stats.nextPubLabel)
             (Кликните для меню управления)
             """
@@ -217,7 +225,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         viewsRow.isEnabled = false
         menu.addItem(viewsRow)
 
-        let likesRow = NSMenuItem(title: "   • ❤️ Лайки всех постов: \(stats.totalLikes.formattedWithSeparator())", action: nil, keyEquivalent: "")
+        let likesRow = NSMenuItem(title: "   • ❤️ Лайки: \(stats.totalLikes.formattedWithSeparator())  |  💬 Ответы: \(stats.totalReplies)  |  🔁 Репосты: \(stats.totalReposts)", action: nil, keyEquivalent: "")
         likesRow.isEnabled = false
         menu.addItem(likesRow)
 
