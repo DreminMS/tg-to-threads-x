@@ -1,16 +1,16 @@
 {
-  "updated_at": "2026-10-22T03:32:02.582870+00:00",
-  "updated_at_msk": "06:32 МСК",
+  "updated_at": "2026-10-22T04:13:20.799429+00:00",
+  "updated_at_msk": "07:13 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "next_publication": {
-    "iso": "2026-10-22T07:00:00+03:00",
-    "time_msk": "07:00 МСК",
-    "full_label": "Сегодня в 07:00 МСК",
-    "short_label": "~07:00 МСК"
+    "iso": "2026-10-22T08:00:00+03:00",
+    "time_msk": "08:00 МСК",
+    "full_label": "Сегодня в 08:00 МСК",
+    "short_label": "~08:00 МСК"
   },
   "published": 16,
-  "pending": 469,
-  "failed": 0,
+  "pending": 468,
+  "failed": 1,
   "skipped": 41,
   "total": 526,
   "percent": 3.0,
@@ -52,36 +52,24 @@
     }
   },
   "next_post": {
-    "id": 2338,
+    "id": 2339,
     "date": "20.02.2022",
-    "date_msk": "20.02.2022 11:00 МСК",
-    "photos_count": 1,
+    "date_msk": "20.02.2022 11:01 МСК",
+    "photos_count": 10,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2338_0.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2339_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2339_1.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2339_2.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2339_3.jpg"
     ],
-    "text": "",
+    "text": "Вчера нагулялось утром и вечером",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/2338",
-    "eta_msk": "07:00 МСК",
-    "eta_label": "Сегодня в 07:00 МСК",
-    "eta_iso": "2026-10-22T07:00:00+03:00"
+    "tg_url": "https://t.me/dremin_live/2339",
+    "eta_msk": "08:00 МСК",
+    "eta_label": "Сегодня в 08:00 МСК",
+    "eta_iso": "2026-10-22T08:00:00+03:00"
   },
   "upcoming_posts": [
-    {
-      "id": 2338,
-      "date": "20.02.2022",
-      "date_msk": "20.02.2022 11:00 МСК",
-      "photos_count": 1,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2338_0.jpg"
-      ],
-      "text": "",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2338",
-      "eta_msk": "07:00 МСК",
-      "eta_label": "Сегодня в 07:00 МСК",
-      "eta_iso": "2026-10-22T07:00:00+03:00"
-    },
     {
       "id": 2339,
       "date": "20.02.2022",
@@ -151,6 +139,24 @@
       "eta_msk": "11:00 МСК",
       "eta_label": "Сегодня в 11:00 МСК",
       "eta_iso": "2026-10-22T11:00:00+03:00"
+    },
+    {
+      "id": 2417,
+      "date": "25.02.2022",
+      "date_msk": "25.02.2022 13:59 МСК",
+      "photos_count": 10,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2417_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2417_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2417_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2417_3.jpg"
+      ],
+      "text": "Неизданное с ночной прогулки",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2417",
+      "eta_msk": "12:00 МСК",
+      "eta_label": "Сегодня в 12:00 МСК",
+      "eta_iso": "2026-10-22T12:00:00+03:00"
     }
   ],
   "recent_posts": [
@@ -357,8 +363,8 @@
       "id": "archive_poster.yml",
       "name": "Hourly Archive Poster",
       "schedule": "Раз в час (07:00 - 00:00 МСК)",
-      "description": "Следующая публикация: Сегодня в 07:00 МСК",
-      "next_run_msk": "Сегодня в 07:00 МСК"
+      "description": "Следующая публикация: Сегодня в 08:00 МСК",
+      "next_run_msk": "Сегодня в 08:00 МСК"
     },
     {
       "id": "crosspost.yml",
