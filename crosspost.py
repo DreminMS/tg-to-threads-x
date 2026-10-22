@@ -472,6 +472,14 @@ def run_poller(config: Dict[str, Any], dry_run: bool = False, once: bool = False
 
     while True:
         try:
+            from archive_poster import is_posting_paused
+            if is_posting_paused(conn):
+                logger.info("⏸️ Crossposting is PAUSED by user. Waiting.")
+                if once:
+                    return 0
+                time.sleep(poll_interval)
+                continue
+
             # Check token refresh periodically (if older than 30 days)
             now = time.time()
             if now - last_refresh_check > 86400:

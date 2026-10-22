@@ -56,19 +56,31 @@ jobs:
           python archive_poster.py --delete ${{ inputs.post_id }}
           python update_status.py
 
+      - name: Handle Pause Posting
+        if: ${{ inputs.action == 'pause' }}
+        run: |
+          python archive_poster.py --pause
+          python update_status.py
+
+      - name: Handle Resume Posting
+        if: ${{ inputs.action == 'resume' }}
+        run: |
+          python archive_poster.py --resume
+          python update_status.py
+
       - name: Install dependencies (Publishing)
-        if: ${{ inputs.action != 'skip' && inputs.action != 'delete' }}
+        if: ${{ inputs.action != 'skip' && inputs.action != 'delete' && inputs.action != 'pause' && inputs.action != 'resume' }}
         run: |
           pip install -r requirements.txt
           playwright install chromium --with-deps
 
       - name: Check and Publish New Telegram Posts
-        if: ${{ inputs.action != 'skip' && inputs.action != 'delete' }}
+        if: ${{ inputs.action != 'skip' && inputs.action != 'delete' && inputs.action != 'pause' && inputs.action != 'resume' }}
         run: |
           python crosspost.py --once
 
       - name: Publish Next Archive Post
-        if: ${{ inputs.action != 'skip' && inputs.action != 'delete' }}
+        if: ${{ inputs.action != 'skip' && inputs.action != 'delete' && inputs.action != 'pause' && inputs.action != 'resume' }}
         run: |
           if [ "${{ inputs.action }}" = "publish" ]; then
             python archive_poster.py --publish-one

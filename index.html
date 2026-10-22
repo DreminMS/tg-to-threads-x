@@ -922,42 +922,95 @@
       line-height: 1.5;
     }
 
-    /* Top Statusbar */
-    .top-statusbar {
+    /* Top Statusbar Card (Compact & Modern) */
+    .top-statusbar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 8px 12px;
+      margin-top: -6px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .sb-stats-row {
       display: flex;
       align-items: center;
       gap: 6px;
-      overflow-x: auto;
-      padding: 0 2px 14px;
-      margin-top: -6px;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
+      flex-wrap: wrap;
+      flex: 1;
     }
-    .top-statusbar::-webkit-scrollbar {
-      display: none;
-    }
-    .sb-item {
+
+    .sb-badge {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 5px 11px;
-      border-radius: 20px;
+      padding: 4px 8px;
+      border-radius: 10px;
       font-size: 12px;
       font-weight: 600;
       white-space: nowrap;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       color: #e2e8f0;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
-    .sb-item .sb-val {
-      font-weight: 700;
+
+    .sb-badge.sb-next-active {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.35);
       color: #38bdf8;
+      font-weight: 700;
     }
-    .sb-item .sb-label {
-      color: var(--text-muted);
-      font-size: 11px;
+
+    .sb-badge.sb-next-paused {
+      background: rgba(245, 158, 11, 0.16);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      font-weight: 700;
+    }
+
+    .sb-val {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .sb-sep {
+      opacity: 0.3;
+      margin: 0 1px;
+    }
+
+    /* Pause / Resume Button */
+    .sb-pause-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 11px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8fafc;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .sb-pause-toggle:active {
+      transform: scale(0.93);
+    }
+
+    .sb-pause-toggle.is-paused {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: rgba(245, 158, 11, 0.5);
+      color: #fbbf24;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
     }
   </style>
 </head>
@@ -984,34 +1037,31 @@
     </header>
 
     <!-- Top Live Stats Bar (Statusbar) -->
-    <div class="top-statusbar" id="topStatusbar">
-      <div class="sb-item" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.08);">
-        <span>⏰</span>
-        <span class="sb-val" id="sbNextPub" style="color: #38bdf8;">~14:00 МСК</span>
-        <span class="sb-label">след. пост</span>
+    <div class="top-statusbar-card" id="topStatusbar">
+      <div class="sb-stats-row">
+        <div class="sb-badge sb-next-active" id="sbNextBadge" title="Время следующей публикации">
+          <span id="sbNextIcon">⏰</span>
+          <span id="sbNextPub">~14:00 МСК</span>
+        </div>
+        <div class="sb-badge" title="Суммарные просмотры всех опубликованных постов в Threads и Twitter">
+          <span>👁️</span>
+          <span class="sb-val" id="sbViews">—</span>
+        </div>
+        <div class="sb-badge" title="Суммарные лайки всех опубликованных постов в Threads и Twitter">
+          <span>❤️</span>
+          <span class="sb-val" id="sbLikes">—</span>
+        </div>
+        <div class="sb-badge" title="Подписчики Threads и читатели Twitter">
+          <span>🧵</span> <span class="sb-val" id="sbThreads">—</span>
+          <span class="sb-sep">|</span>
+          <span>𝕏</span> <span class="sb-val" id="sbTwitter">—</span>
+        </div>
       </div>
-      <div class="sb-item">
-        <span>❤️</span>
-        <span class="sb-val" id="sbLikes">—</span>
-        <span class="sb-label">лайков</span>
-      </div>
-      <div class="sb-item">
-        <span>👁️</span>
-        <span class="sb-val" id="sbViews">—</span>
-        <span class="sb-label">просмотров</span>
-      </div>
-      <div class="sb-item">
-        <span>💬</span>
-        <span class="sb-val" id="sbReplies">—</span>
-        <span class="sb-label">ответов</span>
-      </div>
-      <div class="sb-item">
-        <span>🧵</span>
-        <span class="sb-val" id="sbThreads">—</span>
-      </div>
-      <div class="sb-item">
-        <span>𝕏</span>
-        <span class="sb-val" id="sbTwitter">—</span>
+      <div>
+        <button class="sb-pause-toggle" id="sbPauseBtn" onclick="togglePostingPause()" title="Приостановить или возобновить постинг">
+          <span id="sbPauseIcon">⏸️</span>
+          <span id="sbPauseText">Пауза</span>
+        </button>
       </div>
     </div>
 
@@ -1325,29 +1375,58 @@
           const totGr = a.total_growth || 0;
           document.getElementById('statTotalGrowth').innerText = totGr > 0 ? `+${totGr}` : '+0';
 
-          // Top Statusbar
+          // Top Statusbar Metrics (Accurate aggregated stats)
           const sbLikesEl = document.getElementById('sbLikes');
-          if (sbLikesEl) sbLikesEl.innerText = t.likes ?? 0;
+          if (sbLikesEl) sbLikesEl.innerText = Number(t.likes ?? 0).toLocaleString();
           const sbViewsEl = document.getElementById('sbViews');
-          if (sbViewsEl) sbViewsEl.innerText = t.views ?? 0;
-          const sbRepliesEl = document.getElementById('sbReplies');
-          if (sbRepliesEl) sbRepliesEl.innerText = t.replies ?? 0;
+          if (sbViewsEl) sbViewsEl.innerText = formatCompactNum(t.views ?? 0);
           if (a.threads && document.getElementById('sbThreads')) {
-            document.getElementById('sbThreads').innerText = Number(a.threads.followers).toLocaleString();
+            document.getElementById('sbThreads').innerText = formatCompactNum(a.threads.followers);
           }
           if (a.twitter && document.getElementById('sbTwitter')) {
-            document.getElementById('sbTwitter').innerText = Number(a.twitter.followers).toLocaleString();
+            document.getElementById('sbTwitter').innerText = formatCompactNum(a.twitter.followers);
           }
         }
 
-        // Top Statusbar next publication ETA
+        // Top Statusbar next publication ETA & Pause handling
+        const isPaused = Boolean(data.is_paused);
+        window._isPostingPaused = isPaused;
+        const pauseBtn = document.getElementById('sbPauseBtn');
+        const pauseIcon = document.getElementById('sbPauseIcon');
+        const pauseText = document.getElementById('sbPauseText');
+        const nextBadge = document.getElementById('sbNextBadge');
+        const nextIcon = document.getElementById('sbNextIcon');
+        const sbNext = document.getElementById('sbNextPub');
+
+        if (isPaused) {
+          if (pauseBtn) {
+            pauseBtn.classList.add('is-paused');
+            pauseBtn.title = 'Постинг приостановлен. Нажмите, чтобы возобновить.';
+          }
+          if (pauseIcon) pauseIcon.innerText = '▶️';
+          if (pauseText) pauseText.innerText = 'Пуск';
+          if (nextBadge) nextBadge.className = 'sb-badge sb-next-paused';
+          if (nextIcon) nextIcon.innerText = '⏸️';
+          if (sbNext) sbNext.innerText = 'На паузе';
+        } else {
+          if (pauseBtn) {
+            pauseBtn.classList.remove('is-paused');
+            pauseBtn.title = 'Автопостинг активен. Нажмите, чтобы поставить на паузу.';
+          }
+          if (pauseIcon) pauseIcon.innerText = '⏸️';
+          if (pauseText) pauseText.innerText = 'Пауза';
+          if (nextBadge) nextBadge.className = 'sb-badge sb-next-active';
+          if (nextIcon) nextIcon.innerText = '⏰';
+          if (sbNext && data.next_publication) {
+            sbNext.innerText = data.next_publication.short_label || 'Раз в час';
+          }
+        }
+
         if (data.next_publication) {
-          const sbNext = document.getElementById('sbNextPub');
-          if (sbNext) sbNext.innerText = data.next_publication.short_label || 'Раз в час';
           const nextEl = document.getElementById('wfArchiveNext');
           if (nextEl) nextEl.innerText = data.next_publication.short_label || 'Раз в час';
           const descEl = document.getElementById('wfArchiveDesc');
-          if (descEl) descEl.innerText = `След. публикация: ${data.next_publication.full_label}`;
+          if (descEl) descEl.innerText = isPaused ? 'Автопостинг на паузе ⏸️' : `След. публикация: ${data.next_publication.full_label}`;
         }
 
         // Upcoming posts preview with skip button
@@ -1542,6 +1621,66 @@
         setTimeout(() => loadStatus(false), 5000);
       } else {
         if (card) card.classList.remove('deleting');
+      }
+    }
+
+    function formatCompactNum(n) {
+      n = Number(n || 0);
+      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return n.toLocaleString();
+    }
+
+    async function togglePostingPause() {
+      const isCurrentlyPaused = Boolean(window._isPostingPaused);
+      const action = isCurrentlyPaused ? 'resume' : 'pause';
+      const confirmMsg = isCurrentlyPaused 
+        ? 'Возобновить автоматический постинг архива?' 
+        : 'Поставить постинг на паузу?\n\nАвтоматическая публикация архивных постов будет приостановлена до возобновления.';
+
+      if (!confirm(confirmMsg)) return;
+
+      const pauseBtn = document.getElementById('sbPauseBtn');
+      if (pauseBtn) {
+        pauseBtn.disabled = true;
+        pauseBtn.style.opacity = '0.6';
+      }
+
+      showToast(isCurrentlyPaused ? '▶️ Возобновление постинга...' : '⏸️ Приостановка постинга...');
+
+      // Optimistic UI update
+      window._isPostingPaused = !isCurrentlyPaused;
+      const pauseText = document.getElementById('sbPauseText');
+      const pauseIcon = document.getElementById('sbPauseIcon');
+      const nextBadge = document.getElementById('sbNextBadge');
+      const nextPub = document.getElementById('sbNextPub');
+
+      if (!isCurrentlyPaused) {
+        if (pauseBtn) pauseBtn.classList.add('is-paused');
+        if (pauseIcon) pauseIcon.innerText = '▶️';
+        if (pauseText) pauseText.innerText = 'Пуск';
+        if (nextBadge) nextBadge.className = 'sb-badge sb-next-paused';
+        if (nextPub) nextPub.innerText = 'На паузе';
+      } else {
+        if (pauseBtn) pauseBtn.classList.remove('is-paused');
+        if (pauseIcon) pauseIcon.innerText = '⏸️';
+        if (pauseText) pauseText.innerText = 'Пауза';
+        if (nextBadge) nextBadge.className = 'sb-badge sb-next-active';
+        if (nextPub) nextPub.innerText = 'Активация...';
+      }
+
+      const success = await triggerWorkflow('archive_poster.yml', { action: action });
+      if (pauseBtn) {
+        pauseBtn.disabled = false;
+        pauseBtn.style.opacity = '1';
+      }
+
+      if (success) {
+        showToast(isCurrentlyPaused ? '✅ Постинг возобновлен' : '⏸️ Постинг поставлен на паузу');
+        setTimeout(() => loadStatus(false), 4500);
+      } else {
+        showToast('⚠️ Ошибка переключения паузы');
+        loadStatus(false);
       }
     }
 

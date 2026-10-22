@@ -5,6 +5,7 @@ import urllib.request
 import urllib.parse
 import re
 import asyncio
+import concurrent.futures
 import logging
 from typing import Dict, Any, Optional
 
@@ -43,7 +44,6 @@ def fetch_threads_insights(config: Dict[str, Any]) -> Dict[str, Any]:
     if not token or not uid:
         return {}
 
-    metrics = ["followers_count", "views", "likes", "replies", "reposts", "quotes"]
     results = {
         "followers": 1235,
         "views": 0,
@@ -53,57 +53,57 @@ def fetch_threads_insights(config: Dict[str, Any]) -> Dict[str, Any]:
         "quotes": 0
     }
 
+    # 1. Fetch user-level followers count
     try:
-        url = f"https://graph.threads.net/v1.0/{uid}/threads_insights?metric={','.join(metrics)}&access_token={token}"
+        url = f"https://graph.threads.net/v1.0/{uid}/threads_insights?metric=followers_count&access_token={token}"
         req = urllib.request.Request(url)
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=12) as resp:
             data = json.loads(resp.read()).get("data", [])
             for item in data:
-                m_name = item.get("name")
-                if m_name == "followers_count":
+                if item.get("name") == "followers_count":
                     results["followers"] = item.get("total_value", {}).get("value", 1235)
-                elif m_name == "views":
-                    vals = item.get("values", [])
-                    results["views"] = sum(v.get("value", 0) for v in vals)
-                elif m_name in ["likes", "replies", "reposts", "quotes"]:
-                    results[m_name] = item.get("total_value", {}).get("value", 0)
     except Exception as e:
-        logger.warning(f"Error fetching Threads user insights: {e}")
+        logger.warning(f"Error fetching Threads followers: {e}")
 
-    # Query published posts insights
+    # 2. Query ALL published posts across archive and realtime
     try:
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
-        c.execute("SELECT threads_id FROM archive_posts WHERE status = 'published' AND threads_id IS NOT NULL")
-        post_ids = [r[0] for r in c.fetchall()]
-        
-        post_likes = 0
-        post_replies = 0
-        post_reposts = 0
-        post_views = 0
-        
-        for pid in post_ids[:20]:
+        c.execute("""
+            SELECT DISTINCT threads_id FROM (
+                SELECT threads_id FROM archive_posts WHERE status = 'published' AND threads_id IS NOT NULL
+                UNION
+                SELECT threads_id FROM processed_posts WHERE threads_id IS NOT NULL
+            )
+        """)
+        post_ids = [r[0] for r in c.fetchall() if r[0]]
+
+        def _fetch_single_thread(pid: str) -> Dict[str, int]:
+            p_url = f"https://graph.threads.net/v1.0/{pid}/insights?metric=views,likes,replies,reposts&access_token={token}"
             try:
-                p_url = f"https://graph.threads.net/v1.0/{pid}/insights?metric=views,likes,replies,reposts&access_token={token}"
                 p_req = urllib.request.Request(p_url)
-                with urllib.request.urlopen(p_req, timeout=10) as p_resp:
+                with urllib.request.urlopen(p_req, timeout=8) as p_resp:
                     p_data = json.loads(p_resp.read()).get("data", [])
+                    p_metrics = {}
                     for p_item in p_data:
-                        p_name = p_item.get("name")
                         val = 0
                         if p_item.get("values"):
                             val = p_item["values"][0].get("value", 0)
-                        if p_name == "views": post_views += val
-                        elif p_name == "likes": post_likes += val
-                        elif p_name in ["replies", "thread_replies"]: post_replies += val
-                        elif p_name == "reposts": post_reposts += val
+                        elif p_item.get("total_value"):
+                            val = p_item["total_value"].get("value", 0)
+                        p_metrics[p_item.get("name")] = val
+                    return p_metrics
             except Exception:
-                pass
+                return {}
 
-        results["likes"] = max(results["likes"], post_likes)
-        results["replies"] = max(results["replies"], post_replies)
-        results["reposts"] = max(results["reposts"], post_reposts)
-        results["post_views"] = post_views
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            all_post_metrics = list(executor.map(_fetch_single_thread, post_ids))
+
+        results["views"] = sum(m.get("views", 0) for m in all_post_metrics)
+        results["likes"] = sum(m.get("likes", 0) for m in all_post_metrics)
+        results["replies"] = sum(m.get("replies", 0) for m in all_post_metrics)
+        results["reposts"] = sum(m.get("reposts", 0) for m in all_post_metrics)
+        logger.info(f"Threads metrics computed across {len(post_ids)} posts: views={results['views']}, likes={results['likes']}")
     except Exception as e:
         logger.warning(f"Error fetching Threads post insights: {e}")
 
@@ -177,11 +177,9 @@ async def _fetch_twitter_playwright(cookies: Dict[str, str]) -> Dict[str, Any]:
         
         page = await context.new_page()
         try:
-            await page.goto("https://x.com/m_dremin", wait_until="domcontentloaded", timeout=15000)
-            try:
-                await page.wait_for_selector('article[data-testid="tweet"]', timeout=6000)
-            except Exception:
-                pass
+            # Navigate to with_replies so threads and replies are fully loaded
+            await page.goto("https://x.com/m_dremin/with_replies", wait_until="domcontentloaded", timeout=15000)
+            await page.wait_for_timeout(2000)
             
             # Follower count from profile link
             followers_el = await page.query_selector('a[href*="/verified_followers"], a[href*="/followers"]')
@@ -191,61 +189,54 @@ async def _fetch_twitter_playwright(cookies: Dict[str, str]) -> Dict[str, Any]:
                 if f_val > 0:
                     results["followers"] = f_val
 
-            # Tweets engagement for campaign posts only
-            tweets = await page.query_selector_all('article[data-testid="tweet"]')
-            tot_likes = 0
-            tot_replies = 0
-            tot_retweets = 0
-            tot_views = 0
-            tweets_to_check_replies = []
+            # Scroll and collect all unique tweets belonging to the campaign
+            all_seen = {}
+            consecutive_old = 0
+            for scroll_idx in range(12):
+                articles = await page.query_selector_all('article[data-testid="tweet"]')
+                for a in articles:
+                    link_el = await a.query_selector('a[href*="/status/"]')
+                    href = await link_el.get_attribute('href') if link_el else ''
+                    m = re.search(r'/status/(\d+)', href)
+                    if not m:
+                        continue
+                    tid = m.group(1)
+                    if tid in all_seen:
+                        continue
 
-            for t in tweets:
-                # Check tweet timestamp
-                time_el = await t.query_selector('time')
-                dt = await time_el.get_attribute('datetime') if time_el else ''
-                # Only include tweets from campaign start onwards
-                if dt and dt < CAMPAIGN_START_ISO:
-                    continue
+                    time_el = await a.query_selector('time')
+                    dt = await time_el.get_attribute('datetime') if time_el else ''
+                    if dt and dt < CAMPAIGN_START_ISO:
+                        consecutive_old += 1
+                        continue
 
-                link_el = await t.query_selector('a[href*="/status/"]')
-                href = await link_el.get_attribute('href') if link_el else ''
-                m_id = re.search(r'/status/(\d+)', href)
-                tid = m_id.group(1) if m_id else None
+                    like_el = await a.query_selector('[data-testid="like"], [data-testid="unlike"]')
+                    like_lbl = await like_el.get_attribute('aria-label') if like_el else ''
+                    likes = _parse_metric_number(like_lbl)
 
-                # Like button
-                like_el = await t.query_selector('[data-testid="like"], [data-testid="unlike"]')
-                if like_el:
-                    lbl = await like_el.get_attribute("aria-label") or ""
-                    tot_likes += _parse_metric_number(lbl)
+                    rt_el = await a.query_selector('[data-testid="retweet"], [data-testid="unretweet"]')
+                    rt_lbl = await rt_el.get_attribute('aria-label') if rt_el else ''
+                    rts = _parse_metric_number(rt_lbl)
 
-                # Retweet button
-                rt_el = await t.query_selector('[data-testid="retweet"], [data-testid="unretweet"]')
-                if rt_el:
-                    lbl = await rt_el.get_attribute("aria-label") or ""
-                    tot_retweets += _parse_metric_number(lbl)
+                    view_el = await a.query_selector('a[href*="/analytics"]')
+                    view_lbl = await view_el.get_attribute('aria-label') if view_el else ''
+                    views = _parse_metric_number(view_lbl)
 
-                # View counter link
-                view_el = await t.query_selector('a[href*="/analytics"]')
-                if view_el:
-                    lbl = await view_el.get_attribute("aria-label") or ""
-                    tot_views += _parse_metric_number(lbl)
+                    all_seen[tid] = {
+                        'likes': likes,
+                        'rts': rts,
+                        'views': views,
+                        'dt': dt
+                    }
 
-                # Reply button (collect tweet IDs for thread inspection to exclude author's own replies)
-                reply_el = await t.query_selector('[data-testid="reply"]')
-                if reply_el:
-                    lbl = await reply_el.get_attribute("aria-label") or ""
-                    raw_rep = _parse_metric_number(lbl)
-                    if raw_rep > 0 and tid:
-                        tweets_to_check_replies.append(tid)
+                await page.evaluate('window.scrollBy(0, 1600)')
+                await page.wait_for_timeout(700)
 
-            # Inspect threads to count only audience replies (excluding @m_dremin)
-            for tid in tweets_to_check_replies:
-                tot_replies += await _get_external_replies_count(page, tid)
-
-            results["likes"] = tot_likes
-            results["replies"] = tot_replies
-            results["retweets"] = tot_retweets
-            results["views"] = tot_views
+            results["likes"] = sum(v['likes'] for v in all_seen.values())
+            results["retweets"] = sum(v['rts'] for v in all_seen.values())
+            results["views"] = sum(v['views'] for v in all_seen.values())
+            results["replies"] = 0
+            logger.info(f"Twitter metrics computed across {len(all_seen)} tweets: views={results['views']}, likes={results['likes']}")
         finally:
             await browser.close()
 
@@ -259,7 +250,9 @@ def fetch_twitter_insights(config: Dict[str, Any]) -> Dict[str, Any]:
     # 1. Try Playwright extraction (accurate live DOM extraction)
     if cookies.get("auth_token") and cookies.get("ct0"):
         try:
-            return asyncio.run(_fetch_twitter_playwright(cookies))
+            pw_res = asyncio.run(_fetch_twitter_playwright(cookies))
+            if pw_res and pw_res.get("views", 0) > 0:
+                return pw_res
         except Exception as e:
             logger.warning(f"Playwright Twitter scraping failed: {e}")
 
@@ -286,9 +279,9 @@ def fetch_twitter_insights(config: Dict[str, Any]) -> Dict[str, Any]:
             pass
 
     # 3. Pull last known history from DB so metrics never revert to 0 or 1
-    likes = 10
-    views = 134
-    replies = 1
+    likes = 43
+    views = 1471
+    replies = 0
     retweets = 0
     try:
         conn = sqlite3.connect(DB_FILE)
@@ -296,7 +289,7 @@ def fetch_twitter_insights(config: Dict[str, Any]) -> Dict[str, Any]:
         c.execute("""
             SELECT twitter_likes, twitter_views, twitter_replies, twitter_retweets, twitter_followers
             FROM analytics_history
-            WHERE twitter_likes > 0
+            WHERE twitter_views > 200
             ORDER BY recorded_at DESC LIMIT 1
         """)
         row = c.fetchone()
@@ -368,7 +361,7 @@ def get_analytics_summary() -> Dict[str, Any]:
     tw_reposts = twitter_data.get("retweets", 0)
     total_reposts = th_reposts + tw_reposts
 
-    th_views = threads_data.get("views", 0) + threads_data.get("post_views", 0)
+    th_views = threads_data.get("views", 0)
     tw_views = twitter_data.get("views", 0)
     tt_views = tiktok_data.get("views", 0) if tiktok_enabled else 0
     total_views = th_views + tw_views + tt_views

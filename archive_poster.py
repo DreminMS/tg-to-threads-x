@@ -92,7 +92,30 @@ def init_db() -> sqlite3.Connection:
                 conn.execute(f"ALTER TABLE archive_posts ADD COLUMN {col} {col_type}")
             except Exception:
                 pass
+        conn.execute("CREATE TABLE IF NOT EXISTS app_settings (key TEXT PRIMARY KEY, value TEXT)")
     return conn
+
+
+def is_posting_paused(conn: sqlite3.Connection) -> bool:
+    try:
+        cur = conn.cursor()
+        cur.execute("CREATE TABLE IF NOT EXISTS app_settings (key TEXT PRIMARY KEY, value TEXT)")
+        cur.execute("SELECT value FROM app_settings WHERE key = 'posting_paused'")
+        row = cur.fetchone()
+        return bool(row and row[0] == "1")
+    except Exception as e:
+        logger.warning(f"Error checking posting_paused: {e}")
+        return False
+
+
+def set_posting_paused(conn: sqlite3.Connection, paused: bool):
+    try:
+        cur = conn.cursor()
+        cur.execute("CREATE TABLE IF NOT EXISTS app_settings (key TEXT PRIMARY KEY, value TEXT)")
+        cur.execute("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('posting_paused', ?)", ("1" if paused else "0",))
+        conn.commit()
+    except Exception as e:
+        logger.warning(f"Error setting posting_paused: {e}")
 
 
 # ==========================================
@@ -642,16 +665,20 @@ def delete_archive_post(post_id: int, config: Optional[Dict[str, Any]] = None) -
 
 def publish_hourly(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
     """
-    Checks if at least 50 minutes have elapsed since the last published archive post and current hour >= 7 MSK.
+    Checks if posting is paused, and if at least 50 minutes have elapsed since last post (and hour >= 7 MSK).
     If so, publishes the next archive post.
     """
+    conn = init_db()
+    if is_posting_paused(conn):
+        logger.info("⏸️ Posting is currently PAUSED by user. Skipping hourly archive publication.")
+        return None
+
     from datetime import datetime, timezone, timedelta
     msk_now = datetime.now(timezone(timedelta(hours=3)))
     if msk_now.hour < 7:
         logger.info(f"Archive posting is scheduled from 07:00 to 00:00 MSK (currently {msk_now.strftime('%H:%M')} MSK). Waiting.")
         return None
 
-    conn = init_db()
     cur = conn.cursor()
     cur.execute("SELECT max(published_at) FROM archive_posts WHERE status = 'published'")
     row = cur.fetchone()
@@ -679,6 +706,8 @@ def main():
     parser.add_argument("--status", action="store_true", help="Show current queue status")
     parser.add_argument("--publish-one", action="store_true", help="Publish 1 post right now")
     parser.add_argument("--publish-hourly", action="store_true", help="Publish 1 post if hourly interval reached")
+    parser.add_argument("--pause", action="store_true", help="Pause automated posting")
+    parser.add_argument("--resume", action="store_true", help="Resume automated posting")
     parser.add_argument("--skip", type=int, help="Skip a specific post ID")
     parser.add_argument("--skip-reason", type=str, default="manual_skip", help="Reason for skipping")
     parser.add_argument("--delete", type=int, help="Delete a published post by ID from Threads, Twitter, and database")
@@ -686,6 +715,18 @@ def main():
     parser.add_argument("--daemon", action="store_true", help="Run continuously with 1-hour interval")
     parser.add_argument("--interval", type=int, default=3600, help="Interval in seconds (default: 3600)")
     args = parser.parse_args()
+
+    if args.pause:
+        conn = init_db()
+        set_posting_paused(conn, True)
+        print("⏸️ Posting has been paused.")
+        return
+
+    if args.resume:
+        conn = init_db()
+        set_posting_paused(conn, False)
+        print("▶️ Posting has been resumed.")
+        return
 
     if args.delete:
         config = load_config()

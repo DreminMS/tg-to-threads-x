@@ -191,12 +191,29 @@ def update_status_json():
     except Exception as e:
         analytics_data = {}
 
+    try:
+        from archive_poster import is_posting_paused
+        is_paused = is_posting_paused(conn)
+    except Exception:
+        is_paused = False
+
+    if is_paused:
+        next_pub_data = {
+            "iso": None,
+            "time_msk": "На паузе",
+            "full_label": "Постинг на паузе ⏸️",
+            "short_label": "⏸️ На паузе"
+        }
+    else:
+        next_pub_data = slots[0] if slots else None
+
     msk_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=3)))
     status_data = {
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "updated_at_msk": msk_now.strftime("%H:%M МСК"),
         "timezone": "Europe/Moscow (МСК, UTC+3)",
-        "next_publication": slots[0] if slots else None,
+        "is_paused": is_paused,
+        "next_publication": next_pub_data,
         "published": published,
         "pending": pending,
         "failed": failed,
