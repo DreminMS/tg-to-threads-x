@@ -18,6 +18,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     let dbPath = "/Users/mihaildremin/.gemini/antigravity/scratch/tg_to_threads/crosspost.db"
     let projectDir = "/Users/mihaildremin/.gemini/antigravity/scratch/tg_to_threads"
     
+    var viewMode: String {
+        get { UserDefaults.standard.string(forKey: "menuBarViewMode") ?? "minimal" }
+        set { 
+            UserDefaults.standard.set(newValue, forKey: "menuBarViewMode")
+            updateUI()
+            rebuildMenu()
+        }
+    }
+    
     struct Stats {
         var published: Int = 0
         var pending: Int = 0
@@ -167,15 +176,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 button.title = "🧵 🔄 ..."
                 return
             }
-            if stats.isPaused {
-                button.title = "🧵 ⏸️ Пауза (\(stats.published)/\(stats.total))"
-            } else if stats.total > 0 {
-                let viewsStr = self.formatCompact(stats.totalViews)
-                let timeStr = stats.nextPubShort.isEmpty ? "" : " • \(stats.nextPubShort)"
-                button.title = "🧵 \(stats.published)/\(stats.total) • 👁️ \(viewsStr) ❤️ \(stats.totalLikes)\(timeStr)"
+            let viewsStr = self.formatCompact(stats.totalViews)
+            let mode = self.viewMode
+            
+            if mode == "icon" {
+                button.title = stats.isPaused ? "🧵⏸" : "🧵"
+            } else if mode == "detailed" {
+                button.title = stats.isPaused ? "🧵 ⏸ \(stats.published)/\(stats.total)" : "🧵 \(stats.published)/\(stats.total) • 👁️ \(viewsStr)"
             } else {
-                button.title = "🧵 Poster"
+                // "minimal" default: fits easily on any display without notch clipping
+                button.title = stats.isPaused ? "🧵 ⏸ \(stats.published)/\(stats.total)" : "🧵 \(stats.published)/\(stats.total)"
             }
+            
+            button.toolTip = """
+            🧵 Threads & 𝕏 Poster (\(stats.isPaused ? "На паузе ⏸" : "Активен 🟢"))
+            • Прогресс: \(stats.published) / \(stats.total) (\(String(format: "%.1f", stats.percent))%)
+            • Охват: \(stats.totalViews.formattedWithSeparator()) просмотров
+            • Лайки: \(stats.totalLikes.formattedWithSeparator())
+            • Следующий пост: \(stats.nextPubLabel.isEmpty ? "—" : stats.nextPubLabel)
+            (Кликните для меню управления)
+            """
         }
     }
     
@@ -289,6 +309,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         folderItem.target = self
         menu.addItem(folderItem)
         
+        // View format options
+        let viewMenu = NSMenu()
+        let mode = self.viewMode
+        
+        let minItem = NSMenuItem(title: "Лаконичный: 🧵 \(stats.published)/\(stats.total)", action: #selector(setModeMinimal), keyEquivalent: "")
+        minItem.target = self
+        minItem.state = (mode == "minimal") ? .on : .off
+        viewMenu.addItem(minItem)
+
+        let detItem = NSMenuItem(title: "С охватом: 🧵 \(stats.published)/\(stats.total) • 👁️ \(self.formatCompact(stats.totalViews))", action: #selector(setModeDetailed), keyEquivalent: "")
+        detItem.target = self
+        detItem.state = (mode == "detailed") ? .on : .off
+        viewMenu.addItem(detItem)
+        
+        let iconItem = NSMenuItem(title: "Только иконка: 🧵", action: #selector(setModeIcon), keyEquivalent: "")
+        iconItem.target = self
+        iconItem.state = (mode == "icon") ? .on : .off
+        viewMenu.addItem(iconItem)
+        
+        let viewMenuItem = NSMenuItem(title: "📐 Формат значка в строке меню...", action: nil, keyEquivalent: "")
+        viewMenuItem.submenu = viewMenu
+        menu.addItem(viewMenuItem)
+
         menu.addItem(NSMenuItem.separator())
         
         // Quit
@@ -296,6 +339,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         quitItem.target = self
         menu.addItem(quitItem)
     }
+
+    @objc func setModeMinimal() { viewMode = "minimal" }
+    @objc func setModeDetailed() { viewMode = "detailed" }
+    @objc func setModeIcon() { viewMode = "icon" }
 
     @objc func togglePause() {
         let stats = fetchStats()
@@ -428,6 +475,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
 // Entry Point
 let app = NSApplication.shared
+app.setActivationPolicy(.accessory)
 let delegate = AppDelegate()
 app.delegate = delegate
 app.run()
