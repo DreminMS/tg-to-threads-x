@@ -382,12 +382,6 @@
       border-color: rgba(29, 155, 240, 0.3);
     }
 
-    .pill-tiktok {
-      background: rgba(254, 44, 85, 0.15);
-      color: #ff0050;
-      border-color: rgba(254, 44, 85, 0.35);
-    }
-
     /* Analytics Section */
     .analytics-grid-2 {
       display: grid;
@@ -979,7 +973,7 @@
           </svg>
         </div>
         <div>
-          <div class="brand-title">Threads, 𝕏 & TikTok</div>
+          <div class="brand-title">Threads & 𝕏 Archive</div>
           <div class="brand-subtitle" id="lastUpdated">Загрузка...</div>
         </div>
       </div>
@@ -1018,10 +1012,6 @@
       <div class="sb-item">
         <span>𝕏</span>
         <span class="sb-val" id="sbTwitter">—</span>
-      </div>
-      <div class="sb-item">
-        <span>🎵</span>
-        <span class="sb-val" id="sbTikTok">—</span>
       </div>
     </div>
 
@@ -1098,18 +1088,6 @@
         <div class="analytics-num" id="twitterFollowers">—</div>
         <div style="font-size: 11px; color: var(--text-muted);">
           Читателей (база: <span id="twitterBaseline">526</span>)
-        </div>
-      </div>
-
-      <!-- TikTok Card -->
-      <div class="analytics-card">
-        <div class="analytics-user-row">
-          <a class="analytics-platform-badge badge-tt" href="https://www.tiktok.com/@dremin_m" target="_blank">🎵 TikTok</a>
-          <span class="growth-pill" id="tiktokGrowth">+0</span>
-        </div>
-        <div class="analytics-num" id="tiktokFollowers">0</div>
-        <div style="font-size: 11px; color: var(--text-muted);">
-          Подписчиков (база: <span id="tiktokBaseline">0</span>)
         </div>
       </div>
     </div>
@@ -1337,19 +1315,6 @@
             twGr.className = `growth-pill ${grVal === 0 ? 'zero' : ''}`;
           }
 
-          if (a.tiktok) {
-            const ttFol = document.getElementById('tiktokFollowers');
-            if (ttFol) ttFol.innerText = Number(a.tiktok.followers || 0).toLocaleString();
-            const ttBase = document.getElementById('tiktokBaseline');
-            if (ttBase) ttBase.innerText = Number(a.tiktok.baseline || 0).toLocaleString();
-            const ttGr = document.getElementById('tiktokGrowth');
-            if (ttGr) {
-              const grVal = a.tiktok.growth || 0;
-              ttGr.innerText = grVal > 0 ? `+${grVal}` : (grVal < 0 ? `${grVal}` : '+0');
-              ttGr.className = `growth-pill ${grVal === 0 ? 'zero' : ''}`;
-            }
-          }
-
           const t = a.totals || {};
           document.getElementById('metricLikes').innerText = t.likes ?? 0;
           document.getElementById('metricReposts').innerText = t.reposts ?? 0;
@@ -1372,9 +1337,6 @@
           }
           if (a.twitter && document.getElementById('sbTwitter')) {
             document.getElementById('sbTwitter').innerText = Number(a.twitter.followers).toLocaleString();
-          }
-          if (a.tiktok && document.getElementById('sbTikTok')) {
-            document.getElementById('sbTikTok').innerText = Number(a.tiktok.followers || 0).toLocaleString();
           }
         }
 
@@ -1488,7 +1450,6 @@
                   <div class="recent-links">
                     ${p.threads_url ? `<a class="post-link-pill pill-threads" href="${p.threads_url}" target="_blank">🧵 Threads ↗</a>` : ''}
                     ${p.twitter_url ? `<a class="post-link-pill pill-twitter" href="${p.twitter_url}" target="_blank">𝕏 Tweet ↗</a>` : ''}
-                    ${p.tiktok_url ? `<a class="post-link-pill pill-tiktok" href="${p.tiktok_url}" target="_blank">🎵 TikTok ↗</a>` : ''}
                     ${p.tg_url ? `<a class="btn-tg-link" href="${p.tg_url}" target="_blank">✈️ TG ↗</a>` : ''}
                   </div>
                   <button class="btn-delete-post" onclick="deletePost(${p.post_id})">
@@ -1562,7 +1523,7 @@
     }
 
     async function deletePost(postId) {
-      if (!confirm(`Вы действительно хотите удалить пост #${postId} из Threads, Twitter (X) и TikTok?\n\nПост будет безвозвратно удален со всех платформ.`)) {
+      if (!confirm(`Вы действительно хотите удалить пост #${postId} из Threads и Twitter (X)?\n\nПост будет безвозвратно удален с обеих платформ.`)) {
         return;
       }
 

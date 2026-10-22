@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-22T00:00:48.427998+00:00",
-  "updated_at_msk": "03:00 МСК",
+  "updated_at": "2026-10-22T00:07:41.492869+00:00",
+  "updated_at_msk": "03:07 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "next_publication": {
     "iso": "2026-10-22T07:00:00+03:00",
@@ -17,8 +17,8 @@
   "days_left": 19.5,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 4,
-    "total_views": 193,
+    "total_reactions": 6,
+    "total_views": 379,
     "total_growth": 0,
     "threads": {
       "username": "dremin",
@@ -37,25 +37,16 @@
       "followers": 526,
       "baseline": 526,
       "growth": 0,
-      "likes": 0,
+      "likes": 2,
       "replies": 0,
       "retweets": 0,
-      "views": 0
-    },
-    "tiktok": {
-      "username": "dremin_m",
-      "url": "https://www.tiktok.com/@dremin_m",
-      "followers": 0,
-      "baseline": 0,
-      "growth": 0,
-      "likes": 0,
-      "views": 0
+      "views": 186
     },
     "totals": {
-      "likes": 4,
+      "likes": 6,
       "replies": 0,
       "reposts": 0,
-      "views": 193,
+      "views": 379,
       "published_photos": 126,
       "total_archive_photos": 1940
     }
@@ -167,7 +158,6 @@
       "post_id": 4624,
       "threads_id": "18141469717717451",
       "twitter_id": "2112691676418552267",
-      "tiktok_id": null,
       "published_at": "2026-10-21T16:02:59.618559+00:00",
       "published_at_msk": "21.10.2026 19:02 МСК",
       "date": "2026-10-20",
@@ -182,14 +172,12 @@
       "text": "",
       "threads_url": "https://www.threads.com/@dremin/post/DevCxxYj1sf",
       "twitter_url": "https://x.com/m_dremin/status/2112691676418552267",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/4624"
     },
     {
       "post_id": 2337,
       "threads_id": "18137690221656908",
       "twitter_id": "2113003176140099769",
-      "tiktok_id": null,
       "published_at": "2026-10-21 20:24:11",
       "published_at_msk": "21.10.2026 23:24 МСК",
       "date": "20.02.2022",
@@ -201,14 +189,12 @@
       "text": "",
       "threads_url": "https://www.threads.com/@dremin/post/DexQbs5mhwI",
       "twitter_url": "https://x.com/m_dremin/status/2113003176140099769",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2337"
     },
     {
       "post_id": 2323,
       "threads_id": "18401189989206700",
       "twitter_id": "2112987956604772810",
-      "tiktok_id": null,
       "published_at": "2026-10-21 19:24:05",
       "published_at_msk": "21.10.2026 22:24 МСК",
       "date": "13.02.2022",
@@ -223,14 +209,12 @@
       "text": "",
       "threads_url": "https://www.threads.com/@dremin/post/DexJgxqj3MU",
       "twitter_url": "https://x.com/m_dremin/status/2112987956604772810",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2323"
     },
     {
       "post_id": 2305,
       "threads_id": "18140261869618568",
       "twitter_id": "2112969155691663450",
-      "tiktok_id": null,
       "published_at": "2026-10-21 18:09:23",
       "published_at_msk": "21.10.2026 21:09 МСК",
       "date": "13.02.2022",
@@ -245,14 +229,12 @@
       "text": "Традиционный воскресный фотогулять прошел успешно!",
       "threads_url": "https://www.threads.com/@dremin/post/DexA9x_lNDl",
       "twitter_url": "https://x.com/m_dremin/status/2112969155691663450",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2305"
     },
     {
       "post_id": 2300,
       "threads_id": "18113741636034748",
       "twitter_id": "2112952766591074643",
-      "tiktok_id": null,
       "published_at": "2026-10-21 17:04:04",
       "published_at_msk": "21.10.2026 20:04 МСК",
       "date": "12.02.2022",
@@ -267,14 +249,12 @@
       "text": "Вы думали это все?",
       "threads_url": "https://www.threads.com/@dremin/post/Dew5gz8lAKl",
       "twitter_url": "https://x.com/m_dremin/status/2112952766591074643",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2300"
     },
     {
       "post_id": 2295,
       "threads_id": "18114570596330974",
       "twitter_id": "2112928847066960281",
-      "tiktok_id": null,
       "published_at": "2026-10-21 15:28:00",
       "published_at_msk": "21.10.2026 18:28 МСК",
       "date": "11.02.2022",
@@ -289,14 +269,12 @@
       "text": "",
       "threads_url": "https://www.threads.com/@dremin/post/DewuowOltEO",
       "twitter_url": "https://x.com/m_dremin/status/2112928847066960281",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2295"
     },
     {
       "post_id": 2286,
       "threads_id": "18200097148385353",
       "twitter_id": "2112914135998759400",
-      "tiktok_id": null,
       "published_at": "2026-10-21 14:29:43",
       "published_at_msk": "21.10.2026 17:29 МСК",
       "date": "09.02.2022",
@@ -311,14 +289,12 @@
       "text": "А у меня в гостях космическая собака!",
       "threads_url": "https://www.threads.com/@dremin/post/Dewn8ewG2OZ",
       "twitter_url": "https://x.com/m_dremin/status/2112914135998759400",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2286"
     },
     {
       "post_id": 2279,
       "threads_id": "17910708117491596",
       "twitter_id": "2112897474373570825",
-      "tiktok_id": null,
       "published_at": "2026-10-21 13:23:21",
       "published_at_msk": "21.10.2026 16:23 МСК",
       "date": "07.02.2022",
@@ -333,14 +309,12 @@
       "text": "Вышел за хлебом",
       "threads_url": "https://www.threads.com/@dremin/post/DewgXP7Fb0M",
       "twitter_url": "https://x.com/m_dremin/status/2112897474373570825",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2279"
     },
     {
       "post_id": 2269,
       "threads_id": "18023494232716655",
       "twitter_id": "2112884184364810415",
-      "tiktok_id": null,
       "published_at": "2026-10-21 12:30:42",
       "published_at_msk": "21.10.2026 15:30 МСК",
       "date": "07.02.2022",
@@ -355,14 +329,12 @@
       "text": "Проекционники мои проекционники",
       "threads_url": "https://www.threads.com/@dremin/post/DewaUyElttu",
       "twitter_url": "https://x.com/m_dremin/status/2112884184364810415",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2269"
     },
     {
       "post_id": 2257,
       "threads_id": "17964576726236926",
       "twitter_id": "2112867678192877574",
-      "tiktok_id": null,
       "published_at": "2026-10-21 11:25:07",
       "published_at_msk": "21.10.2026 14:25 МСК",
       "date": "06.02.2022",
@@ -377,7 +349,6 @@
       "text": "",
       "threads_url": "https://www.threads.com/@dremin/post/DewS0cslaRn",
       "twitter_url": "https://x.com/m_dremin/status/2112867678192877574",
-      "tiktok_url": "",
       "tg_url": "https://t.me/dremin_live/2257"
     }
   ],

@@ -58,15 +58,6 @@ def load_config() -> Dict[str, Any]:
             "auth_token": os.environ["TWITTER_AUTH_TOKEN"],
             "ct0": os.environ["TWITTER_CT0"]
         }
-    if os.environ.get("TIKTOK_COOKIES_JSON"):
-        try:
-            cfg["tiktok_cookies"] = json.loads(os.environ["TIKTOK_COOKIES_JSON"])
-            cfg["tiktok_enabled"] = True
-        except Exception:
-            pass
-    if os.environ.get("TIKTOK_SESSION_ID"):
-        cfg.setdefault("tiktok_cookies", {})["sessionid"] = os.environ["TIKTOK_SESSION_ID"]
-        cfg["tiktok_enabled"] = True
 
     if not cfg.get("threads_access_token"):
         logger.error("Missing threads_access_token in config or environment variables.")

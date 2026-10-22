@@ -34,15 +34,6 @@ def load_config() -> Dict[str, Any]:
         cfg.setdefault("twitter_cookies", {})["auth_token"] = os.environ["TWITTER_AUTH_TOKEN"]
     if os.environ.get("TWITTER_CT0"):
         cfg.setdefault("twitter_cookies", {})["ct0"] = os.environ["TWITTER_CT0"]
-    if os.environ.get("TIKTOK_COOKIES_JSON"):
-        try:
-            cfg["tiktok_cookies"] = json.loads(os.environ["TIKTOK_COOKIES_JSON"])
-            cfg["tiktok_enabled"] = True
-        except Exception:
-            pass
-    if os.environ.get("TIKTOK_SESSION_ID"):
-        cfg.setdefault("tiktok_cookies", {})["sessionid"] = os.environ["TIKTOK_SESSION_ID"]
-        cfg["tiktok_enabled"] = True
     return cfg
 
 
@@ -340,7 +331,8 @@ def get_analytics_summary() -> Dict[str, Any]:
     config = load_config()
     threads_data = fetch_threads_insights(config)
     twitter_data = fetch_twitter_insights(config)
-    tiktok_data = fetch_tiktok_insights(config)
+    tiktok_enabled = bool(config.get("tiktok_enabled"))
+    tiktok_data = fetch_tiktok_insights(config) if tiktok_enabled else {}
 
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
@@ -351,21 +343,21 @@ def get_analytics_summary() -> Dict[str, Any]:
 
     threads_base = baselines.get("threads", {}).get("initial", 1235)
     twitter_base = baselines.get("twitter", {}).get("initial", 526)
-    tiktok_base = baselines.get("tiktok", {}).get("initial", 0)
+    tiktok_base = baselines.get("tiktok", {}).get("initial", 0) if tiktok_enabled else 0
     start_date = baselines.get("threads", {}).get("date", "2026-10-21")
 
     th_followers = threads_data.get("followers", 1235)
     tw_followers = twitter_data.get("followers", 526)
-    tt_followers = tiktok_data.get("followers", 0)
+    tt_followers = tiktok_data.get("followers", 0) if tiktok_enabled else 0
 
     th_growth = th_followers - threads_base
     tw_growth = tw_followers - twitter_base
-    tt_growth = tt_followers - tiktok_base
+    tt_growth = (tt_followers - tiktok_base) if tiktok_enabled else 0
     total_growth = th_growth + tw_growth + tt_growth
 
     th_likes = threads_data.get("likes", 0)
     tw_likes = twitter_data.get("likes", 0)
-    tt_likes = tiktok_data.get("likes", 0)
+    tt_likes = tiktok_data.get("likes", 0) if tiktok_enabled else 0
     total_likes = th_likes + tw_likes + tt_likes
 
     th_replies = threads_data.get("replies", 0)
@@ -378,7 +370,7 @@ def get_analytics_summary() -> Dict[str, Any]:
 
     th_views = threads_data.get("views", 0) + threads_data.get("post_views", 0)
     tw_views = twitter_data.get("views", 0)
-    tt_views = tiktok_data.get("views", 0)
+    tt_views = tiktok_data.get("views", 0) if tiktok_enabled else 0
     total_views = th_views + tw_views + tt_views
 
     total_reactions = total_likes + total_replies + total_reposts
@@ -412,7 +404,7 @@ def get_analytics_summary() -> Dict[str, Any]:
     except Exception as e:
         logger.warning(f"Could not record analytics history: {e}")
 
-    return {
+    res = {
         "start_date": start_date,
         "total_reactions": total_reactions,
         "total_views": total_views,
@@ -439,15 +431,6 @@ def get_analytics_summary() -> Dict[str, Any]:
             "retweets": tw_reposts,
             "views": tw_views
         },
-        "tiktok": {
-            "username": "dremin_m",
-            "url": "https://www.tiktok.com/@dremin_m",
-            "followers": tt_followers,
-            "baseline": tiktok_base,
-            "growth": tt_growth,
-            "likes": tt_likes,
-            "views": tt_views
-        },
         "totals": {
             "likes": total_likes,
             "replies": total_replies,
@@ -457,6 +440,17 @@ def get_analytics_summary() -> Dict[str, Any]:
             "total_archive_photos": 1940
         }
     }
+    if tiktok_enabled:
+        res["tiktok"] = {
+            "username": config.get("tiktok_username", "dremin_m"),
+            "url": f"https://www.tiktok.com/@{config.get('tiktok_username', 'dremin_m')}",
+            "followers": tt_followers,
+            "baseline": tiktok_base,
+            "growth": tt_growth,
+            "likes": tt_likes,
+            "views": tt_views
+        }
+    return res
 
 
 if __name__ == "__main__":
