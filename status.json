@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-10-23T16:48:31.639841+00:00",
-  "updated_at_msk": "19:48 МСК",
+  "updated_at": "2026-10-23T17:12:55.526145+00:00",
+  "updated_at_msk": "20:12 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
-    "iso": "2026-10-23T20:00:00+03:00",
-    "time_msk": "20:00 МСК",
-    "full_label": "Сегодня в 20:00 МСК",
-    "short_label": "~20:00 МСК"
+    "iso": "2026-10-23T22:00:00+03:00",
+    "time_msk": "22:00 МСК",
+    "full_label": "Сегодня в 22:00 МСК",
+    "short_label": "~22:00 МСК"
   },
-  "published": 47,
-  "pending": 440,
+  "published": 48,
+  "pending": 439,
   "failed": 2,
   "skipped": 42,
   "total": 531,
-  "percent": 8.9,
+  "percent": 9.0,
   "days_left": 18.3,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 333,
-    "total_views": 7837,
+    "total_reactions": 341,
+    "total_views": 8060,
     "total_growth": 0,
     "threads": {
       "username": "dremin",
@@ -27,10 +27,10 @@
       "followers": 1236,
       "baseline": 1235,
       "growth": 1,
-      "likes": 182,
+      "likes": 190,
       "replies": 0,
       "reposts": 2,
-      "views": 1882
+      "views": 1951
     },
     "twitter": {
       "username": "m_dremin",
@@ -41,54 +41,36 @@
       "likes": 100,
       "replies": 48,
       "retweets": 1,
-      "views": 5955
+      "views": 6109
     },
     "totals": {
-      "likes": 282,
+      "likes": 290,
       "replies": 48,
       "reposts": 3,
-      "views": 7837,
-      "published_photos": 280,
+      "views": 8060,
+      "published_photos": 288,
       "total_archive_photos": 1940
     }
   },
   "next_post": {
-    "id": 2612,
-    "date": "17.04.2022",
-    "date_msk": "17.04.2022 17:30 МСК",
-    "photos_count": 8,
+    "id": 2620,
+    "date": "18.04.2022",
+    "date_msk": "18.04.2022 06:10 МСК",
+    "photos_count": 6,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_0.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_1.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_2.jpg",
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_3.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2620_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2620_1.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2620_2.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2620_3.jpg"
     ],
-    "text": "Сегодня опять лечу на Чукотку. Приехал заранее в аэропорт чтобы поснимать в терминале. Особая атмосфера путешествий.",
+    "text": "Доброе утро страна!",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/2612",
-    "eta_msk": "20:00 МСК",
-    "eta_label": "Сегодня в 20:00 МСК",
-    "eta_iso": "2026-10-23T20:00:00+03:00"
+    "tg_url": "https://t.me/dremin_live/2620",
+    "eta_msk": "22:00 МСК",
+    "eta_label": "Сегодня в 22:00 МСК",
+    "eta_iso": "2026-10-23T22:00:00+03:00"
   },
   "upcoming_posts": [
-    {
-      "id": 2612,
-      "date": "17.04.2022",
-      "date_msk": "17.04.2022 17:30 МСК",
-      "photos_count": 8,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_3.jpg"
-      ],
-      "text": "Сегодня опять лечу на Чукотку. Приехал заранее в аэропорт чтобы поснимать в терминале. Особая атмосфера путешествий.",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2612",
-      "eta_msk": "20:00 МСК",
-      "eta_label": "Сегодня в 20:00 МСК",
-      "eta_iso": "2026-10-23T20:00:00+03:00"
-    },
     {
       "id": 2620,
       "date": "18.04.2022",
@@ -103,9 +85,9 @@
       "text": "Доброе утро страна!",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/2620",
-      "eta_msk": "21:00 МСК",
-      "eta_label": "Сегодня в 21:00 МСК",
-      "eta_iso": "2026-10-23T21:00:00+03:00"
+      "eta_msk": "22:00 МСК",
+      "eta_label": "Сегодня в 22:00 МСК",
+      "eta_iso": "2026-10-23T22:00:00+03:00"
     },
     {
       "id": 2626,
@@ -121,9 +103,9 @@
       "text": "Билибино как есть. Фотографии смог загрузить только по прилету обратно в Анадырь. Интернет в Билибино можно сказать отсутствует.",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/2626",
-      "eta_msk": "22:00 МСК",
-      "eta_label": "Сегодня в 22:00 МСК",
-      "eta_iso": "2026-10-23T22:00:00+03:00"
+      "eta_msk": "23:00 МСК",
+      "eta_label": "Сегодня в 23:00 МСК",
+      "eta_iso": "2026-10-23T23:00:00+03:00"
     },
     {
       "id": 2644,
@@ -137,9 +119,9 @@
       "text": "Держите Анадырский закат",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/2644",
-      "eta_msk": "23:00 МСК",
-      "eta_label": "Сегодня в 23:00 МСК",
-      "eta_iso": "2026-10-23T23:00:00+03:00"
+      "eta_msk": "00:00 МСК",
+      "eta_label": "Завтра в 00:00 МСК",
+      "eta_iso": "2026-10-24T00:00:00+03:00"
     },
     {
       "id": 2646,
@@ -152,12 +134,50 @@
       "text": "Вернулся в Москву, кто хочет встретиться - пишите в личку\n@dremin",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/2646",
-      "eta_msk": "00:00 МСК",
-      "eta_label": "Завтра в 00:00 МСК",
-      "eta_iso": "2026-10-24T00:00:00+03:00"
+      "eta_msk": "07:00 МСК",
+      "eta_label": "Завтра в 07:00 МСК",
+      "eta_iso": "2026-10-24T07:00:00+03:00"
+    },
+    {
+      "id": 2647,
+      "date": "27.04.2022",
+      "date_msk": "27.04.2022 22:44 МСК",
+      "photos_count": 8,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2647_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2647_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2647_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2647_3.jpg"
+      ],
+      "text": "Байкал. Просто Байкал.",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2647",
+      "eta_msk": "08:00 МСК",
+      "eta_label": "Завтра в 08:00 МСК",
+      "eta_iso": "2026-10-24T08:00:00+03:00"
     }
   ],
   "recent_posts": [
+    {
+      "post_id": 2612,
+      "threads_id": "17993075349054237",
+      "twitter_id": "2113679895880745406",
+      "published_at": "2026-10-23 17:12:30",
+      "published_at_msk": "23.10.2026 20:12 МСК",
+      "date": "17.04.2022",
+      "date_msk": "17.04.2022 17:30 МСК",
+      "photos_count": 8,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2612_3.jpg"
+      ],
+      "text": "Сегодня опять лечу на Чукотку. Приехал заранее в аэропорт чтобы поснимать в терминале. Особая атмосфера путешествий.",
+      "threads_url": "https://www.threads.com/@dremin/post/De2ELBJFAhm",
+      "twitter_url": "https://x.com/m_dremin/status/2113679895880745406",
+      "tg_url": "https://t.me/dremin_live/2612"
+    },
     {
       "post_id": 2609,
       "threads_id": "18111752354610732",
@@ -327,26 +347,6 @@
       "threads_url": "https://www.threads.com/@dremin/post/De1A3czHJJV",
       "twitter_url": "https://x.com/m_dremin/status/2113531890066198797",
       "tg_url": "https://t.me/dremin_live/2551"
-    },
-    {
-      "post_id": 2532,
-      "threads_id": "18107153357256635",
-      "twitter_id": "2113518304325493095",
-      "published_at": "2026-10-23 06:30:29",
-      "published_at_msk": "23.10.2026 09:30 МСК",
-      "date": "24.03.2022",
-      "date_msk": "24.03.2022 09:10 МСК",
-      "photos_count": 10,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2532_0.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2532_1.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2532_2.jpg",
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2532_3.jpg"
-      ],
-      "text": "Очередная попытка поймать туман в Петербурге. Туман особо не поймался, зато поймалось несколько кадров.",
-      "threads_url": "https://www.threads.com/@dremin/post/De06sGzleji",
-      "twitter_url": "https://x.com/m_dremin/status/2113518304325493095",
-      "tg_url": "https://t.me/dremin_live/2532"
     }
   ],
   "workflows": [
@@ -354,8 +354,8 @@
       "id": "archive_poster.yml",
       "name": "Hourly Archive Poster",
       "schedule": "Раз в час (07:00 - 00:00 МСК)",
-      "description": "Следующая публикация: Сегодня в 20:00 МСК",
-      "next_run_msk": "Сегодня в 20:00 МСК"
+      "description": "Следующая публикация: Сегодня в 22:00 МСК",
+      "next_run_msk": "Сегодня в 22:00 МСК"
     },
     {
       "id": "crosspost.yml",
