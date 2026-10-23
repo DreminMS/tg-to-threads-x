@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-23T15:02:20.654701+00:00",
-  "updated_at_msk": "18:02 МСК",
+  "updated_at": "2026-10-23T15:07:37.570968+00:00",
+  "updated_at_msk": "18:07 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -10,16 +10,16 @@
     "short_label": "~19:00 МСК"
   },
   "published": 46,
-  "pending": 442,
+  "pending": 441,
   "failed": 2,
-  "skipped": 41,
+  "skipped": 42,
   "total": 531,
   "percent": 8.7,
   "days_left": 18.4,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 301,
-    "total_views": 7551,
+    "total_reactions": 304,
+    "total_views": 7565,
     "total_growth": 0,
     "threads": {
       "username": "dremin",
@@ -27,10 +27,10 @@
       "followers": 1236,
       "baseline": 1235,
       "growth": 1,
-      "likes": 150,
+      "likes": 153,
       "replies": 0,
       "reposts": 2,
-      "views": 1596
+      "views": 1610
     },
     "twitter": {
       "username": "m_dremin",
@@ -44,10 +44,10 @@
       "views": 5955
     },
     "totals": {
-      "likes": 250,
+      "likes": 253,
       "replies": 48,
       "reposts": 3,
-      "views": 7551,
+      "views": 7565,
       "published_photos": 277,
       "total_archive_photos": 1940
     }
@@ -142,16 +142,17 @@
       "eta_iso": "2026-10-23T22:00:00+03:00"
     },
     {
-      "id": 2643,
-      "date": "22.04.2022",
-      "date_msk": "22.04.2022 02:43 МСК",
-      "photos_count": 1,
+      "id": 2644,
+      "date": "24.04.2022",
+      "date_msk": "24.04.2022 10:59 МСК",
+      "photos_count": 2,
       "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2643_0.jpg"
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2644_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2644_1.jpg"
       ],
-      "text": "Поднялся на Чукотке",
+      "text": "Держите Анадырский закат",
       "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2643",
+      "tg_url": "https://t.me/dremin_live/2644",
       "eta_msk": "23:00 МСК",
       "eta_label": "Сегодня в 23:00 МСК",
       "eta_iso": "2026-10-23T23:00:00+03:00"
