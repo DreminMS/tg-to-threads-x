@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-24T18:07:17.163764+00:00",
-  "updated_at_msk": "21:07 МСК",
+  "updated_at": "2026-10-24T18:20:47.697185+00:00",
+  "updated_at_msk": "21:20 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -18,8 +18,8 @@
   "days_left": 17.5,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 508,
-    "total_views": 11344,
+    "total_reactions": 511,
+    "total_views": 11461,
     "total_growth": 3,
     "threads": {
       "username": "dremin",
@@ -27,10 +27,10 @@
       "followers": 1240,
       "baseline": 1235,
       "growth": 5,
-      "likes": 351,
+      "likes": 354,
       "replies": 2,
       "reposts": 4,
-      "views": 3428
+      "views": 3451
     },
     "twitter": {
       "username": "m_dremin",
@@ -41,13 +41,13 @@
       "likes": 102,
       "replies": 48,
       "retweets": 1,
-      "views": 7916
+      "views": 8010
     },
     "totals": {
-      "likes": 453,
+      "likes": 456,
       "replies": 50,
       "reposts": 5,
-      "views": 11344,
+      "views": 11461,
       "published_photos": 368,
       "total_archive_photos": 1940
     }
