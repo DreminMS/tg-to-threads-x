@@ -1,36 +1,36 @@
 {
-  "updated_at": "2026-10-25T05:37:47.052836+00:00",
-  "updated_at_msk": "08:37 МСК",
+  "updated_at": "2026-10-25T06:07:41.989406+00:00",
+  "updated_at_msk": "09:07 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
-    "iso": "2026-10-25T09:00:00+03:00",
-    "time_msk": "09:00 МСК",
-    "full_label": "Сегодня в 09:00 МСК",
-    "short_label": "~09:00 МСК"
+    "iso": "2026-10-25T10:00:00+03:00",
+    "time_msk": "10:00 МСК",
+    "full_label": "Сегодня в 10:00 МСК",
+    "short_label": "~10:00 МСК"
   },
-  "published": 70,
-  "pending": 416,
+  "published": 71,
+  "pending": 415,
   "failed": 2,
   "skipped": 43,
   "total": 531,
-  "percent": 13.2,
+  "percent": 13.4,
   "days_left": 17.3,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 533,
-    "total_views": 13120,
-    "total_growth": 4,
+    "total_reactions": 539,
+    "total_views": 13174,
+    "total_growth": 5,
     "threads": {
       "username": "dremin",
       "url": "https://www.threads.net/@dremin",
-      "followers": 1241,
+      "followers": 1242,
       "baseline": 1235,
-      "growth": 6,
-      "likes": 375,
+      "growth": 7,
+      "likes": 381,
       "replies": 3,
       "reposts": 4,
-      "views": 3682
+      "views": 3688
     },
     "twitter": {
       "username": "m_dremin",
@@ -41,48 +41,36 @@
       "likes": 102,
       "replies": 48,
       "retweets": 1,
-      "views": 9438
+      "views": 9486
     },
     "totals": {
-      "likes": 477,
+      "likes": 483,
       "replies": 51,
       "reposts": 5,
-      "views": 13120,
-      "published_photos": 372,
+      "views": 13174,
+      "published_photos": 373,
       "total_archive_photos": 1940
     }
   },
   "next_post": {
-    "id": 2723,
+    "id": 2724,
     "date": "28.05.2022",
-    "date_msk": "28.05.2022 18:44 МСК",
-    "photos_count": 1,
+    "date_msk": "28.05.2022 19:56 МСК",
+    "photos_count": 10,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2723_0.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2724_0.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2724_1.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2724_2.jpg",
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2724_3.jpg"
     ],
-    "text": "Тобольск прекрасен",
+    "text": "Тобольск в чб",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/2723",
-    "eta_msk": "09:00 МСК",
-    "eta_label": "Сегодня в 09:00 МСК",
-    "eta_iso": "2026-10-25T09:00:00+03:00"
+    "tg_url": "https://t.me/dremin_live/2724",
+    "eta_msk": "10:00 МСК",
+    "eta_label": "Сегодня в 10:00 МСК",
+    "eta_iso": "2026-10-25T10:00:00+03:00"
   },
   "upcoming_posts": [
-    {
-      "id": 2723,
-      "date": "28.05.2022",
-      "date_msk": "28.05.2022 18:44 МСК",
-      "photos_count": 1,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2723_0.jpg"
-      ],
-      "text": "Тобольск прекрасен",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/2723",
-      "eta_msk": "09:00 МСК",
-      "eta_label": "Сегодня в 09:00 МСК",
-      "eta_iso": "2026-10-25T09:00:00+03:00"
-    },
     {
       "id": 2724,
       "date": "28.05.2022",
@@ -146,9 +134,44 @@
       "eta_msk": "13:00 МСК",
       "eta_label": "Сегодня в 13:00 МСК",
       "eta_iso": "2026-10-25T13:00:00+03:00"
+    },
+    {
+      "id": 2741,
+      "date": "10.06.2022",
+      "date_msk": "10.06.2022 20:00 МСК",
+      "photos_count": 4,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2741_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2741_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2741_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2741_3.jpg"
+      ],
+      "text": "",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/2741",
+      "eta_msk": "14:00 МСК",
+      "eta_label": "Сегодня в 14:00 МСК",
+      "eta_iso": "2026-10-25T14:00:00+03:00"
     }
   ],
   "recent_posts": [
+    {
+      "post_id": 2723,
+      "threads_id": "17959300821015850",
+      "twitter_id": "2114237340486946900",
+      "published_at": "2026-10-25 06:07:18",
+      "published_at_msk": "25.10.2026 09:07 МСК",
+      "date": "28.05.2022",
+      "date_msk": "28.05.2022 18:44 МСК",
+      "photos_count": 1,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2723_0.jpg"
+      ],
+      "text": "Тобольск прекрасен",
+      "threads_url": "https://www.threads.com/@dremin/post/De6Bqg9lSaJ",
+      "twitter_url": "https://x.com/m_dremin/status/2114237340486946900",
+      "tg_url": "https://t.me/dremin_live/2723"
+    },
     {
       "post_id": 2719,
       "threads_id": "18234151798323272",
@@ -309,23 +332,6 @@
       "threads_url": "https://www.threads.com/@dremin/post/De4VcMPHAEH",
       "twitter_url": "https://x.com/m_dremin/status/2113999345930616836",
       "tg_url": "https://t.me/dremin_live/2694"
-    },
-    {
-      "post_id": 2693,
-      "threads_id": "18032399435684144",
-      "twitter_id": "2113985572339662925",
-      "published_at": "2026-10-24 13:26:52",
-      "published_at_msk": "24.10.2026 16:26 МСК",
-      "date": "07.05.2022",
-      "date_msk": "07.05.2022 14:30 МСК",
-      "photos_count": 1,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/2693_0.jpg"
-      ],
-      "text": "",
-      "threads_url": "https://www.threads.com/@dremin/post/De4PLEOEZxp",
-      "twitter_url": "https://x.com/m_dremin/status/2113985572339662925",
-      "tg_url": "https://t.me/dremin_live/2693"
     }
   ],
   "workflows": [
@@ -333,8 +339,8 @@
       "id": "archive_poster.yml",
       "name": "Hourly Archive Poster",
       "schedule": "Раз в час (07:00 - 00:00 МСК)",
-      "description": "Следующая публикация: Сегодня в 09:00 МСК",
-      "next_run_msk": "Сегодня в 09:00 МСК"
+      "description": "Следующая публикация: Сегодня в 10:00 МСК",
+      "next_run_msk": "Сегодня в 10:00 МСК"
     },
     {
       "id": "crosspost.yml",
