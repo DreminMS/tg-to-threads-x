@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-26T22:55:04.010721+00:00",
-  "updated_at_msk": "01:55 МСК",
+  "updated_at": "2026-10-26T23:21:47.312783+00:00",
+  "updated_at_msk": "02:21 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -19,7 +19,7 @@
   "analytics": {
     "start_date": "2026-10-21",
     "total_reactions": 900,
-    "total_views": 20650,
+    "total_views": 20658,
     "total_growth": 12,
     "threads": {
       "username": "dremin",
@@ -30,7 +30,7 @@
       "likes": 729,
       "replies": 8,
       "reposts": 4,
-      "views": 6252
+      "views": 6260
     },
     "twitter": {
       "username": "m_dremin",
@@ -47,7 +47,7 @@
       "likes": 839,
       "replies": 56,
       "reposts": 5,
-      "views": 20650,
+      "views": 20658,
       "published_photos": 416,
       "total_archive_photos": 1940
     }
@@ -171,12 +171,12 @@
       "tg_url": "https://t.me/dremin_live/2800",
       "metrics": {
         "likes": 2,
-        "views": 35,
+        "views": 36,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 2,
-          "views": 35,
+          "views": 36,
           "replies": 0,
           "reposts": 0
         },
@@ -244,7 +244,7 @@
       "tg_url": "https://t.me/dremin_live/2780",
       "metrics": {
         "likes": 10,
-        "views": 99,
+        "views": 100,
         "replies": 1,
         "reposts": 0,
         "threads": {
@@ -255,7 +255,7 @@
         },
         "twitter": {
           "likes": 1,
-          "views": 41,
+          "views": 42,
           "replies": 1,
           "reposts": 0
         }
@@ -422,12 +422,12 @@
       "tg_url": "https://t.me/dremin_live/2768",
       "metrics": {
         "likes": 60,
-        "views": 389,
+        "views": 394,
         "replies": 3,
         "reposts": 0,
         "threads": {
           "likes": 60,
-          "views": 389,
+          "views": 394,
           "replies": 3,
           "reposts": 0
         },
@@ -493,12 +493,12 @@
       "tg_url": "https://t.me/dremin_live/2764",
       "metrics": {
         "likes": 38,
-        "views": 279,
+        "views": 280,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 38,
-          "views": 279,
+          "views": 280,
           "replies": 0,
           "reposts": 0
         },
