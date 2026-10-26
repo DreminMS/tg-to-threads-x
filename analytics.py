@@ -38,6 +38,147 @@ def load_config() -> Dict[str, Any]:
     return cfg
 
 
+def init_post_metrics_db(conn):
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS post_metrics (
+            post_id INTEGER PRIMARY KEY,
+            threads_id TEXT,
+            twitter_id TEXT,
+            threads_likes INTEGER DEFAULT 0,
+            threads_views INTEGER DEFAULT 0,
+            threads_replies INTEGER DEFAULT 0,
+            threads_reposts INTEGER DEFAULT 0,
+            twitter_likes INTEGER DEFAULT 0,
+            twitter_views INTEGER DEFAULT 0,
+            twitter_replies INTEGER DEFAULT 0,
+            twitter_retweets INTEGER DEFAULT 0,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+
+
+def save_threads_post_metrics(conn, post_metrics_map: Dict[str, Dict[str, int]]):
+    if not post_metrics_map:
+        return
+    init_post_metrics_db(conn)
+    c = conn.cursor()
+    c.execute("""
+        SELECT post_id, threads_id, twitter_id FROM archive_posts WHERE threads_id IS NOT NULL
+        UNION
+        SELECT message_id, threads_id, twitter_id FROM processed_posts WHERE threads_id IS NOT NULL
+    """)
+    th_to_post = {}
+    for pid, th_id, tw_id in c.fetchall():
+        if th_id:
+            th_to_post[str(th_id)] = (pid, tw_id)
+
+    for th_id, m in post_metrics_map.items():
+        if str(th_id) not in th_to_post or not m:
+            continue
+        pid, tw_id = th_to_post[str(th_id)]
+        c.execute("""
+            INSERT INTO post_metrics (
+                post_id, threads_id, twitter_id,
+                threads_likes, threads_views, threads_replies, threads_reposts,
+                updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(post_id) DO UPDATE SET
+                threads_id = excluded.threads_id,
+                twitter_id = COALESCE(excluded.twitter_id, post_metrics.twitter_id),
+                threads_likes = excluded.threads_likes,
+                threads_views = excluded.threads_views,
+                threads_replies = excluded.threads_replies,
+                threads_reposts = excluded.threads_reposts,
+                updated_at = CURRENT_TIMESTAMP
+        """, (
+            pid, str(th_id), tw_id,
+            m.get("likes", 0), m.get("views", 0), m.get("replies", 0), m.get("reposts", 0)
+        ))
+    conn.commit()
+
+
+def save_twitter_post_metrics(conn, twitter_metrics_map: Dict[str, Dict[str, Any]]):
+    if not twitter_metrics_map:
+        return
+    init_post_metrics_db(conn)
+    c = conn.cursor()
+    c.execute("""
+        SELECT post_id, threads_id, twitter_id FROM archive_posts WHERE twitter_id IS NOT NULL
+        UNION
+        SELECT message_id, threads_id, twitter_id FROM processed_posts WHERE twitter_id IS NOT NULL
+    """)
+    tw_to_post = {}
+    for pid, th_id, tw_id in c.fetchall():
+        if tw_id:
+            tw_to_post[str(tw_id)] = (pid, th_id)
+
+    for tw_id, m in twitter_metrics_map.items():
+        if str(tw_id) not in tw_to_post or not m:
+            continue
+        pid, th_id = tw_to_post[str(tw_id)]
+        c.execute("""
+            INSERT INTO post_metrics (
+                post_id, threads_id, twitter_id,
+                twitter_likes, twitter_views, twitter_replies, twitter_retweets,
+                updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(post_id) DO UPDATE SET
+                twitter_id = excluded.twitter_id,
+                threads_id = COALESCE(excluded.threads_id, post_metrics.threads_id),
+                twitter_likes = excluded.twitter_likes,
+                twitter_views = excluded.twitter_views,
+                twitter_replies = excluded.twitter_replies,
+                twitter_retweets = excluded.twitter_retweets,
+                updated_at = CURRENT_TIMESTAMP
+        """, (
+            pid, th_id, str(tw_id),
+            m.get("likes", 0), m.get("views", 0), m.get("replies", 0), m.get("rts", 0)
+        ))
+    conn.commit()
+
+
+def get_recent_posts_metrics(conn) -> Dict[int, Dict[str, Any]]:
+    init_post_metrics_db(conn)
+    c = conn.cursor()
+    c.execute("""
+        SELECT post_id, threads_likes, threads_views, threads_replies, threads_reposts,
+               twitter_likes, twitter_views, twitter_replies, twitter_retweets
+        FROM post_metrics
+    """)
+    res = {}
+    for r in c.fetchall():
+        pid = r[0]
+        th_l = r[1] or 0
+        th_v = r[2] or 0
+        th_rp = r[3] or 0
+        th_rt = r[4] or 0
+        tw_l = r[5] or 0
+        tw_v = r[6] or 0
+        tw_rp = r[7] or 0
+        tw_rt = r[8] or 0
+        res[pid] = {
+            "likes": th_l + tw_l,
+            "views": th_v + tw_v,
+            "replies": th_rp + tw_rp,
+            "reposts": th_rt + tw_rt,
+            "threads": {
+                "likes": th_l,
+                "views": th_v,
+                "replies": th_rp,
+                "reposts": th_rt
+            },
+            "twitter": {
+                "likes": tw_l,
+                "views": tw_v,
+                "replies": tw_rp,
+                "reposts": tw_rt
+            }
+        }
+    return res
+
+
 def fetch_threads_insights(config: Dict[str, Any]) -> Dict[str, Any]:
     token = config.get("threads_access_token")
     uid = config.get("threads_user_id")
@@ -87,7 +228,7 @@ def fetch_threads_insights(config: Dict[str, Any]) -> Dict[str, Any]:
         """)
         post_ids = [r[0] for r in c.fetchall() if r[0]]
 
-        def _fetch_single_thread(pid: str) -> Dict[str, int]:
+        def _fetch_single_thread(pid: str) -> tuple:
             p_url = f"https://graph.threads.net/v1.0/{pid}/insights?metric=views,likes,replies,reposts&access_token={token}"
             try:
                 p_req = urllib.request.Request(p_url)
@@ -101,13 +242,17 @@ def fetch_threads_insights(config: Dict[str, Any]) -> Dict[str, Any]:
                         elif p_item.get("total_value"):
                             val = p_item["total_value"].get("value", 0)
                         p_metrics[p_item.get("name")] = val
-                    return p_metrics
+                    return pid, p_metrics
             except Exception:
-                return {}
+                return pid, {}
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-            all_post_metrics = list(executor.map(_fetch_single_thread, post_ids))
+            thread_results = list(executor.map(_fetch_single_thread, post_ids))
 
+        post_metric_dict = {pid: m for pid, m in thread_results if m}
+        save_threads_post_metrics(conn, post_metric_dict)
+
+        all_post_metrics = list(post_metric_dict.values())
         post_views = sum(m.get("views", 0) for m in all_post_metrics)
         post_likes = sum(m.get("likes", 0) for m in all_post_metrics)
         post_replies = sum(m.get("replies", 0) for m in all_post_metrics)
@@ -276,6 +421,7 @@ async def _fetch_twitter_playwright(cookies: Dict[str, str]) -> Dict[str, Any]:
             results["retweets"] = sum(v['rts'] for v in all_seen.values())
             results["replies"] = sum(v['replies'] for v in all_seen.values())
             results["views"] = sum(v['views'] for v in all_seen.values())
+            results["tweets"] = all_seen
             logger.info(f"Twitter metrics computed across {len(all_seen)} tweets: views={results['views']}, likes={results['likes']}, replies={results['replies']}, retweets={results['retweets']}")
         finally:
             await browser.close()
@@ -318,6 +464,12 @@ def fetch_twitter_insights(config: Dict[str, Any]) -> Dict[str, Any]:
             logger.warning(f"Playwright Twitter scraping failed: {e}")
 
     if pw_res and pw_res.get("views", 0) > 0:
+        if pw_res.get("tweets"):
+            try:
+                conn = sqlite3.connect(DB_FILE)
+                save_twitter_post_metrics(conn, pw_res["tweets"])
+            except Exception as e:
+                logger.warning(f"Could not save twitter post metrics: {e}")
         return {
             "followers": pw_res.get("followers") or last_known["followers"],
             "views": max(pw_res.get("views", 0), last_known["views"]),

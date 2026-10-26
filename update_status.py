@@ -157,20 +157,39 @@ def update_status_json():
     except Exception:
         pass
 
+    try:
+        from analytics import get_analytics_summary, get_recent_posts_metrics
+        analytics_data = get_analytics_summary()
+    except Exception as e:
+        analytics_data = {}
+
+    metrics_map = {}
+    try:
+        from analytics import get_recent_posts_metrics
+        metrics_map = get_recent_posts_metrics(conn)
+    except Exception as e:
+        pass
+
     c.execute("""
         SELECT post_id, threads_id, twitter_id, published_at, photos_json, text, post_date, threads_url
         FROM archive_posts 
         WHERE status = 'published' AND length(photos_json) > 2
         ORDER BY published_at DESC, post_id DESC 
-        LIMIT 10
+        LIMIT 15
     """)
     recent_rows = c.fetchall()
     recent = []
     for r in recent_rows:
         photos = json.loads(r[4]) if r[4] else []
         th_url = r[7] if r[7] else (f"https://www.threads.net/@dremin" if r[1] else "")
+        pid = r[0]
+        post_m = metrics_map.get(pid, {
+            "likes": 0, "views": 0, "replies": 0, "reposts": 0,
+            "threads": {"likes": 0, "views": 0, "replies": 0, "reposts": 0},
+            "twitter": {"likes": 0, "views": 0, "replies": 0, "reposts": 0}
+        })
         recent.append({
-            "post_id": r[0],
+            "post_id": pid,
             "threads_id": r[1],
             "twitter_id": r[2],
             "published_at": r[3],
@@ -182,14 +201,9 @@ def update_status_json():
             "text": (r[5] or "").strip(),
             "threads_url": th_url,
             "twitter_url": f"https://x.com/m_dremin/status/{r[2]}" if r[2] else "",
-            "tg_url": f"https://t.me/dremin_live/{r[0]}"
+            "tg_url": f"https://t.me/dremin_live/{r[0]}",
+            "metrics": post_m
         })
-
-    try:
-        from analytics import get_analytics_summary
-        analytics_data = get_analytics_summary()
-    except Exception as e:
-        analytics_data = {}
 
     try:
         from archive_poster import is_posting_paused

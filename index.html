@@ -824,6 +824,59 @@
       background: rgba(239, 68, 68, 0.25);
     }
 
+    /* Post Reaction Badges */
+    .recent-reactions-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 5px 8px;
+      background: rgba(255, 255, 255, 0.035);
+      border-radius: 10px;
+      border: none;
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .post-rx-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 3px 7px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.035);
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .post-rx-badge.has-val {
+      color: #f1f5f9;
+      font-weight: 700;
+    }
+
+    .post-rx-badge.rx-likes.has-val {
+      color: #fb7185;
+      background: rgba(244, 63, 94, 0.14);
+    }
+
+    .post-rx-badge.rx-views.has-val {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.14);
+    }
+
+    .post-rx-badge.rx-replies.has-val {
+      color: #c084fc;
+      background: rgba(168, 85, 247, 0.14);
+    }
+
+    .post-rx-badge.rx-reposts.has-val {
+      color: #34d399;
+      background: rgba(52, 211, 153, 0.14);
+    }
+
     /* Toast */
     #toast {
       position: fixed;
@@ -1582,6 +1635,40 @@
               <img class="recent-img" src="${url}" loading="lazy" alt="Preview photo" onclick="window.open(this.src, '_blank')" onerror="handleImgError(this)">
             `).join('');
 
+            const m = p.metrics || {};
+            const likes = m.likes || 0;
+            const views = m.views || 0;
+            const replies = m.replies || 0;
+            const reposts = m.reposts || 0;
+            const th = m.threads || {};
+            const tw = m.twitter || {};
+
+            const tipParts = [];
+            if (p.threads_url) tipParts.push(`Threads: ❤️ ${th.likes || 0} · 👁️ ${th.views || 0}`);
+            if (p.twitter_url) tipParts.push(`𝕏: ❤️ ${tw.likes || 0} · 👁️ ${tw.views || 0}`);
+            const tip = tipParts.join(' | ') || 'Реакции к публикации';
+
+            const reactionsHtml = `
+              <div class="recent-reactions-bar" title="${escapeHtml(tip)}">
+                <span class="post-rx-badge rx-likes ${likes > 0 ? 'has-val' : ''}">
+                  ❤️ ${likes}
+                </span>
+                <span class="post-rx-badge rx-views ${views > 0 ? 'has-val' : ''}">
+                  👁️ ${views}
+                </span>
+                ${replies > 0 ? `
+                  <span class="post-rx-badge rx-replies has-val">
+                    💬 ${replies}
+                  </span>
+                ` : ''}
+                ${reposts > 0 ? `
+                  <span class="post-rx-badge rx-reposts has-val">
+                    🔄 ${reposts}
+                  </span>
+                ` : ''}
+              </div>
+            `;
+
             return `
               <div class="recent-card" id="recent-card-${p.post_id}">
                 <div class="recent-header">
@@ -1601,6 +1688,8 @@
                 ${photosHtml ? `<div class="recent-photos">${photosHtml}</div>` : ''}
 
                 ${p.text ? `<div class="recent-text">${escapeHtml(p.text)}</div>` : ''}
+
+                ${reactionsHtml}
 
                 <div class="recent-actions">
                   <div class="recent-links">
