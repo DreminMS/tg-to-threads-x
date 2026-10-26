@@ -1009,6 +1009,74 @@
       color: #fbbf24;
       box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
     }
+
+    /* Responsive 3-Column Dashboard Layout */
+    .dashboard-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .col-published {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      order: 3;
+    }
+
+    .col-main {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      order: 1;
+    }
+
+    .col-upcoming {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      order: 2;
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        max-width: 1400px;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: minmax(320px, 1fr) minmax(380px, 1.25fr) minmax(320px, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .col-published {
+        order: 1;
+      }
+
+      .col-main {
+        order: 2;
+      }
+
+      .col-upcoming {
+        order: 3;
+      }
+
+      .col-published .section-title,
+      .col-upcoming .section-title {
+        position: sticky;
+        top: 12px;
+        z-index: 10;
+        background: rgba(9, 13, 22, 0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 8px 10px;
+        border-radius: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1062,189 +1130,201 @@
       </div>
     </div>
 
-    <!-- Install PWA Banner (Android & Mobile) -->
-    <div id="installBanner" class="install-banner" style="display: none;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 24px;">📲</span>
-        <div>
-          <div style="font-size: 13px; font-weight: 700; color: #fff;">Установить приложение</div>
-          <div style="font-size: 11px; color: var(--text-muted);">Добавить на рабочий стол телефона</div>
-        </div>
-      </div>
-      <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px; white-space: nowrap;" onclick="installApp()">Установить</button>
-    </div>
+    <!-- Dashboard 3-Column Layout (Published | Main | Upcoming) -->
+    <div class="dashboard-grid">
 
-    <!-- Main Stats Card -->
-    <div class="card">
-      <div class="stats-header">
-        <div>
-          <div class="stat-main-num" id="statPublished">—</div>
-          <div class="stat-main-label" id="statSubLabel">Опубликовано постов</div>
+      <!-- Column 1: Опубликованные посты -->
+      <div class="col-published">
+        <div class="section-title">
+          <span>Опубликованные посты</span>
+          <span style="font-size: 11px; color: #34d399; font-weight: 600;" id="recentCount"></span>
         </div>
-        <div class="badge-cloud">
-          <span class="dot"></span> Облако 24/7
+
+        <div id="recentPostsList" class="recent-container">
+          <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0;">Загрузка истории...</div>
         </div>
       </div>
 
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" id="progressBar"></div>
+      <!-- Column 2: Основной блок -->
+      <div class="col-main">
+        <!-- Install PWA Banner (Android & Mobile) -->
+        <div id="installBanner" class="install-banner" style="display: none;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 24px;">📲</span>
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: #fff;">Установить приложение</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Добавить на рабочий стол телефона</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px; white-space: nowrap;" onclick="installApp()">Установить</button>
+        </div>
+
+        <!-- Main Stats Card -->
+        <div class="card">
+          <div class="stats-header">
+            <div>
+              <div class="stat-main-num" id="statPublished">—</div>
+              <div class="stat-main-label" id="statSubLabel">Опубликовано постов</div>
+            </div>
+            <div class="badge-cloud">
+              <span class="dot"></span> Облако 24/7
+            </div>
+          </div>
+
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progressBar"></div>
+          </div>
+
+          <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="stat-box">
+              <div class="stat-box-title">В очереди</div>
+              <div class="stat-box-val" id="statPending">—</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-title">Пропущено</div>
+              <div class="stat-box-val" id="statSkipped" style="color: #fb7185;">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-title">Расчетное</div>
+              <div class="stat-box-val" id="statDays">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Analytics & Reactions -->
+        <div class="section-title">
+          <span>Аналитика и Реакции</span>
+          <span style="font-size: 11px; color: var(--accent); font-weight: 600;" id="analyticsStartDate">Старт: 21 окт</span>
+        </div>
+
+        <!-- Followers & Growth Cards -->
+        <div class="analytics-grid-2">
+          <!-- Threads Card -->
+          <div class="analytics-card">
+            <div class="analytics-user-row">
+              <a class="analytics-platform-badge badge-th" href="https://www.threads.net/@dremin" target="_blank">🧵 Threads</a>
+              <span class="growth-pill" id="threadsGrowth">+0</span>
+            </div>
+            <div class="analytics-num" id="threadsFollowers">—</div>
+            <div style="font-size: 11px; color: var(--text-muted);">
+              Подписчиков (база: <span id="threadsBaseline">1,235</span>)
+            </div>
+          </div>
+
+          <!-- Twitter / X Card -->
+          <div class="analytics-card">
+            <div class="analytics-user-row">
+              <a class="analytics-platform-badge badge-tw" href="https://x.com/m_dremin" target="_blank">𝕏 Twitter</a>
+              <span class="growth-pill" id="twitterGrowth">+0</span>
+            </div>
+            <div class="analytics-num" id="twitterFollowers">—</div>
+            <div style="font-size: 11px; color: var(--text-muted);">
+              Читателей (база: <span id="twitterBaseline">526</span>)
+            </div>
+          </div>
+        </div>
+
+        <!-- Engagement Reactions Card -->
+        <div class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-size: 13px; font-weight: 700; color: #fff;">📊 Активность публикаций архива</div>
+            <div style="font-size: 12px; color: #38bdf8; font-weight: 600;" id="totalReactionsLabel">—</div>
+          </div>
+          <div class="analytics-reactions-grid">
+            <div class="reaction-box">
+              <span class="reaction-icon">❤️</span>
+              <span class="reaction-val" id="metricLikes">—</span>
+              <span class="reaction-label">Лайки</span>
+            </div>
+            <div class="reaction-box">
+              <span class="reaction-icon">🔄</span>
+              <span class="reaction-val" id="metricReposts">—</span>
+              <span class="reaction-label">Репосты</span>
+            </div>
+            <div class="reaction-box">
+              <span class="reaction-icon">💬</span>
+              <span class="reaction-val" id="metricReplies">—</span>
+              <span class="reaction-label">Ответы</span>
+            </div>
+            <div class="reaction-box">
+              <span class="reaction-icon">👁️</span>
+              <span class="reaction-val" id="metricViews">—</span>
+              <span class="reaction-label">Охват</span>
+            </div>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; padding-top: 6px;">
+            <span>📸 Выложено: <b id="statPhotosLive" style="color: #cbd5e1;">10</b> / 1,940 фото</span>
+            <span>Прирост: <b id="statTotalGrowth" style="color: #34d399;">+0</b></span>
+          </div>
+        </div>
+
+        <!-- Workflows (Daemons) Controls -->
+        <div class="section-title">
+          <span>Управление облачными демонами</span>
+        </div>
+
+        <!-- Archive Workflow -->
+        <div class="card wf-card">
+          <div class="wf-top">
+            <div>
+              <div class="wf-name">📦 Архивный автопостер</div>
+              <div class="wf-desc" id="wfArchiveDesc">Публикация фотоархива (07:00 - 00:00 МСК)</div>
+            </div>
+            <div class="wf-schedule-pill" id="wfArchiveNext">Раз в час</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="triggerWorkflow('archive_poster.yml')">
+              ⚡ Опубликовать 1 пост сейчас
+            </button>
+            <button class="btn btn-secondary" onclick="openWorkflowPage('archive_poster.yml')">
+              🌐 Страница
+            </button>
+          </div>
+        </div>
+
+        <!-- Crosspost Workflow -->
+        <div class="card wf-card">
+          <div class="wf-top">
+            <div>
+              <div class="wf-name">⚡ Telegram Кросспостер</div>
+              <div class="wf-desc">Новые посты из канала @dremin_live</div>
+            </div>
+            <div class="wf-schedule-pill">Каждые 10 мин</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="triggerWorkflow('crosspost.yml')">
+              ⚡ Проверить Telegram сейчас
+            </button>
+            <button class="btn btn-secondary" onclick="openWorkflowPage('crosspost.yml')">
+              🌐 Страница
+            </button>
+          </div>
+        </div>
+
+        <!-- Links Card -->
+        <div class="card" style="display: flex; gap: 8px; justify-content: space-around; padding: 14px;">
+          <a href="https://www.threads.net/@dremin" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">🧵 Threads</a>
+          <span style="color: var(--card-border)">•</span>
+          <a href="https://x.com/m_dremin" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">𝕏 Twitter</a>
+          <span style="color: var(--card-border)">•</span>
+          <a href="https://t.me/dremin_live" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">✈️ Telegram</a>
+          <span style="color: var(--card-border)">•</span>
+          <a href="https://github.com/DreminMS/tg-to-threads-x/actions" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">⚙️ Actions</a>
+        </div>
       </div>
 
-      <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-        <div class="stat-box">
-          <div class="stat-box-title">В очереди</div>
-          <div class="stat-box-val" id="statPending">—</div>
+      <!-- Column 3: Будущие посты -->
+      <div class="col-upcoming">
+        <div class="section-title">
+          <span>Будущие посты (очередь)</span>
+          <span style="font-size: 11px; color: var(--accent); font-weight: 600;" id="upcomingCount"></span>
         </div>
-        <div class="stat-box">
-          <div class="stat-box-title">Пропущено</div>
-          <div class="stat-box-val" id="statSkipped" style="color: #fb7185;">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-box-title">Расчетное</div>
-          <div class="stat-box-val" id="statDays">—</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Social Analytics & Reactions -->
-    <div class="section-title">
-      <span>Аналитика и Реакции</span>
-      <span style="font-size: 11px; color: var(--accent); font-weight: 600;" id="analyticsStartDate">Старт: 21 окт</span>
-    </div>
-
-    <!-- Followers & Growth Cards -->
-    <div class="analytics-grid-2">
-      <!-- Threads Card -->
-      <div class="analytics-card">
-        <div class="analytics-user-row">
-          <a class="analytics-platform-badge badge-th" href="https://www.threads.net/@dremin" target="_blank">🧵 Threads</a>
-          <span class="growth-pill" id="threadsGrowth">+0</span>
-        </div>
-        <div class="analytics-num" id="threadsFollowers">—</div>
-        <div style="font-size: 11px; color: var(--text-muted);">
-          Подписчиков (база: <span id="threadsBaseline">1,235</span>)
+        <div id="upcomingContainer" class="upcoming-container">
+          <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0;">Загрузка очереди...</div>
         </div>
       </div>
 
-      <!-- Twitter / X Card -->
-      <div class="analytics-card">
-        <div class="analytics-user-row">
-          <a class="analytics-platform-badge badge-tw" href="https://x.com/m_dremin" target="_blank">𝕏 Twitter</a>
-          <span class="growth-pill" id="twitterGrowth">+0</span>
-        </div>
-        <div class="analytics-num" id="twitterFollowers">—</div>
-        <div style="font-size: 11px; color: var(--text-muted);">
-          Читателей (база: <span id="twitterBaseline">526</span>)
-        </div>
-      </div>
-    </div>
-
-    <!-- Engagement Reactions Card -->
-    <div class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 10px;">
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-        <div style="font-size: 13px; font-weight: 700; color: #fff;">📊 Активность публикаций архива</div>
-        <div style="font-size: 12px; color: #38bdf8; font-weight: 600;" id="totalReactionsLabel">—</div>
-      </div>
-      <div class="analytics-reactions-grid">
-        <div class="reaction-box">
-          <span class="reaction-icon">❤️</span>
-          <span class="reaction-val" id="metricLikes">—</span>
-          <span class="reaction-label">Лайки</span>
-        </div>
-        <div class="reaction-box">
-          <span class="reaction-icon">🔄</span>
-          <span class="reaction-val" id="metricReposts">—</span>
-          <span class="reaction-label">Репосты</span>
-        </div>
-        <div class="reaction-box">
-          <span class="reaction-icon">💬</span>
-          <span class="reaction-val" id="metricReplies">—</span>
-          <span class="reaction-label">Ответы</span>
-        </div>
-        <div class="reaction-box">
-          <span class="reaction-icon">👁️</span>
-          <span class="reaction-val" id="metricViews">—</span>
-          <span class="reaction-label">Охват</span>
-        </div>
-      </div>
-      <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; padding-top: 6px;">
-        <span>📸 Выложено: <b id="statPhotosLive" style="color: #cbd5e1;">10</b> / 1,940 фото</span>
-        <span>Прирост: <b id="statTotalGrowth" style="color: #34d399;">+0</b></span>
-      </div>
-    </div>
-
-    <!-- Upcoming Posts Queue Preview with Skip -->
-    <div class="section-title">
-      <span>Ближайшие публикации очереди</span>
-      <span style="font-size: 11px; color: var(--accent); font-weight: 600;" id="upcomingCount"></span>
-    </div>
-
-    <div id="upcomingContainer" class="upcoming-container">
-      <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0;">Загрузка очереди...</div>
-    </div>
-
-    <!-- Workflows (Daemons) Controls -->
-    <div class="section-title">
-      <span>Управление облачными демонами</span>
-    </div>
-
-    <!-- Archive Workflow -->
-    <div class="card wf-card">
-      <div class="wf-top">
-        <div>
-          <div class="wf-name">📦 Архивный автопостер</div>
-          <div class="wf-desc" id="wfArchiveDesc">Публикация фотоархива (07:00 - 00:00 МСК)</div>
-        </div>
-        <div class="wf-schedule-pill" id="wfArchiveNext">Раз в час</div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="triggerWorkflow('archive_poster.yml')">
-          ⚡ Опубликовать 1 пост сейчас
-        </button>
-        <button class="btn btn-secondary" onclick="openWorkflowPage('archive_poster.yml')">
-          🌐 Страница
-        </button>
-      </div>
-    </div>
-
-    <!-- Crosspost Workflow -->
-    <div class="card wf-card">
-      <div class="wf-top">
-        <div>
-          <div class="wf-name">⚡ Telegram Кросспостер</div>
-          <div class="wf-desc">Новые посты из канала @dremin_live</div>
-        </div>
-        <div class="wf-schedule-pill">Каждые 10 мин</div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="triggerWorkflow('crosspost.yml')">
-          ⚡ Проверить Telegram сейчас
-        </button>
-        <button class="btn btn-secondary" onclick="openWorkflowPage('crosspost.yml')">
-          🌐 Страница
-        </button>
-      </div>
-    </div>
-
-    <!-- Recent Activity -->
-    <div class="section-title">
-      <span>Недавние публикации</span>
-      <span style="font-size: 11px; color: #34d399; font-weight: 600;" id="recentCount"></span>
-    </div>
-
-    <div id="recentPostsList" class="recent-container">
-      <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0;">Загрузка истории...</div>
-    </div>
-
-    <!-- Links Card -->
-    <div class="card" style="display: flex; gap: 8px; justify-content: space-around; padding: 14px;">
-      <a href="https://www.threads.net/@dremin" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">🧵 Threads</a>
-      <span style="color: var(--card-border)">•</span>
-      <a href="https://x.com/m_dremin" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">𝕏 Twitter</a>
-      <span style="color: var(--card-border)">•</span>
-      <a href="https://t.me/dremin_live" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">✈️ Telegram</a>
-      <span style="color: var(--card-border)">•</span>
-      <a href="https://github.com/DreminMS/tg-to-threads-x/actions" target="_blank" style="color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;">⚙️ Actions</a>
     </div>
 
   </div>
