@@ -1321,9 +1321,9 @@
           <div class="wf-top">
             <div>
               <div class="wf-name">📦 Архивный автопостер</div>
-              <div class="wf-desc" id="wfArchiveDesc">Публикация фотоархива (07:00 - 00:00 МСК)</div>
+              <div class="wf-desc" id="wfArchiveDesc">5 постов в день (10:00, 13:00, 17:00, 20:00, 23:00 МСК)</div>
             </div>
-            <div class="wf-schedule-pill" id="wfArchiveNext">Раз в час</div>
+            <div class="wf-schedule-pill" id="wfArchiveNext">5 постов/день</div>
           </div>
           <div class="btn-row">
             <button class="btn btn-primary" onclick="triggerWorkflow('archive_poster.yml')">
@@ -1548,13 +1548,13 @@
           if (nextBadge) nextBadge.className = 'sb-badge sb-next-active';
           if (nextIcon) nextIcon.innerText = '⏰';
           if (sbNext && data.next_publication) {
-            sbNext.innerText = data.next_publication.short_label || 'Раз в час';
+            sbNext.innerText = data.next_publication.short_label || '5 постов/день';
           }
         }
 
         if (data.next_publication) {
           const nextEl = document.getElementById('wfArchiveNext');
-          if (nextEl) nextEl.innerText = data.next_publication.short_label || 'Раз в час';
+          if (nextEl) nextEl.innerText = data.next_publication.short_label || '5 постов/день';
           const descEl = document.getElementById('wfArchiveDesc');
           if (descEl) descEl.innerText = isPaused ? 'Автопостинг на паузе ⏸️' : `След. публикация: ${data.next_publication.full_label}`;
         }

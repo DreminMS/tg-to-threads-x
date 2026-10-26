@@ -665,20 +665,15 @@ def delete_archive_post(post_id: int, config: Optional[Dict[str, Any]] = None) -
 
 def publish_hourly(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
     """
-    Checks if posting is paused, and if at least 50 minutes have elapsed since last post (and hour >= 7 MSK).
+    Checks if posting is paused, and if at least 45 minutes have elapsed since last post.
     If so, publishes the next archive post.
     """
     conn = init_db()
     if is_posting_paused(conn):
-        logger.info("⏸️ Posting is currently PAUSED by user. Skipping hourly archive publication.")
+        logger.info("⏸️ Posting is currently PAUSED by user. Skipping archive publication.")
         return None
 
     from datetime import datetime, timezone, timedelta
-    msk_now = datetime.now(timezone(timedelta(hours=3)))
-    if msk_now.hour < 7:
-        logger.info(f"Archive posting is scheduled from 07:00 to 00:00 MSK (currently {msk_now.strftime('%H:%M')} MSK). Waiting.")
-        return None
-
     cur = conn.cursor()
     cur.execute("SELECT max(published_at) FROM archive_posts WHERE status = 'published'")
     row = cur.fetchone()
@@ -690,13 +685,13 @@ def publish_hourly(config: Dict[str, Any], dry_run: bool = False) -> Optional[in
                 dt = dt.replace(tzinfo=timezone.utc)
             now = datetime.now(timezone.utc)
             diff_mins = (now - dt).total_seconds() / 60
-            if diff_mins < 50:
-                logger.info(f"Last archive post was published {diff_mins:.1f}m ago (<50m). Waiting for next hour slot.")
+            if diff_mins < 45:
+                logger.info(f"Last archive post was published {diff_mins:.1f}m ago (<45m). Waiting for next slot.")
                 return None
         except Exception as e:
             logger.warning(f"Could not parse last_pub '{last_pub}': {e}")
 
-    logger.info("Hourly archive slot available! Proceeding with publication...")
+    logger.info("Scheduled archive slot available! Proceeding with publication...")
     return publish_next_archive_post(config, dry_run=dry_run)
 
 

@@ -38,6 +38,9 @@ def format_msk(dt_val: str) -> str:
         return str(dt_val)
 
 
+OPTIMAL_HOURS_MSK = [10, 13, 17, 20, 23]
+
+
 def compute_schedule_slots(last_pub_raw: str, count: int = 5):
     msk_tz = datetime.timezone(datetime.timedelta(hours=3))
     now = datetime.datetime.now(msk_tz)
@@ -53,41 +56,37 @@ def compute_schedule_slots(last_pub_raw: str, count: int = 5):
                 if last_dt.tzinfo is None:
                     last_dt = last_dt.replace(tzinfo=datetime.timezone.utc)
             last_msk = last_dt.astimezone(msk_tz)
-            earliest = last_msk + datetime.timedelta(minutes=50)
+            # Minimum 30 minutes after last publication
+            earliest = last_msk + datetime.timedelta(minutes=30)
             if earliest > min_time:
                 min_time = earliest
         except Exception:
             pass
 
-    candidate = now.replace(minute=0, second=0, microsecond=0) + datetime.timedelta(hours=1)
-    if candidate < min_time:
-        candidate = min_time.replace(minute=0, second=0, microsecond=0) + datetime.timedelta(hours=1)
-
     slots = []
-    curr = candidate
+    check_date = now.date()
     while len(slots) < count:
-        h = curr.hour
-        # Schedule pause: 01:00 to 06:59 MSK
-        if 1 <= h < 7:
-            curr = curr.replace(hour=7, minute=0, second=0, microsecond=0)
-            h = 7
+        for hour in OPTIMAL_HOURS_MSK:
+            slot_dt = datetime.datetime(check_date.year, check_date.month, check_date.day, hour, 0, 0, tzinfo=msk_tz)
+            if slot_dt > min_time:
+                day_diff = (slot_dt.date() - now.date()).days
+                if day_diff == 0:
+                    prefix = "Сегодня"
+                elif day_diff == 1:
+                    prefix = "Завтра"
+                else:
+                    prefix = slot_dt.strftime("%d.%m")
 
-        day_diff = (curr.date() - now.date()).days
-        if day_diff == 0:
-            prefix = "Сегодня"
-        elif day_diff == 1:
-            prefix = "Завтра"
-        else:
-            prefix = curr.strftime("%d.%m")
-
-        time_str = curr.strftime("%H:%M")
-        slots.append({
-            "iso": curr.isoformat(),
-            "time_msk": f"{time_str} МСК",
-            "full_label": f"{prefix} в {time_str} МСК",
-            "short_label": f"~{time_str} МСК"
-        })
-        curr = curr + datetime.timedelta(hours=1)
+                time_str = slot_dt.strftime("%H:%M")
+                slots.append({
+                    "iso": slot_dt.isoformat(),
+                    "time_msk": f"{time_str} МСК",
+                    "full_label": f"{prefix} в {time_str} МСК",
+                    "short_label": f"~{time_str} МСК"
+                })
+                if len(slots) >= count:
+                    break
+        check_date = check_date + datetime.timedelta(days=1)
 
     return slots
 
@@ -234,7 +233,7 @@ def update_status_json():
         "skipped": skipped,
         "total": total,
         "percent": percent,
-        "days_left": round(pending / 24, 1),
+        "days_left": round(pending / 5, 1),
         "analytics": analytics_data,
         "next_post": next_post,
         "upcoming_posts": upcoming_posts,
@@ -242,9 +241,9 @@ def update_status_json():
         "workflows": [
             {
                 "id": "archive_poster.yml",
-                "name": "Hourly Archive Poster",
-                "schedule": "Раз в час (07:00 - 00:00 МСК)",
-                "description": f"Следующая публикация: {slots[0]['full_label']}" if slots else "Публикация архива с 2022 года",
+                "name": "Archive Poster (5 постов в день)",
+                "schedule": "5 раз в день (10:00, 13:00, 17:00, 20:00, 23:00 МСК)",
+                "description": f"Следующая публикация: {slots[0]['full_label']}" if slots else "Публикация архива по расписанию",
                 "next_run_msk": slots[0]["full_label"] if slots else ""
             },
             {
