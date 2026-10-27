@@ -285,8 +285,8 @@ def delete_threads_post(threads_id: str, access_token: str) -> bool:
 
 
 
-def wait_for_container(creation_id: str, access_token: str, max_retries: int = 15, delay: float = 2.0) -> bool:
-    for _ in range(max_retries):
+def wait_for_container(creation_id: str, access_token: str, max_retries: int = 25, delay: float = 2.0) -> bool:
+    for attempt in range(max_retries):
         try:
             info = threads_api_get(creation_id, {"fields": "status,error_message"}, access_token)
             status = info.get("status")
@@ -296,22 +296,34 @@ def wait_for_container(creation_id: str, access_token: str, max_retries: int = 1
                 err = info.get("error_message", "Unknown container error")
                 raise RuntimeError(f"Container {creation_id} failed with error: {err}")
         except Exception as e:
-            logger.warning(f"Waiting for container {creation_id}... ({e})")
+            if "status" in str(e) or "ERROR" in str(e):
+                raise
+            logger.warning(f"Waiting for container {creation_id} (attempt {attempt+1}/{max_retries})... ({e})")
         time.sleep(delay)
-    return True
+    raise RuntimeError(f"Container {creation_id} timed out waiting for FINISHED status after {max_retries * delay:.0f}s")
 
 
-def publish_threads_container(user_id: str, creation_id: str, access_token: str) -> str:
+def publish_threads_container(user_id: str, creation_id: str, access_token: str, max_retries: int = 5) -> str:
     wait_for_container(creation_id, access_token)
-    res = threads_api_post(
-        f"{user_id}/threads_publish",
-        {"creation_id": creation_id},
-        access_token
-    )
-    post_id = res.get("id")
-    if not post_id:
-        raise RuntimeError(f"Failed to publish container: {res}")
-    return post_id
+    time.sleep(2.5)  # Buffer for Meta's cross-datacenter replication
+    for attempt in range(max_retries):
+        try:
+            res = threads_api_post(
+                f"{user_id}/threads_publish",
+                {"creation_id": creation_id},
+                access_token
+            )
+            post_id = res.get("id")
+            if post_id:
+                return post_id
+        except Exception as e:
+            err_str = str(e)
+            if ("cannot be found" in err_str or "4279009" in err_str or "Not Found" in err_str) and attempt < max_retries - 1:
+                logger.warning(f"Container {creation_id} not yet visible for publish, waiting 3s (attempt {attempt+1}/{max_retries})...")
+                time.sleep(3.0)
+            else:
+                raise
+    raise RuntimeError(f"Failed to publish container: {creation_id}")
 
 
 def refresh_threads_token_if_needed(config: Dict[str, Any]):
@@ -450,12 +462,24 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
             for item_id in carousel_item_ids:
                 wait_for_container(item_id, access_token)
 
+            time.sleep(2.5)
+
             # Create carousel container (NO text caption!)
             carousel_data = {
                 "media_type": "CAROUSEL",
                 "children": ",".join(carousel_item_ids)
             }
-            res = threads_api_post(f"{user_id}/threads", carousel_data, access_token)
+            res = None
+            for c_attempt in range(3):
+                try:
+                    res = threads_api_post(f"{user_id}/threads", carousel_data, access_token)
+                    break
+                except Exception as c_err:
+                    if ("Invalid Carousel Children" in str(c_err) or "4279004" in str(c_err)) and c_attempt < 2:
+                        logger.warning(f"Carousel children still indexing, waiting 4s (attempt {c_attempt+1}/3)...")
+                        time.sleep(4.0)
+                    else:
+                        raise
             creation_id = res["id"]
             threads_id = publish_threads_container(user_id, creation_id, access_token)
 
