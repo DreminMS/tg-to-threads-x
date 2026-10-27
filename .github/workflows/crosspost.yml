@@ -44,10 +44,6 @@ jobs:
         run: |
           python crosspost.py --once
 
-      - name: Check and Publish Hourly Archive Post
-        run: |
-          python archive_poster.py --publish-hourly
-
       - name: Commit and push state
         run: |
           python update_status.py
