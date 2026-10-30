@@ -119,7 +119,7 @@ def update_status_json():
 
     # Fetch next upcoming posts (e.g. 5 upcoming posts for preview)
     c.execute("""
-        SELECT post_id, post_date, photos_json, text, is_meme
+        SELECT post_id, post_date, photos_json, text, is_meme, tags
         FROM archive_posts 
         WHERE status = 'pending' 
         ORDER BY post_id ASC 
@@ -140,6 +140,7 @@ def update_status_json():
             "photos_count": len(photos),
             "photos": photos[:4],  # first 4 photos for gallery preview
             "text": (r[3] or "").strip(),
+            "tags": (r[5] or "").strip(),
             "is_meme": bool(r[4]),
             "tg_url": f"https://t.me/dremin_live/{r[0]}",
             "eta_msk": slot["time_msk"] if slot else "",
@@ -170,7 +171,7 @@ def update_status_json():
         pass
 
     c.execute("""
-        SELECT post_id, threads_id, twitter_id, published_at, photos_json, text, post_date, threads_url
+        SELECT post_id, threads_id, twitter_id, published_at, photos_json, text, post_date, threads_url, tags
         FROM archive_posts 
         WHERE status = 'published' AND length(photos_json) > 2
         ORDER BY published_at DESC, post_id DESC 
@@ -198,6 +199,7 @@ def update_status_json():
             "photos_count": len(photos),
             "photos": photos[:4],
             "text": (r[5] or "").strip(),
+            "tags": (r[8] or "").strip(),
             "threads_url": th_url,
             "twitter_url": f"https://x.com/m_dremin/status/{r[2]}" if r[2] else "",
             "tg_url": f"https://t.me/dremin_live/{r[0]}",

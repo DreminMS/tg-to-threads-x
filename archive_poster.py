@@ -377,30 +377,23 @@ def check_remote_recent_publication(config: Dict[str, Any], min_minutes: int = 4
     return False
 
 
-def format_archive_caption(raw_text: Optional[str]) -> str:
+def format_archive_caption(tags: Optional[str], raw_text: Optional[str] = None, post_id: int = 0) -> str:
     """
-    Formats the post caption:
-    - If original author text exists from Telegram: preserves it cleanly with the #фотография topic tag.
-    - If no text: returns only the clean topic tag #фотография without any artificial hooks or generated questions.
+    Returns purely the relevant topic hashtags for the post (NO body text/descriptions).
     """
-    topic_tag = "#фотография"
-    if raw_text and raw_text.strip():
-        text = raw_text.strip()
-        text = re.sub(r'https?://t\.me/[A-Za-z0-9_+/]+', '', text)
-        text = re.sub(r'@dremin_live', '', text)
-        text = re.sub(r'Dremin live\s*\|?', '', text, flags=re.IGNORECASE)
-        clean = text.strip()
-        if clean:
-            if not clean.endswith(topic_tag):
-                return f"{clean}\n\n{topic_tag}"
-            return clean
+    if tags and tags.strip():
+        return tags.strip()
 
-    return topic_tag
+    try:
+        from tag_posts import analyze_image_tags
+        return analyze_image_tags(post_id, raw_text or "")
+    except Exception:
+        return "#streetphotography #фотография"
 
 
 def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
     """
-    Fetches the oldest pending post and publishes it to Threads and Twitter with captions and topic tags.
+    Fetches the oldest pending post and publishes it to Threads and Twitter with topic hashtags only.
     Starts posting strictly from 07:00 AM MSK onwards.
     """
     from datetime import datetime, timezone, timedelta
@@ -431,7 +424,7 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
 
     # 2. Select oldest pending post that has NOT been processed in real-time
     cur.execute("""
-        SELECT a.post_id, a.post_date, a.photos_json, a.text
+        SELECT a.post_id, a.post_date, a.photos_json, a.tags, a.text
         FROM archive_posts a
         LEFT JOIN processed_posts p ON a.post_id = p.message_id
         WHERE a.status = 'pending' AND p.message_id IS NULL
@@ -443,9 +436,9 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
         logger.info("No pending archive posts found in queue.")
         return None
 
-    post_id, post_date, photos_json, raw_text = row
+    post_id, post_date, photos_json, tags, raw_text = row
     photos = json.loads(photos_json)
-    caption = format_archive_caption(raw_text)
+    caption = format_archive_caption(tags, raw_text, post_id)
 
     # 3. Atomically claim the post so no concurrent runner can pick it up
     with conn:
