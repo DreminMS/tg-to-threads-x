@@ -24,7 +24,7 @@ def format_msk(dt_val: str) -> str:
             if len(parts) == 3:
                 base = f"{parts[0]}:{parts[1]}"
             return f"{base} МСК"
-        clean = dt_val.replace("Z", "+00:00")
+        clean = dt_val.replace("+0000", "+00:00").replace("Z", "+00:00")
         if "T" not in clean and "+" not in clean and "-" in clean:
             dt = datetime.datetime.fromisoformat(clean).replace(tzinfo=datetime.timezone.utc)
         else:
@@ -204,6 +204,29 @@ def update_status_json():
             "metrics": post_m
         })
 
+    # Fetch recent audience comments
+    recent_comments = []
+    try:
+        c.execute("""
+            SELECT reply_id, platform, post_id, author_username, text, permalink, action_taken, created_at
+            FROM processed_replies
+            ORDER BY created_at DESC
+            LIMIT 20
+        """)
+        for r_id, r_plat, r_pid, r_user, r_text, r_link, r_act, r_created in c.fetchall():
+            recent_comments.append({
+                "reply_id": r_id,
+                "platform": r_plat or "threads",
+                "post_id": r_pid,
+                "username": r_user,
+                "text": r_text,
+                "permalink": r_link or "",
+                "action_taken": r_act or "none",
+                "created_at_msk": format_msk(r_created) if r_created else ""
+            })
+    except Exception as e:
+        recent_comments = []
+
     try:
         from archive_poster import is_posting_paused
         is_paused = is_posting_paused(conn)
@@ -238,6 +261,7 @@ def update_status_json():
         "next_post": next_post,
         "upcoming_posts": upcoming_posts,
         "recent_posts": recent,
+        "recent_comments": recent_comments,
         "workflows": [
             {
                 "id": "archive_poster.yml",

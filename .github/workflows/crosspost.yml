@@ -44,6 +44,10 @@ jobs:
         run: |
           python crosspost.py --once
 
+      - name: Sync Audience Comments
+        run: |
+          python comments_manager.py --sync
+
       - name: Commit and push state
         run: |
           python update_status.py

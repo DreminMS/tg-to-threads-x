@@ -377,9 +377,57 @@ def check_remote_recent_publication(config: Dict[str, Any], min_minutes: int = 4
     return False
 
 
+def format_archive_caption(raw_text: Optional[str], photos_count: int, post_id: int) -> str:
+    """
+    Formats the post caption:
+    - If author text exists: cleans up legacy Telegram links/mentions and appends the topic tag.
+    - If text is empty: uses an engaging photography hook with an interactive question and topic tag.
+    """
+    topic_tag = "#фотография"
+    clean_text = ""
+    if raw_text and raw_text.strip():
+        text = raw_text.strip()
+        text = re.sub(r'https?://t\.me/[A-Za-z0-9_+/]+', '', text)
+        text = re.sub(r'@dremin_live', '', text)
+        text = re.sub(r'Dremin live\s*\|?', '', text, flags=re.IGNORECASE)
+        clean_text = text.strip()
+
+    if clean_text:
+        if not clean_text.endswith(topic_tag):
+            return f"{clean_text}\n\n{topic_tag}"
+        return clean_text
+
+    if photos_count == 1:
+        single_hooks = [
+            f"Как вам атмосфера кадра? 📸\n\n{topic_tag}",
+            f"Кадр из архива. Что первое бросилось в глаза? 👇\n\n{topic_tag}",
+            f"Атмосфера момента. Как вам свет и композиция? 🎞️\n\n{topic_tag}",
+            f"Взгляд через объектив. Напишите вашу ассоциацию ✨\n\n{topic_tag}",
+            f"Архивная фотопрогулка. Делитесь впечатлениями в комментариях 📸\n\n{topic_tag}",
+        ]
+        return single_hooks[post_id % len(single_hooks)]
+    elif photos_count == 2:
+        two_hooks = [
+            f"1 или 2? Какой кадр больше откликается? 📸\n\n{topic_tag}",
+            f"Два кадра из архива. Какое настроение ближе? 👇\n\n{topic_tag}",
+            f"Первое или второе фото передает атмосферу лучше? 🎞️\n\n{topic_tag}",
+            f"1 или 2? Что выбрали бы? ✨\n\n{topic_tag}",
+        ]
+        return two_hooks[post_id % len(two_hooks)]
+    else:
+        carousel_hooks = [
+            f"1, 2 или 3? Какой кадр больше зацепил? 📸\n\n{topic_tag}",
+            f"Серия из архива. Какая фотография больше откликается? 👇\n\n{topic_tag}",
+            f"Несколько кадров одного момента. Какое фото выбрали бы любимым? 🎞️\n\n{topic_tag}",
+            f"Цвет или настроение? 1 или последняя? ✨\n\n{topic_tag}",
+            f"Архивная серия. Делитесь в комментариях, какой ракурс ближе 👇\n\n{topic_tag}",
+        ]
+        return carousel_hooks[post_id % len(carousel_hooks)]
+
+
 def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
     """
-    Fetches the oldest pending post and publishes it to Threads and Twitter without captions.
+    Fetches the oldest pending post and publishes it to Threads and Twitter with captions and topic tags.
     Starts posting strictly from 07:00 AM MSK onwards.
     """
     from datetime import datetime, timezone, timedelta
@@ -410,7 +458,7 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
 
     # 2. Select oldest pending post that has NOT been processed in real-time
     cur.execute("""
-        SELECT a.post_id, a.post_date, a.photos_json
+        SELECT a.post_id, a.post_date, a.photos_json, a.text
         FROM archive_posts a
         LEFT JOIN processed_posts p ON a.post_id = p.message_id
         WHERE a.status = 'pending' AND p.message_id IS NULL
@@ -422,8 +470,9 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
         logger.info("No pending archive posts found in queue.")
         return None
 
-    post_id, post_date, photos_json = row
+    post_id, post_date, photos_json, raw_text = row
     photos = json.loads(photos_json)
+    caption = format_archive_caption(raw_text, len(photos), post_id)
 
     # 3. Atomically claim the post so no concurrent runner can pick it up
     with conn:
@@ -432,10 +481,10 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
             logger.info(f"Post {post_id} is already claimed by another runner. Skipping.")
             return None
 
-    logger.info(f"Publishing archive post {post_id} ({post_date}) with {len(photos)} photos...")
+    logger.info(f"Publishing archive post {post_id} ({post_date}) with {len(photos)} photos. Caption:\n{caption}")
 
     if dry_run:
-        logger.info(f"[DRY RUN] Would publish post {post_id} with {len(photos)} photos.")
+        logger.info(f"[DRY RUN] Would publish post {post_id} with {len(photos)} photos. Caption:\n{caption}")
         return post_id
 
     user_id = config["threads_user_id"]
@@ -464,11 +513,14 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
 
             time.sleep(2.5)
 
-            # Create carousel container (NO text caption!)
+            # Create carousel container with caption and topic tag
             carousel_data = {
                 "media_type": "CAROUSEL",
                 "children": ",".join(carousel_item_ids)
             }
+            if caption:
+                carousel_data["text"] = caption
+
             res = None
             for c_attempt in range(3):
                 try:
@@ -489,6 +541,9 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
                 "media_type": "IMAGE",
                 "image_url": photos[0]
             }
+            if caption:
+                post_data["text"] = caption
+
             res = threads_api_post(f"{user_id}/threads", post_data, access_token)
             creation_id = res["id"]
             threads_id = publish_threads_container(user_id, creation_id, access_token)
@@ -499,7 +554,7 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
             try:
                 from twitter_client import post_photos_to_twitter
                 logger.info(f"Publishing post {post_id} to Twitter...")
-                twitter_id = post_photos_to_twitter(photos, text=None, config=config)
+                twitter_id = post_photos_to_twitter(photos, text=caption, config=config)
                 logger.info(f"✅ Successfully published post {post_id} to Twitter! Tweet ID: {twitter_id}")
             except Exception as tw_err:
                 logger.error(f"❌ Failed to publish post {post_id} to Twitter: {tw_err}")

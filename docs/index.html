@@ -1063,6 +1063,120 @@
       box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
     }
 
+    /* Comments & Auto-Heart List */
+    .comments-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .comment-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: background 0.2s ease;
+    }
+
+    .comment-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .comment-author-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .comment-author {
+      font-size: 13px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-decoration: none;
+    }
+
+    .comment-author:hover {
+      text-decoration: underline;
+    }
+
+    .comment-post-ref {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .comment-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .comment-heart-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(244, 63, 94, 0.15);
+      color: #fb7185;
+      padding: 2px 7px;
+      border-radius: 10px;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .comment-new-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      padding: 2px 7px;
+      border-radius: 10px;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .comment-time {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .comment-body {
+      font-size: 13px;
+      color: #e2e8f0;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .comment-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 2px;
+    }
+
+    .comment-btn-link {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .comment-btn-link:hover {
+      color: #38bdf8;
+    }
+
     /* Responsive 3-Column Dashboard Layout */
     .dashboard-grid {
       display: flex;
@@ -1308,6 +1422,18 @@
           <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; padding-top: 6px;">
             <span>📸 Выложено: <b id="statPhotosLive" style="color: #cbd5e1;">10</b> / 1,940 фото</span>
             <span>Прирост: <b id="statTotalGrowth" style="color: #34d399;">+0</b></span>
+          </div>
+        </div>
+
+        <!-- Audience Comments Section -->
+        <div class="section-title">
+          <span>💬 Комментарии аудитории</span>
+          <span style="font-size: 11px; color: var(--accent); font-weight: 600;" id="commentsCountBadge"></span>
+        </div>
+
+        <div class="card" style="padding: 14px;">
+          <div id="commentsList" class="comments-container">
+            <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px 0;">Загрузка комментариев...</div>
           </div>
         </div>
 
@@ -1621,6 +1747,39 @@
         // Updated time in Moscow Time
         const mskStr = data.updated_at_msk || (data.updated_at ? new Date(data.updated_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Moscow'}) + ' МСК' : '');
         document.getElementById('lastUpdated').innerText = `Обновлено: ${mskStr}`;
+
+        // Audience comments
+        const commListEl = document.getElementById('commentsList');
+        const commCountBadge = document.getElementById('commentsCountBadge');
+        if (commListEl) {
+          if (data.recent_comments && data.recent_comments.length > 0) {
+            if (commCountBadge) commCountBadge.innerText = `${data.recent_comments.length} коммент.`;
+            commListEl.innerHTML = data.recent_comments.map(c => `
+              <div class="comment-item">
+                <div class="comment-header">
+                  <div class="comment-author-wrap">
+                    <a class="comment-author" href="https://www.threads.net/@${c.username}" target="_blank">@${c.username}</a>
+                    <span class="comment-post-ref">к посту #${c.post_id}</span>
+                  </div>
+                  <span class="comment-time">${c.created_at_msk || ''}</span>
+                </div>
+                <div class="comment-body">«${escapeHtml(c.text)}»</div>
+                <div class="comment-footer">
+                  <a class="comment-btn-link" href="${c.permalink || ('https://www.threads.net/@' + c.username)}" target="_blank">
+                    Открыть в Threads ↗
+                  </a>
+                </div>
+              </div>
+            `).join('');
+          } else {
+            if (commCountBadge) commCountBadge.innerText = '';
+            commListEl.innerHTML = `
+              <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0;">
+                Пока нет комментариев от аудитории.
+              </div>
+            `;
+          }
+        }
 
         // Recent posts
         const recListEl = document.getElementById('recentPostsList');

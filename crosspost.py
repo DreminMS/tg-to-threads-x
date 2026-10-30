@@ -293,6 +293,12 @@ def post_to_threads(config: Dict[str, Any], text: str, media_urls: List[str]) ->
     user_id = config["threads_user_id"]
     access_token = config["threads_access_token"]
 
+    topic_tag = "#фотография"
+    if text and topic_tag not in text:
+        text = text.strip() + f"\n\n{topic_tag}"
+    elif not text:
+        text = topic_tag
+
     if config.get("append_signature") and config.get("signature_text"):
         if text:
             text = text.strip() + config["signature_text"]
