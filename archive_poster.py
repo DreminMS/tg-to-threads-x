@@ -377,52 +377,25 @@ def check_remote_recent_publication(config: Dict[str, Any], min_minutes: int = 4
     return False
 
 
-def format_archive_caption(raw_text: Optional[str], photos_count: int, post_id: int) -> str:
+def format_archive_caption(raw_text: Optional[str]) -> str:
     """
     Formats the post caption:
-    - If author text exists: cleans up legacy Telegram links/mentions and appends the topic tag.
-    - If text is empty: uses an engaging photography hook with an interactive question and topic tag.
+    - If original author text exists from Telegram: preserves it cleanly with the #фотография topic tag.
+    - If no text: returns only the clean topic tag #фотография without any artificial hooks or generated questions.
     """
     topic_tag = "#фотография"
-    clean_text = ""
     if raw_text and raw_text.strip():
         text = raw_text.strip()
         text = re.sub(r'https?://t\.me/[A-Za-z0-9_+/]+', '', text)
         text = re.sub(r'@dremin_live', '', text)
         text = re.sub(r'Dremin live\s*\|?', '', text, flags=re.IGNORECASE)
-        clean_text = text.strip()
+        clean = text.strip()
+        if clean:
+            if not clean.endswith(topic_tag):
+                return f"{clean}\n\n{topic_tag}"
+            return clean
 
-    if clean_text:
-        if not clean_text.endswith(topic_tag):
-            return f"{clean_text}\n\n{topic_tag}"
-        return clean_text
-
-    if photos_count == 1:
-        single_hooks = [
-            f"Как вам атмосфера кадра? 📸\n\n{topic_tag}",
-            f"Кадр из архива. Что первое бросилось в глаза? 👇\n\n{topic_tag}",
-            f"Атмосфера момента. Как вам свет и композиция? 🎞️\n\n{topic_tag}",
-            f"Взгляд через объектив. Напишите вашу ассоциацию ✨\n\n{topic_tag}",
-            f"Архивная фотопрогулка. Делитесь впечатлениями в комментариях 📸\n\n{topic_tag}",
-        ]
-        return single_hooks[post_id % len(single_hooks)]
-    elif photos_count == 2:
-        two_hooks = [
-            f"1 или 2? Какой кадр больше откликается? 📸\n\n{topic_tag}",
-            f"Два кадра из архива. Какое настроение ближе? 👇\n\n{topic_tag}",
-            f"Первое или второе фото передает атмосферу лучше? 🎞️\n\n{topic_tag}",
-            f"1 или 2? Что выбрали бы? ✨\n\n{topic_tag}",
-        ]
-        return two_hooks[post_id % len(two_hooks)]
-    else:
-        carousel_hooks = [
-            f"1, 2 или 3? Какой кадр больше зацепил? 📸\n\n{topic_tag}",
-            f"Серия из архива. Какая фотография больше откликается? 👇\n\n{topic_tag}",
-            f"Несколько кадров одного момента. Какое фото выбрали бы любимым? 🎞️\n\n{topic_tag}",
-            f"Цвет или настроение? 1 или последняя? ✨\n\n{topic_tag}",
-            f"Архивная серия. Делитесь в комментариях, какой ракурс ближе 👇\n\n{topic_tag}",
-        ]
-        return carousel_hooks[post_id % len(carousel_hooks)]
+    return topic_tag
 
 
 def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
@@ -472,7 +445,7 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
 
     post_id, post_date, photos_json, raw_text = row
     photos = json.loads(photos_json)
-    caption = format_archive_caption(raw_text, len(photos), post_id)
+    caption = format_archive_caption(raw_text)
 
     # 3. Atomically claim the post so no concurrent runner can pick it up
     with conn:
