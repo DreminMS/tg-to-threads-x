@@ -117,13 +117,13 @@ def update_status_json():
     last_pub_row = c.fetchone()
     last_pub = last_pub_row[0] if last_pub_row else None
 
-    # Fetch next upcoming posts (e.g. 5 upcoming posts for preview)
+    # Fetch next upcoming posts (e.g. 15 upcoming posts for preview)
     c.execute("""
         SELECT post_id, post_date, photos_json, text, is_meme, tags
         FROM archive_posts 
         WHERE status = 'pending' 
         ORDER BY post_id ASC 
-        LIMIT 5
+        LIMIT 15
     """)
     upcoming_rows = c.fetchall()
 
