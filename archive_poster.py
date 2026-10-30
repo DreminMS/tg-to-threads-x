@@ -87,7 +87,7 @@ def init_db() -> sqlite3.Connection:
                 skip_reason TEXT
             )
         """)
-        for col, col_type in [("twitter_id", "TEXT"), ("threads_url", "TEXT"), ("tiktok_id", "TEXT"), ("tiktok_url", "TEXT"), ("text", "TEXT"), ("is_meme", "INTEGER DEFAULT 0"), ("skip_reason", "TEXT")]:
+        for col, col_type in [("twitter_id", "TEXT"), ("threads_url", "TEXT"), ("tiktok_id", "TEXT"), ("tiktok_url", "TEXT"), ("text", "TEXT"), ("is_meme", "INTEGER DEFAULT 0"), ("skip_reason", "TEXT"), ("tags", "TEXT"), ("tag_comment_threads_id", "TEXT")]:
             try:
                 conn.execute(f"ALTER TABLE archive_posts ADD COLUMN {col} {col_type}")
             except Exception:

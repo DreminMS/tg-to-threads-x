@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-30T01:59:48.961419+00:00",
-  "updated_at_msk": "04:59 МСК",
+  "updated_at": "2026-10-30T02:39:57.359859+00:00",
+  "updated_at_msk": "05:39 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -18,8 +18,8 @@
   "days_left": 72.2,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 1139,
-    "total_views": 26066,
+    "total_reactions": 1252,
+    "total_views": 26068,
     "total_growth": 24,
     "threads": {
       "username": "dremin",
@@ -28,9 +28,9 @@
       "baseline": 1235,
       "growth": 26,
       "likes": 957,
-      "replies": 10,
+      "replies": 123,
       "reposts": 6,
-      "views": 8765
+      "views": 8767
     },
     "twitter": {
       "username": "m_dremin",
@@ -45,9 +45,9 @@
     },
     "totals": {
       "likes": 1074,
-      "replies": 58,
+      "replies": 171,
       "reposts": 7,
-      "views": 26066,
+      "views": 26068,
       "published_photos": 493,
       "total_archive_photos": 1940
     }
@@ -362,12 +362,12 @@
       "metrics": {
         "likes": 7,
         "views": 138,
-        "replies": 1,
+        "replies": 2,
         "reposts": 0,
         "threads": {
           "likes": 6,
           "views": 60,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -400,12 +400,12 @@
       "metrics": {
         "likes": 4,
         "views": 43,
-        "replies": 0,
+        "replies": 1,
         "reposts": 0,
         "threads": {
           "likes": 4,
           "views": 43,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -436,12 +436,12 @@
       "metrics": {
         "likes": 1,
         "views": 8,
-        "replies": 0,
+        "replies": 1,
         "reposts": 0,
         "threads": {
           "likes": 1,
           "views": 8,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -475,12 +475,12 @@
       "metrics": {
         "likes": 50,
         "views": 584,
-        "replies": 3,
+        "replies": 4,
         "reposts": 2,
         "threads": {
           "likes": 47,
           "views": 418,
-          "replies": 2,
+          "replies": 3,
           "reposts": 2
         },
         "twitter": {
@@ -514,12 +514,12 @@
       "metrics": {
         "likes": 22,
         "views": 357,
-        "replies": 1,
+        "replies": 2,
         "reposts": 0,
         "threads": {
           "likes": 18,
           "views": 176,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -553,12 +553,12 @@
       "metrics": {
         "likes": 9,
         "views": 342,
-        "replies": 1,
+        "replies": 2,
         "reposts": 0,
         "threads": {
           "likes": 5,
           "views": 76,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -589,12 +589,12 @@
       "metrics": {
         "likes": 2,
         "views": 76,
-        "replies": 0,
+        "replies": 1,
         "reposts": 0,
         "threads": {
           "likes": 2,
           "views": 76,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -625,12 +625,12 @@
       "metrics": {
         "likes": 1,
         "views": 24,
-        "replies": 0,
+        "replies": 1,
         "reposts": 0,
         "threads": {
           "likes": 1,
           "views": 24,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -663,12 +663,12 @@
       "metrics": {
         "likes": 15,
         "views": 131,
-        "replies": 0,
+        "replies": 1,
         "reposts": 0,
         "threads": {
           "likes": 15,
           "views": 131,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -700,12 +700,12 @@
       "metrics": {
         "likes": 13,
         "views": 275,
-        "replies": 0,
+        "replies": 1,
         "reposts": 0,
         "threads": {
           "likes": 13,
           "views": 275,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -737,12 +737,12 @@
       "metrics": {
         "likes": 4,
         "views": 91,
-        "replies": 0,
+        "replies": 1,
         "reposts": 0,
         "threads": {
           "likes": 4,
           "views": 91,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -776,12 +776,12 @@
       "metrics": {
         "likes": 26,
         "views": 328,
-        "replies": 1,
+        "replies": 2,
         "reposts": 0,
         "threads": {
           "likes": 25,
           "views": 197,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -812,12 +812,12 @@
       "metrics": {
         "likes": 13,
         "views": 97,
-        "replies": 0,
+        "replies": 1,
         "reposts": 0,
         "threads": {
           "likes": 13,
           "views": 97,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -847,13 +847,13 @@
       "tg_url": "https://t.me/dremin_live/2822",
       "metrics": {
         "likes": 3,
-        "views": 23,
-        "replies": 0,
+        "views": 25,
+        "replies": 1,
         "reposts": 0,
         "threads": {
           "likes": 3,
-          "views": 23,
-          "replies": 0,
+          "views": 25,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -887,12 +887,12 @@
       "metrics": {
         "likes": 4,
         "views": 195,
-        "replies": 1,
+        "replies": 2,
         "reposts": 0,
         "threads": {
           "likes": 2,
           "views": 38,
-          "replies": 0,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
