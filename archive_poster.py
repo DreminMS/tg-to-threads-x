@@ -516,6 +516,7 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
 
         # Twitter Posting (if enabled in config)
         twitter_id = None
+        tw_error = None
         if config.get("twitter_enabled"):
             try:
                 from twitter_client import post_photos_to_twitter
@@ -523,6 +524,7 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
                 twitter_id = post_photos_to_twitter(photos, text=caption, config=config)
                 logger.info(f"✅ Successfully published post {post_id} to Twitter! Tweet ID: {twitter_id}")
             except Exception as tw_err:
+                tw_error = f"Twitter: {tw_err}"
                 logger.error(f"❌ Failed to publish post {post_id} to Twitter: {tw_err}")
 
         # TikTok Posting (if enabled in config)
@@ -551,9 +553,9 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
         with conn:
             conn.execute("""
                 UPDATE archive_posts
-                SET status = 'published', threads_id = ?, twitter_id = ?, tiktok_id = ?, threads_url = ?, tiktok_url = ?, published_at = CURRENT_TIMESTAMP
+                SET status = 'published', threads_id = ?, twitter_id = ?, tiktok_id = ?, threads_url = ?, tiktok_url = ?, error_message = ?, published_at = CURRENT_TIMESTAMP
                 WHERE post_id = ?
-            """, (threads_id, twitter_id, tiktok_id, threads_url, tiktok_url, post_id))
+            """, (threads_id, twitter_id, tiktok_id, threads_url, tiktok_url, tw_error, post_id))
 
         logger.info(f"✅ Successfully published post {post_id}! Threads: {threads_id} ({threads_url}), Twitter: {twitter_id}, TikTok: {tiktok_id} ({tiktok_url})")
         return post_id

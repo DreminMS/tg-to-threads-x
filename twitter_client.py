@@ -115,18 +115,27 @@ async def _async_post_to_twitter(
     from playwright.async_api import async_playwright
 
     downloaded_files = []
+    temp_files = []
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     # 1. Download images to temporary local files or use local paths
     try:
         for i, item in enumerate(photos):
             local_check = None
             if item.startswith("http"):
                 fn = os.path.basename(urllib.parse.urlparse(item).path)
-                for candidate in [os.path.join("docs", "media", "archive", fn), os.path.join("media", "archive", fn), os.path.join("media", fn)]:
+                for candidate in [
+                    os.path.join(base_dir, "docs", "media", "archive", fn),
+                    os.path.join("docs", "media", "archive", fn),
+                    os.path.join("media", "archive", fn),
+                    os.path.join("media", fn)
+                ]:
                     if os.path.exists(candidate):
-                        local_check = candidate
+                        local_check = os.path.abspath(candidate)
                         break
             elif os.path.exists(item):
-                local_check = item
+                local_check = os.path.abspath(item)
+            elif os.path.exists(os.path.join(base_dir, item)):
+                local_check = os.path.abspath(os.path.join(base_dir, item))
 
             if local_check:
                 downloaded_files.append(local_check)
@@ -136,6 +145,7 @@ async def _async_post_to_twitter(
                 with urllib.request.urlopen(req, timeout=30) as resp, open(tmp_path, "wb") as f:
                     f.write(resp.read())
                 downloaded_files.append(tmp_path)
+                temp_files.append(tmp_path)
 
         # Split into batches of at most 4 photos (Twitter's max per tweet)
         batches = [downloaded_files[i : i + 4] for i in range(0, len(downloaded_files), 4)] if downloaded_files else [[]]
@@ -229,7 +239,7 @@ async def _async_post_to_twitter(
                 await page.wait_for_timeout(500)
 
             btn = await page.wait_for_selector(
-                '[data-testid="tweetButton"], [data-testid="tweetButtonInline"]',
+                '[role="dialog"] [data-testid="tweetButton"], [data-testid="tweetButton"], [data-testid="tweetButtonInline"]',
                 timeout=15000
             )
 
@@ -241,8 +251,28 @@ async def _async_post_to_twitter(
             if await btn.is_disabled():
                 raise RuntimeError("Twitter 'Post' button remained disabled.")
 
-            logger.info("Clicking Twitter 'Post' button for root tweet...")
-            await btn.click()
+            logger.info("Submitting Twitter root tweet (mouse click + keyboard shortcut fallback)...")
+            # 1. Native click with force=True bypasses React Native overlay interception
+            try:
+                await btn.click(force=True, timeout=5000)
+            except Exception as click_err:
+                logger.warning(f"btn.click(force=True) error: {click_err}")
+
+            # 2. Universal Twitter keyboard shortcut (Control+Enter / Meta+Enter) inside editor
+            try:
+                textbox = await page.query_selector('[data-testid="tweetTextarea_0"]')
+                if textbox:
+                    await textbox.focus()
+                    await page.keyboard.press("Control+Enter")
+                    await page.keyboard.press("Meta+Enter")
+            except Exception:
+                pass
+
+            # 3. JavaScript DOM click fallback
+            try:
+                await page.evaluate("el => el.click()", btn)
+            except Exception:
+                pass
 
             for _ in range(40):
                 if tweet_response_data.get("data"):
@@ -317,8 +347,23 @@ async def _async_post_to_twitter(
                         logger.warning(f"Thread reply button disabled for batch {batch_idx}; stopping thread.")
                         break
 
-                    logger.info(f"Clicking reply button for batch {batch_idx}...")
-                    await reply_btn.click()
+                    logger.info(f"Submitting thread reply {batch_idx}/{len(batches)}...")
+                    try:
+                        await reply_btn.click(force=True, timeout=5000)
+                    except Exception:
+                        pass
+
+                    try:
+                        await reply_textbox.focus()
+                        await page.keyboard.press("Control+Enter")
+                        await page.keyboard.press("Meta+Enter")
+                    except Exception:
+                        pass
+
+                    try:
+                        await page.evaluate("el => el.click()", reply_btn)
+                    except Exception:
+                        pass
 
                     for _ in range(40):
                         if tweet_response_data.get("data"):
@@ -341,7 +386,7 @@ async def _async_post_to_twitter(
             return root_tweet_id
 
     finally:
-        for fpath in downloaded_files:
+        for fpath in temp_files:
             try:
                 if os.path.exists(fpath):
                     os.remove(fpath)
