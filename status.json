@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-01T00:47:41.023558+00:00",
-  "updated_at_msk": "03:47 МСК",
+  "updated_at": "2026-11-01T01:49:17.410526+00:00",
+  "updated_at_msk": "04:49 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -18,8 +18,8 @@
   "days_left": 69.8,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 1698,
-    "total_views": 32989,
+    "total_reactions": 1726,
+    "total_views": 33164,
     "total_growth": 33,
     "threads": {
       "username": "dremin",
@@ -27,10 +27,10 @@
       "followers": 1269,
       "baseline": 1235,
       "growth": 34,
-      "likes": 1384,
-      "replies": 137,
+      "likes": 1411,
+      "replies": 138,
       "reposts": 9,
-      "views": 12024
+      "views": 12199
     },
     "twitter": {
       "username": "m_dremin",
@@ -44,10 +44,10 @@
       "views": 20965
     },
     "totals": {
-      "likes": 1503,
-      "replies": 185,
+      "likes": 1530,
+      "replies": 186,
       "reposts": 10,
-      "views": 32989,
+      "views": 33164,
       "published_photos": 537,
       "total_archive_photos": 1940
     }
@@ -347,19 +347,19 @@
       "twitter_url": "https://x.com/m_dremin/status/2116627240603787409",
       "tg_url": "https://t.me/dremin_live/2958",
       "metrics": {
-        "likes": 8,
-        "views": 298,
+        "likes": 10,
+        "views": 309,
         "replies": 2,
         "reposts": 0,
         "threads": {
-          "likes": 7,
-          "views": 189,
+          "likes": 8,
+          "views": 197,
           "replies": 0,
           "reposts": 0
         },
         "twitter": {
-          "likes": 1,
-          "views": 109,
+          "likes": 2,
+          "views": 112,
           "replies": 2,
           "reposts": 0
         }
@@ -384,12 +384,12 @@
       "tg_url": "https://t.me/dremin_live/2957",
       "metrics": {
         "likes": 8,
-        "views": 162,
+        "views": 166,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 8,
-          "views": 162,
+          "views": 166,
           "replies": 0,
           "reposts": 0
         },
@@ -419,14 +419,14 @@
       "twitter_url": "https://x.com/m_dremin/status/2116588049157222644",
       "tg_url": "https://t.me/dremin_live/2956",
       "metrics": {
-        "likes": 267,
-        "views": 1644,
-        "replies": 11,
+        "likes": 289,
+        "views": 1784,
+        "replies": 12,
         "reposts": 3,
         "threads": {
-          "likes": 267,
-          "views": 1644,
-          "replies": 11,
+          "likes": 289,
+          "views": 1784,
+          "replies": 12,
           "reposts": 3
         },
         "twitter": {
@@ -458,12 +458,12 @@
       "twitter_url": "",
       "tg_url": "https://t.me/dremin_live/2945",
       "metrics": {
-        "likes": 3,
+        "likes": 4,
         "views": 25,
         "replies": 0,
         "reposts": 0,
         "threads": {
-          "likes": 3,
+          "likes": 4,
           "views": 25,
           "replies": 0,
           "reposts": 0
@@ -495,13 +495,13 @@
       "twitter_url": "",
       "tg_url": "https://t.me/dremin_live/2943",
       "metrics": {
-        "likes": 83,
-        "views": 555,
+        "likes": 85,
+        "views": 575,
         "replies": 2,
         "reposts": 0,
         "threads": {
-          "likes": 83,
-          "views": 555,
+          "likes": 85,
+          "views": 575,
           "replies": 2,
           "reposts": 0
         },
@@ -534,12 +534,12 @@
       "twitter_url": "",
       "tg_url": "https://t.me/dremin_live/2938",
       "metrics": {
-        "likes": 25,
+        "likes": 26,
         "views": 268,
         "replies": 0,
         "reposts": 0,
         "threads": {
-          "likes": 25,
+          "likes": 26,
           "views": 268,
           "replies": 0,
           "reposts": 0
@@ -574,12 +574,12 @@
       "tg_url": "https://t.me/dremin_live/2932",
       "metrics": {
         "likes": 6,
-        "views": 57,
+        "views": 58,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 6,
-          "views": 57,
+          "views": 58,
           "replies": 0,
           "reposts": 0
         },
@@ -613,12 +613,12 @@
       "tg_url": "https://t.me/dremin_live/2928",
       "metrics": {
         "likes": 3,
-        "views": 50,
+        "views": 51,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 3,
-          "views": 50,
+          "views": 51,
           "replies": 0,
           "reposts": 0
         },
@@ -765,7 +765,7 @@
       "tg_url": "https://t.me/dremin_live/2900",
       "metrics": {
         "likes": 8,
-        "views": 273,
+        "views": 274,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -776,7 +776,7 @@
         },
         "twitter": {
           "likes": 1,
-          "views": 200,
+          "views": 201,
           "replies": 1,
           "reposts": 0
         }
@@ -878,7 +878,7 @@
       "tg_url": "https://t.me/dremin_live/2874",
       "metrics": {
         "likes": 51,
-        "views": 713,
+        "views": 714,
         "replies": 4,
         "reposts": 2,
         "threads": {
@@ -889,7 +889,7 @@
         },
         "twitter": {
           "likes": 4,
-          "views": 269,
+          "views": 270,
           "replies": 1,
           "reposts": 0
         }
@@ -897,6 +897,16 @@
     }
   ],
   "recent_comments": [
+    {
+      "reply_id": "18169488865472113",
+      "platform": "threads",
+      "post_id": 2956,
+      "username": "steve.cozort",
+      "text": "Stunning",
+      "permalink": "https://www.threads.com/@steve.cozort/post/DfLjyjrkXEP",
+      "action_taken": "indexed",
+      "created_at_msk": "01.11.2026 04:32 МСК"
+    },
     {
       "reply_id": "18104734430033749",
       "platform": "threads",
@@ -1086,16 +1096,6 @@
       "permalink": "https://www.threads.com/@joshwill.jpg/post/De4gZHEETD2",
       "action_taken": "none",
       "created_at_msk": "24.10.2026 18:57 МСК"
-    },
-    {
-      "reply_id": "18133659703762285",
-      "platform": "threads",
-      "post_id": 2660,
-      "username": "gamalthaib",
-      "text": "👍",
-      "permalink": "https://www.threads.com/@gamalthaib/post/De4dnssEybj",
-      "action_taken": "none",
-      "created_at_msk": "24.10.2026 18:32 МСК"
     }
   ],
   "workflows": [
