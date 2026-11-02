@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-02T18:33:54.729682+00:00",
-  "updated_at_msk": "21:33 МСК",
+  "updated_at": "2026-11-02T19:32:11.772531+00:00",
+  "updated_at_msk": "22:32 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -18,8 +18,8 @@
   "days_left": 67.4,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 2500,
-    "total_views": 40055,
+    "total_reactions": 2501,
+    "total_views": 40073,
     "total_growth": 42,
     "threads": {
       "username": "dremin",
@@ -27,10 +27,10 @@
       "followers": 1275,
       "baseline": 1235,
       "growth": 40,
-      "likes": 2135,
+      "likes": 2136,
       "replies": 146,
       "reposts": 17,
-      "views": 18466
+      "views": 18484
     },
     "twitter": {
       "username": "m_dremin",
@@ -44,10 +44,10 @@
       "views": 21589
     },
     "totals": {
-      "likes": 2288,
+      "likes": 2289,
       "replies": 194,
       "reposts": 18,
-      "views": 40055,
+      "views": 40073,
       "published_photos": 559,
       "total_archive_photos": 1940
     }
@@ -349,12 +349,12 @@
       "tg_url": "https://t.me/dremin_live/2994",
       "metrics": {
         "likes": 0,
-        "views": 4,
+        "views": 17,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 0,
-          "views": 4,
+          "views": 17,
           "replies": 0,
           "reposts": 0
         },
@@ -387,19 +387,19 @@
       "twitter_url": "https://x.com/m_dremin/status/2117268535143723512",
       "tg_url": "https://t.me/dremin_live/2986",
       "metrics": {
-        "likes": 24,
-        "views": 448,
+        "likes": 26,
+        "views": 464,
         "replies": 2,
         "reposts": 0,
         "threads": {
-          "likes": 15,
-          "views": 205,
+          "likes": 16,
+          "views": 207,
           "replies": 0,
           "reposts": 0
         },
         "twitter": {
-          "likes": 9,
-          "views": 243,
+          "likes": 10,
+          "views": 257,
           "replies": 2,
           "reposts": 0
         }
@@ -424,12 +424,12 @@
       "tg_url": "https://t.me/dremin_live/2984",
       "metrics": {
         "likes": 6,
-        "views": 130,
+        "views": 132,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 6,
-          "views": 130,
+          "views": 132,
           "replies": 0,
           "reposts": 0
         },
@@ -643,7 +643,7 @@
       "tg_url": "https://t.me/dremin_live/2971",
       "metrics": {
         "likes": 40,
-        "views": 614,
+        "views": 616,
         "replies": 1,
         "reposts": 0,
         "threads": {
@@ -654,7 +654,7 @@
         },
         "twitter": {
           "likes": 4,
-          "views": 146,
+          "views": 148,
           "replies": 1,
           "reposts": 0
         }
@@ -720,7 +720,7 @@
       "tg_url": "https://t.me/dremin_live/2958",
       "metrics": {
         "likes": 28,
-        "views": 457,
+        "views": 458,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -731,7 +731,7 @@
         },
         "twitter": {
           "likes": 7,
-          "views": 186,
+          "views": 187,
           "replies": 2,
           "reposts": 0
         }
@@ -792,12 +792,12 @@
       "tg_url": "https://t.me/dremin_live/2956",
       "metrics": {
         "likes": 837,
-        "views": 5666,
+        "views": 5667,
         "replies": 20,
         "reposts": 11,
         "threads": {
           "likes": 837,
-          "views": 5666,
+          "views": 5667,
           "replies": 20,
           "reposts": 11
         },
@@ -831,7 +831,7 @@
       "tg_url": "https://t.me/dremin_live/2945",
       "metrics": {
         "likes": 11,
-        "views": 334,
+        "views": 339,
         "replies": 1,
         "reposts": 0,
         "threads": {
@@ -842,7 +842,7 @@
         },
         "twitter": {
           "likes": 7,
-          "views": 292,
+          "views": 297,
           "replies": 1,
           "reposts": 0
         }
