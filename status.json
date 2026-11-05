@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-05T22:51:39.730456+00:00",
-  "updated_at_msk": "01:51 МСК",
+  "updated_at": "2026-11-05T23:38:02.701797+00:00",
+  "updated_at_msk": "02:38 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -18,8 +18,8 @@
   "days_left": 63.8,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 2802,
-    "total_views": 43532,
+    "total_reactions": 2803,
+    "total_views": 43539,
     "total_growth": 40,
     "threads": {
       "username": "dremin",
@@ -27,10 +27,10 @@
       "followers": 1274,
       "baseline": 1235,
       "growth": 39,
-      "likes": 2415,
+      "likes": 2416,
       "replies": 146,
       "reposts": 21,
-      "views": 21943
+      "views": 21950
     },
     "twitter": {
       "username": "m_dremin",
@@ -44,10 +44,10 @@
       "views": 21589
     },
     "totals": {
-      "likes": 2586,
+      "likes": 2587,
       "replies": 194,
       "reposts": 22,
-      "views": 43532,
+      "views": 43539,
       "published_photos": 629,
       "total_archive_photos": 1940
     }
@@ -356,18 +356,18 @@
       "tg_url": "https://t.me/dremin_live/3081",
       "metrics": {
         "likes": 4,
-        "views": 145,
+        "views": 150,
         "replies": 2,
         "reposts": 0,
         "threads": {
           "likes": 4,
-          "views": 127,
+          "views": 128,
           "replies": 0,
           "reposts": 0
         },
         "twitter": {
           "likes": 0,
-          "views": 18,
+          "views": 22,
           "replies": 2,
           "reposts": 0
         }
@@ -393,13 +393,13 @@
       "twitter_url": "https://x.com/m_dremin/status/2118355132010422685",
       "tg_url": "https://t.me/dremin_live/3078",
       "metrics": {
-        "likes": 16,
-        "views": 226,
+        "likes": 17,
+        "views": 227,
         "replies": 0,
         "reposts": 0,
         "threads": {
-          "likes": 16,
-          "views": 226,
+          "likes": 17,
+          "views": 227,
           "replies": 0,
           "reposts": 0
         },
