@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-06T15:26:28.561912+00:00",
-  "updated_at_msk": "18:26 МСК",
+  "updated_at": "2026-11-06T16:16:30.285236+00:00",
+  "updated_at_msk": "19:16 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -19,7 +19,7 @@
   "analytics": {
     "start_date": "2026-10-21",
     "total_reactions": 2840,
-    "total_views": 43910,
+    "total_views": 43965,
     "total_growth": 43,
     "threads": {
       "username": "dremin",
@@ -30,7 +30,7 @@
       "likes": 2453,
       "replies": 146,
       "reposts": 21,
-      "views": 22321
+      "views": 22376
     },
     "twitter": {
       "username": "m_dremin",
@@ -47,7 +47,7 @@
       "likes": 2624,
       "replies": 194,
       "reposts": 22,
-      "views": 43910,
+      "views": 43965,
       "published_photos": 640,
       "total_archive_photos": 1940
     }
@@ -356,18 +356,18 @@
       "tg_url": "https://t.me/dremin_live/3089",
       "metrics": {
         "likes": 1,
-        "views": 64,
+        "views": 123,
         "replies": 2,
         "reposts": 0,
         "threads": {
           "likes": 1,
-          "views": 52,
+          "views": 103,
           "replies": 0,
           "reposts": 0
         },
         "twitter": {
           "likes": 0,
-          "views": 12,
+          "views": 20,
           "replies": 2,
           "reposts": 0
         }
@@ -429,12 +429,12 @@
       "tg_url": "https://t.me/dremin_live/3086",
       "metrics": {
         "likes": 15,
-        "views": 118,
+        "views": 119,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 15,
-          "views": 118,
+          "views": 119,
           "replies": 0,
           "reposts": 0
         },
@@ -468,12 +468,12 @@
       "tg_url": "https://t.me/dremin_live/3081",
       "metrics": {
         "likes": 7,
-        "views": 185,
+        "views": 188,
         "replies": 2,
         "reposts": 0,
         "threads": {
           "likes": 7,
-          "views": 145,
+          "views": 148,
           "replies": 0,
           "reposts": 0
         },
@@ -545,7 +545,7 @@
       "tg_url": "https://t.me/dremin_live/3060",
       "metrics": {
         "likes": 7,
-        "views": 128,
+        "views": 129,
         "replies": 1,
         "reposts": 0,
         "threads": {
@@ -556,7 +556,7 @@
         },
         "twitter": {
           "likes": 6,
-          "views": 109,
+          "views": 110,
           "replies": 1,
           "reposts": 0
         }
@@ -728,7 +728,7 @@
       "tg_url": "https://t.me/dremin_live/3045",
       "metrics": {
         "likes": 15,
-        "views": 281,
+        "views": 282,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -739,7 +739,7 @@
         },
         "twitter": {
           "likes": 7,
-          "views": 119,
+          "views": 120,
           "replies": 2,
           "reposts": 0
         }
@@ -843,7 +843,7 @@
       "tg_url": "https://t.me/dremin_live/3029",
       "metrics": {
         "likes": 32,
-        "views": 427,
+        "views": 428,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -854,7 +854,7 @@
         },
         "twitter": {
           "likes": 8,
-          "views": 140,
+          "views": 141,
           "replies": 2,
           "reposts": 0
         }
