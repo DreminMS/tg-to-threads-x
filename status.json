@@ -1,13 +1,13 @@
 {
-  "updated_at": "2026-11-11T19:31:46.696784+00:00",
-  "updated_at_msk": "22:31 МСК",
+  "updated_at": "2026-11-11T21:23:50.209219+00:00",
+  "updated_at_msk": "00:23 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
-    "iso": "2026-11-11T23:00:00+03:00",
-    "time_msk": "23:00 МСК",
-    "full_label": "Сегодня в 23:00 МСК",
-    "short_label": "~23:00 МСК"
+    "iso": "2026-11-12T10:00:00+03:00",
+    "time_msk": "10:00 МСК",
+    "full_label": "Сегодня в 10:00 МСК",
+    "short_label": "~10:00 МСК"
   },
   "published": 183,
   "pending": 289,
@@ -19,7 +19,7 @@
   "analytics": {
     "start_date": "2026-10-21",
     "total_reactions": 3008,
-    "total_views": 46709,
+    "total_views": 46717,
     "total_growth": 46,
     "threads": {
       "username": "dremin",
@@ -30,7 +30,7 @@
       "likes": 2608,
       "replies": 149,
       "reposts": 22,
-      "views": 25120
+      "views": 25128
     },
     "twitter": {
       "username": "m_dremin",
@@ -47,7 +47,7 @@
       "likes": 2787,
       "replies": 197,
       "reposts": 24,
-      "views": 46709,
+      "views": 46717,
       "published_photos": 724,
       "total_archive_photos": 1940
     }
@@ -64,9 +64,9 @@
     "tags": "#собака #streetphotography #фотография",
     "is_meme": false,
     "tg_url": "https://t.me/dremin_live/3189",
-    "eta_msk": "23:00 МСК",
-    "eta_label": "Сегодня в 23:00 МСК",
-    "eta_iso": "2026-11-11T23:00:00+03:00"
+    "eta_msk": "10:00 МСК",
+    "eta_label": "Сегодня в 10:00 МСК",
+    "eta_iso": "2026-11-12T10:00:00+03:00"
   },
   "upcoming_posts": [
     {
@@ -81,9 +81,9 @@
       "tags": "#собака #streetphotography #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3189",
-      "eta_msk": "23:00 МСК",
-      "eta_label": "Сегодня в 23:00 МСК",
-      "eta_iso": "2026-11-11T23:00:00+03:00"
+      "eta_msk": "10:00 МСК",
+      "eta_label": "Сегодня в 10:00 МСК",
+      "eta_iso": "2026-11-12T10:00:00+03:00"
     },
     {
       "id": 3190,
@@ -97,9 +97,9 @@
       "tags": "#streetphotography #архитектура #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3190",
-      "eta_msk": "10:00 МСК",
-      "eta_label": "Завтра в 10:00 МСК",
-      "eta_iso": "2026-11-12T10:00:00+03:00"
+      "eta_msk": "13:00 МСК",
+      "eta_label": "Сегодня в 13:00 МСК",
+      "eta_iso": "2026-11-12T13:00:00+03:00"
     },
     {
       "id": 3191,
@@ -113,9 +113,9 @@
       "tags": "#ночь #streetphotography #nightphotography #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3191",
-      "eta_msk": "13:00 МСК",
-      "eta_label": "Завтра в 13:00 МСК",
-      "eta_iso": "2026-11-12T13:00:00+03:00"
+      "eta_msk": "17:00 МСК",
+      "eta_label": "Сегодня в 17:00 МСК",
+      "eta_iso": "2026-11-12T17:00:00+03:00"
     },
     {
       "id": 3193,
@@ -129,9 +129,9 @@
       "tags": "#streetphotography #чб #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3193",
-      "eta_msk": "17:00 МСК",
-      "eta_label": "Завтра в 17:00 МСК",
-      "eta_iso": "2026-11-12T17:00:00+03:00"
+      "eta_msk": "20:00 МСК",
+      "eta_label": "Сегодня в 20:00 МСК",
+      "eta_iso": "2026-11-12T20:00:00+03:00"
     },
     {
       "id": 3194,
@@ -145,9 +145,9 @@
       "tags": "#streetphotography #чб #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3194",
-      "eta_msk": "20:00 МСК",
-      "eta_label": "Завтра в 20:00 МСК",
-      "eta_iso": "2026-11-12T20:00:00+03:00"
+      "eta_msk": "23:00 МСК",
+      "eta_label": "Сегодня в 23:00 МСК",
+      "eta_iso": "2026-11-12T23:00:00+03:00"
     },
     {
       "id": 3196,
@@ -163,9 +163,9 @@
       "tags": "#streetphotography #чб #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3196",
-      "eta_msk": "23:00 МСК",
-      "eta_label": "Завтра в 23:00 МСК",
-      "eta_iso": "2026-11-12T23:00:00+03:00"
+      "eta_msk": "10:00 МСК",
+      "eta_label": "Завтра в 10:00 МСК",
+      "eta_iso": "2026-11-13T10:00:00+03:00"
     },
     {
       "id": 3199,
@@ -182,9 +182,9 @@
       "tags": "#streetphotography #чб #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3199",
-      "eta_msk": "10:00 МСК",
-      "eta_label": "13.11 в 10:00 МСК",
-      "eta_iso": "2026-11-13T10:00:00+03:00"
+      "eta_msk": "13:00 МСК",
+      "eta_label": "Завтра в 13:00 МСК",
+      "eta_iso": "2026-11-13T13:00:00+03:00"
     },
     {
       "id": 3204,
@@ -198,9 +198,9 @@
       "tags": "#streetphotography #чб #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3204",
-      "eta_msk": "13:00 МСК",
-      "eta_label": "13.11 в 13:00 МСК",
-      "eta_iso": "2026-11-13T13:00:00+03:00"
+      "eta_msk": "17:00 МСК",
+      "eta_label": "Завтра в 17:00 МСК",
+      "eta_iso": "2026-11-13T17:00:00+03:00"
     },
     {
       "id": 3205,
@@ -216,9 +216,9 @@
       "tags": "#streetphotography #чб #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3205",
-      "eta_msk": "17:00 МСК",
-      "eta_label": "13.11 в 17:00 МСК",
-      "eta_iso": "2026-11-13T17:00:00+03:00"
+      "eta_msk": "20:00 МСК",
+      "eta_label": "Завтра в 20:00 МСК",
+      "eta_iso": "2026-11-13T20:00:00+03:00"
     },
     {
       "id": 3208,
@@ -235,9 +235,9 @@
       "tags": "#streetphotography #чб #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3208",
-      "eta_msk": "20:00 МСК",
-      "eta_label": "13.11 в 20:00 МСК",
-      "eta_iso": "2026-11-13T20:00:00+03:00"
+      "eta_msk": "23:00 МСК",
+      "eta_label": "Завтра в 23:00 МСК",
+      "eta_iso": "2026-11-13T23:00:00+03:00"
     },
     {
       "id": 3212,
@@ -251,9 +251,9 @@
       "tags": "#streetphotography #чб #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3212",
-      "eta_msk": "23:00 МСК",
-      "eta_label": "13.11 в 23:00 МСК",
-      "eta_iso": "2026-11-13T23:00:00+03:00"
+      "eta_msk": "10:00 МСК",
+      "eta_label": "14.11 в 10:00 МСК",
+      "eta_iso": "2026-11-14T10:00:00+03:00"
     },
     {
       "id": 3213,
@@ -268,9 +268,9 @@
       "tags": "#streetphotography #архитектура #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3213",
-      "eta_msk": "10:00 МСК",
-      "eta_label": "14.11 в 10:00 МСК",
-      "eta_iso": "2026-11-14T10:00:00+03:00"
+      "eta_msk": "13:00 МСК",
+      "eta_label": "14.11 в 13:00 МСК",
+      "eta_iso": "2026-11-14T13:00:00+03:00"
     },
     {
       "id": 3215,
@@ -287,9 +287,9 @@
       "tags": "#streetphotography #чб #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3215",
-      "eta_msk": "13:00 МСК",
-      "eta_label": "14.11 в 13:00 МСК",
-      "eta_iso": "2026-11-14T13:00:00+03:00"
+      "eta_msk": "17:00 МСК",
+      "eta_label": "14.11 в 17:00 МСК",
+      "eta_iso": "2026-11-14T17:00:00+03:00"
     },
     {
       "id": 3219,
@@ -303,9 +303,9 @@
       "tags": "#streetphotography #архитектура #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3219",
-      "eta_msk": "17:00 МСК",
-      "eta_label": "14.11 в 17:00 МСК",
-      "eta_iso": "2026-11-14T17:00:00+03:00"
+      "eta_msk": "20:00 МСК",
+      "eta_label": "14.11 в 20:00 МСК",
+      "eta_iso": "2026-11-14T20:00:00+03:00"
     },
     {
       "id": 3220,
@@ -319,9 +319,9 @@
       "tags": "#streetphotography #архитектура #фотография",
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3220",
-      "eta_msk": "20:00 МСК",
-      "eta_label": "14.11 в 20:00 МСК",
-      "eta_iso": "2026-11-14T20:00:00+03:00"
+      "eta_msk": "23:00 МСК",
+      "eta_label": "14.11 в 23:00 МСК",
+      "eta_iso": "2026-11-14T23:00:00+03:00"
     }
   ],
   "recent_posts": [
@@ -347,12 +347,12 @@
       "tg_url": "https://t.me/dremin_live/3185",
       "metrics": {
         "likes": 0,
-        "views": 56,
+        "views": 59,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 0,
-          "views": 56,
+          "views": 59,
           "replies": 0,
           "reposts": 0
         },
@@ -386,12 +386,12 @@
       "tg_url": "https://t.me/dremin_live/3181",
       "metrics": {
         "likes": 6,
-        "views": 139,
+        "views": 142,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 6,
-          "views": 139,
+          "views": 142,
           "replies": 0,
           "reposts": 0
         },
@@ -423,12 +423,12 @@
       "tg_url": "https://t.me/dremin_live/3179",
       "metrics": {
         "likes": 4,
-        "views": 60,
+        "views": 61,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 4,
-          "views": 60,
+          "views": 61,
           "replies": 0,
           "reposts": 0
         },
@@ -462,7 +462,7 @@
       "tg_url": "https://t.me/dremin_live/3174",
       "metrics": {
         "likes": 13,
-        "views": 190,
+        "views": 192,
         "replies": 2,
         "reposts": 1,
         "threads": {
@@ -473,7 +473,7 @@
         },
         "twitter": {
           "likes": 6,
-          "views": 106,
+          "views": 108,
           "replies": 2,
           "reposts": 1
         }
@@ -573,7 +573,7 @@
       "tg_url": "https://t.me/dremin_live/3165",
       "metrics": {
         "likes": 17,
-        "views": 263,
+        "views": 264,
         "replies": 1,
         "reposts": 1,
         "threads": {
@@ -584,7 +584,7 @@
         },
         "twitter": {
           "likes": 9,
-          "views": 121,
+          "views": 122,
           "replies": 1,
           "reposts": 1
         }
@@ -612,7 +612,7 @@
       "tg_url": "https://t.me/dremin_live/3159",
       "metrics": {
         "likes": 10,
-        "views": 252,
+        "views": 253,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -623,7 +623,7 @@
         },
         "twitter": {
           "likes": 6,
-          "views": 112,
+          "views": 113,
           "replies": 2,
           "reposts": 0
         }
@@ -1094,8 +1094,8 @@
       "id": "archive_poster.yml",
       "name": "Archive Poster (5 постов в день)",
       "schedule": "5 раз в день (10:00, 13:00, 17:00, 20:00, 23:00 МСК)",
-      "description": "Следующая публикация: Сегодня в 23:00 МСК",
-      "next_run_msk": "Сегодня в 23:00 МСК"
+      "description": "Следующая публикация: Сегодня в 10:00 МСК",
+      "next_run_msk": "Сегодня в 10:00 МСК"
     },
     {
       "id": "crosspost.yml",
