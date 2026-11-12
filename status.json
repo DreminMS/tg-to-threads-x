@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-12T18:30:47.127436+00:00",
-  "updated_at_msk": "21:30 МСК",
+  "updated_at": "2026-11-12T19:30:17.471558+00:00",
+  "updated_at_msk": "22:30 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -19,7 +19,7 @@
   "analytics": {
     "start_date": "2026-10-21",
     "total_reactions": 3016,
-    "total_views": 46991,
+    "total_views": 47002,
     "total_growth": 45,
     "threads": {
       "username": "dremin",
@@ -30,7 +30,7 @@
       "likes": 2616,
       "replies": 149,
       "reposts": 22,
-      "views": 25402
+      "views": 25413
     },
     "twitter": {
       "username": "m_dremin",
@@ -47,7 +47,7 @@
       "likes": 2795,
       "replies": 197,
       "reposts": 24,
-      "views": 46991,
+      "views": 47002,
       "published_photos": 728,
       "total_archive_photos": 1940
     }
@@ -354,12 +354,12 @@
       "tg_url": "https://t.me/dremin_live/3193",
       "metrics": {
         "likes": 0,
-        "views": 39,
+        "views": 46,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 0,
-          "views": 39,
+          "views": 46,
           "replies": 0,
           "reposts": 0
         },
@@ -727,7 +727,7 @@
       "tg_url": "https://t.me/dremin_live/3165",
       "metrics": {
         "likes": 17,
-        "views": 294,
+        "views": 295,
         "replies": 1,
         "reposts": 1,
         "threads": {
@@ -738,7 +738,7 @@
         },
         "twitter": {
           "likes": 9,
-          "views": 152,
+          "views": 153,
           "replies": 1,
           "reposts": 1
         }
@@ -766,18 +766,18 @@
       "tg_url": "https://t.me/dremin_live/3159",
       "metrics": {
         "likes": 10,
-        "views": 282,
+        "views": 285,
         "replies": 2,
         "reposts": 0,
         "threads": {
           "likes": 4,
-          "views": 141,
+          "views": 143,
           "replies": 0,
           "reposts": 0
         },
         "twitter": {
           "likes": 6,
-          "views": 141,
+          "views": 142,
           "replies": 2,
           "reposts": 0
         }
