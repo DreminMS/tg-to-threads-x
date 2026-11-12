@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-11-12T14:00:02.002489+00:00",
-  "updated_at_msk": "17:00 МСК",
+  "updated_at": "2026-11-12T14:47:54.405633+00:00",
+  "updated_at_msk": "17:47 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
-    "iso": "2026-11-12T17:00:00+03:00",
-    "time_msk": "17:00 МСК",
-    "full_label": "Сегодня в 17:00 МСК",
-    "short_label": "~17:00 МСК"
+    "iso": "2026-11-12T20:00:00+03:00",
+    "time_msk": "20:00 МСК",
+    "full_label": "Сегодня в 20:00 МСК",
+    "short_label": "~20:00 МСК"
   },
-  "published": 185,
-  "pending": 287,
+  "published": 186,
+  "pending": 286,
   "failed": 7,
   "skipped": 51,
   "total": 530,
-  "percent": 34.9,
-  "days_left": 57.4,
+  "percent": 35.1,
+  "days_left": 57.2,
   "analytics": {
     "start_date": "2026-10-21",
     "total_reactions": 3011,
-    "total_views": 46837,
+    "total_views": 46838,
     "total_growth": 45,
     "threads": {
       "username": "dremin",
@@ -30,7 +30,7 @@
       "likes": 2611,
       "replies": 149,
       "reposts": 22,
-      "views": 25248
+      "views": 25249
     },
     "twitter": {
       "username": "m_dremin",
@@ -47,44 +47,28 @@
       "likes": 2790,
       "replies": 197,
       "reposts": 24,
-      "views": 46837,
-      "published_photos": 726,
+      "views": 46838,
+      "published_photos": 727,
       "total_archive_photos": 1940
     }
   },
   "next_post": {
-    "id": 3191,
-    "date": "19.06.2023",
-    "date_msk": "19.06.2023 17:25 МСК",
+    "id": 3193,
+    "date": "05.07.2023",
+    "date_msk": "05.07.2023 12:01 МСК",
     "photos_count": 1,
     "photos": [
-      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/3191_0.jpg"
+      "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/3193_0.jpg"
     ],
     "text": "",
-    "tags": "#ночь #streetphotography #nightphotography #фотография",
+    "tags": "#streetphotography #чб #фотография",
     "is_meme": false,
-    "tg_url": "https://t.me/dremin_live/3191",
-    "eta_msk": "17:00 МСК",
-    "eta_label": "Сегодня в 17:00 МСК",
-    "eta_iso": "2026-11-12T17:00:00+03:00"
+    "tg_url": "https://t.me/dremin_live/3193",
+    "eta_msk": "20:00 МСК",
+    "eta_label": "Сегодня в 20:00 МСК",
+    "eta_iso": "2026-11-12T20:00:00+03:00"
   },
   "upcoming_posts": [
-    {
-      "id": 3191,
-      "date": "19.06.2023",
-      "date_msk": "19.06.2023 17:25 МСК",
-      "photos_count": 1,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/3191_0.jpg"
-      ],
-      "text": "",
-      "tags": "#ночь #streetphotography #nightphotography #фотография",
-      "is_meme": false,
-      "tg_url": "https://t.me/dremin_live/3191",
-      "eta_msk": "17:00 МСК",
-      "eta_label": "Сегодня в 17:00 МСК",
-      "eta_iso": "2026-11-12T17:00:00+03:00"
-    },
     {
       "id": 3193,
       "date": "05.07.2023",
@@ -327,9 +311,64 @@
       "eta_msk": "13:00 МСК",
       "eta_label": "15.11 в 13:00 МСК",
       "eta_iso": "2026-11-15T13:00:00+03:00"
+    },
+    {
+      "id": 3229,
+      "date": "02.09.2023",
+      "date_msk": "02.09.2023 18:48 МСК",
+      "photos_count": 5,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/3229_0.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/3229_1.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/3229_2.jpg",
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/3229_3.jpg"
+      ],
+      "text": "",
+      "tags": "#streetphotography #архитектура #фотография",
+      "is_meme": false,
+      "tg_url": "https://t.me/dremin_live/3229",
+      "eta_msk": "17:00 МСК",
+      "eta_label": "15.11 в 17:00 МСК",
+      "eta_iso": "2026-11-15T17:00:00+03:00"
     }
   ],
   "recent_posts": [
+    {
+      "post_id": 3191,
+      "threads_id": "18172167640481854",
+      "twitter_id": "2120891197262836143",
+      "published_at": "2026-11-12 14:47:23",
+      "published_at_msk": "12.11.2026 17:47 МСК",
+      "date": "19.06.2023",
+      "date_msk": "19.06.2023 17:25 МСК",
+      "photos_count": 1,
+      "photos": [
+        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/3191_0.jpg"
+      ],
+      "text": "",
+      "tags": "#ночь #streetphotography #nightphotography #фотография",
+      "threads_url": "https://www.threads.com/@dremin/post/DfpTeaDEaLp",
+      "twitter_url": "https://x.com/m_dremin/status/2120891197262836143",
+      "tg_url": "https://t.me/dremin_live/3191",
+      "metrics": {
+        "likes": 0,
+        "views": 0,
+        "replies": 0,
+        "reposts": 0,
+        "threads": {
+          "likes": 0,
+          "views": 0,
+          "replies": 0,
+          "reposts": 0
+        },
+        "twitter": {
+          "likes": 0,
+          "views": 0,
+          "replies": 0,
+          "reposts": 0
+        }
+      }
+    },
     {
       "post_id": 3190,
       "threads_id": "17991965127070208",
@@ -349,12 +388,12 @@
       "tg_url": "https://t.me/dremin_live/3190",
       "metrics": {
         "likes": 1,
-        "views": 100,
+        "views": 101,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 1,
-          "views": 100,
+          "views": 101,
           "replies": 0,
           "reposts": 0
         },
@@ -539,7 +578,7 @@
       "tg_url": "https://t.me/dremin_live/3174",
       "metrics": {
         "likes": 13,
-        "views": 222,
+        "views": 223,
         "replies": 2,
         "reposts": 1,
         "threads": {
@@ -550,7 +589,7 @@
         },
         "twitter": {
           "likes": 6,
-          "views": 138,
+          "views": 139,
           "replies": 2,
           "reposts": 1
         }
@@ -650,7 +689,7 @@
       "tg_url": "https://t.me/dremin_live/3165",
       "metrics": {
         "likes": 17,
-        "views": 286,
+        "views": 287,
         "replies": 1,
         "reposts": 1,
         "threads": {
@@ -661,7 +700,7 @@
         },
         "twitter": {
           "likes": 9,
-          "views": 144,
+          "views": 145,
           "replies": 1,
           "reposts": 1
         }
@@ -689,7 +728,7 @@
       "tg_url": "https://t.me/dremin_live/3159",
       "metrics": {
         "likes": 10,
-        "views": 275,
+        "views": 276,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -700,7 +739,7 @@
         },
         "twitter": {
           "likes": 6,
-          "views": 134,
+          "views": 135,
           "replies": 2,
           "reposts": 0
         }
@@ -843,42 +882,6 @@
         "threads": {
           "likes": 0,
           "views": 27,
-          "replies": 0,
-          "reposts": 0
-        },
-        "twitter": {
-          "likes": 0,
-          "views": 0,
-          "replies": 0,
-          "reposts": 0
-        }
-      }
-    },
-    {
-      "post_id": 3150,
-      "threads_id": "18438060472198863",
-      "twitter_id": "2119705622128071044",
-      "published_at": "2026-11-09 08:16:18",
-      "published_at_msk": "09.11.2026 11:16 МСК",
-      "date": "18.04.2023",
-      "date_msk": "18.04.2023 03:14 МСК",
-      "photos_count": 1,
-      "photos": [
-        "https://dreminms.github.io/tg-to-threads-x/docs/media/archive/3150_0.jpg"
-      ],
-      "text": "",
-      "tags": "#пейзаж #landscape #лето #фотография",
-      "threads_url": "https://www.threads.com/@dremin/post/Dfg4WB0FY_5",
-      "twitter_url": "https://x.com/m_dremin/status/2119705622128071044",
-      "tg_url": "https://t.me/dremin_live/3150",
-      "metrics": {
-        "likes": 2,
-        "views": 119,
-        "replies": 0,
-        "reposts": 0,
-        "threads": {
-          "likes": 2,
-          "views": 119,
           "replies": 0,
           "reposts": 0
         },
@@ -1098,8 +1101,8 @@
       "id": "archive_poster.yml",
       "name": "Archive Poster (5 постов в день)",
       "schedule": "5 раз в день (10:00, 13:00, 17:00, 20:00, 23:00 МСК)",
-      "description": "Следующая публикация: Сегодня в 17:00 МСК",
-      "next_run_msk": "Сегодня в 17:00 МСК"
+      "description": "Следующая публикация: Сегодня в 20:00 МСК",
+      "next_run_msk": "Сегодня в 20:00 МСК"
     },
     {
       "id": "crosspost.yml",
