@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-14T02:33:14.698540+00:00",
-  "updated_at_msk": "05:33 МСК",
+  "updated_at": "2026-11-14T03:28:47.335071+00:00",
+  "updated_at_msk": "06:28 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -19,7 +19,7 @@
   "analytics": {
     "start_date": "2026-10-21",
     "total_reactions": 3046,
-    "total_views": 47611,
+    "total_views": 47612,
     "total_growth": 46,
     "threads": {
       "username": "dremin",
@@ -30,7 +30,7 @@
       "likes": 2644,
       "replies": 149,
       "reposts": 22,
-      "views": 26022
+      "views": 26023
     },
     "twitter": {
       "username": "m_dremin",
@@ -47,7 +47,7 @@
       "likes": 2825,
       "replies": 197,
       "reposts": 24,
-      "views": 47611,
+      "views": 47612,
       "published_photos": 745,
       "total_archive_photos": 1940
     }
@@ -357,12 +357,12 @@
       "tg_url": "https://t.me/dremin_live/3208",
       "metrics": {
         "likes": 1,
-        "views": 121,
+        "views": 122,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 1,
-          "views": 121,
+          "views": 122,
           "replies": 0,
           "reposts": 0
         },
@@ -470,7 +470,7 @@
       "tg_url": "https://t.me/dremin_live/3199",
       "metrics": {
         "likes": 5,
-        "views": 166,
+        "views": 169,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -481,7 +481,7 @@
         },
         "twitter": {
           "likes": 2,
-          "views": 69,
+          "views": 72,
           "replies": 2,
           "reposts": 0
         }
@@ -842,7 +842,7 @@
       "tg_url": "https://t.me/dremin_live/3174",
       "metrics": {
         "likes": 13,
-        "views": 267,
+        "views": 268,
         "replies": 2,
         "reposts": 1,
         "threads": {
@@ -853,7 +853,7 @@
         },
         "twitter": {
           "likes": 6,
-          "views": 183,
+          "views": 184,
           "replies": 2,
           "reposts": 1
         }
