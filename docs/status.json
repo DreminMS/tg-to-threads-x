@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-14T14:35:04.956277+00:00",
-  "updated_at_msk": "17:35 МСК",
+  "updated_at": "2026-11-14T14:58:21.001933+00:00",
+  "updated_at_msk": "17:58 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -18,8 +18,8 @@
   "days_left": 55.2,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 3060,
-    "total_views": 47743,
+    "total_reactions": 3065,
+    "total_views": 47753,
     "total_growth": 46,
     "threads": {
       "username": "dremin",
@@ -27,10 +27,10 @@
       "followers": 1282,
       "baseline": 1235,
       "growth": 47,
-      "likes": 2657,
-      "replies": 149,
+      "likes": 2661,
+      "replies": 150,
       "reposts": 22,
-      "views": 26154
+      "views": 26164
     },
     "twitter": {
       "username": "m_dremin",
@@ -44,10 +44,10 @@
       "views": 21589
     },
     "totals": {
-      "likes": 2839,
-      "replies": 197,
+      "likes": 2843,
+      "replies": 198,
       "reposts": 24,
-      "views": 47743,
+      "views": 47753,
       "published_photos": 752,
       "total_archive_photos": 1940
     }
@@ -358,14 +358,14 @@
       "twitter_url": "https://x.com/m_dremin/status/2121612724375560326",
       "tg_url": "https://t.me/dremin_live/3215",
       "metrics": {
-        "likes": 0,
-        "views": 0,
-        "replies": 0,
+        "likes": 4,
+        "views": 8,
+        "replies": 1,
         "reposts": 0,
         "threads": {
-          "likes": 0,
-          "views": 0,
-          "replies": 0,
+          "likes": 4,
+          "views": 8,
+          "replies": 1,
           "reposts": 0
         },
         "twitter": {
@@ -545,12 +545,12 @@
       "tg_url": "https://t.me/dremin_live/3204",
       "metrics": {
         "likes": 10,
-        "views": 153,
+        "views": 154,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 10,
-          "views": 153,
+          "views": 154,
           "replies": 0,
           "reposts": 0
         },
@@ -584,7 +584,7 @@
       "tg_url": "https://t.me/dremin_live/3199",
       "metrics": {
         "likes": 6,
-        "views": 195,
+        "views": 196,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -595,7 +595,7 @@
         },
         "twitter": {
           "likes": 3,
-          "views": 97,
+          "views": 98,
           "replies": 2,
           "reposts": 0
         }
@@ -900,6 +900,16 @@
   ],
   "recent_comments": [
     {
+      "reply_id": "17880360900567735",
+      "platform": "threads",
+      "post_id": 3215,
+      "username": "mohamoudroda",
+      "text": "where is it? usa?",
+      "permalink": "https://www.threads.com/@mohamoudroda/post/DfucOIWDZwz",
+      "action_taken": "indexed",
+      "created_at_msk": "14.11.2026 17:39 МСК"
+    },
+    {
       "reply_id": "17950013007069016",
       "platform": "threads",
       "post_id": 3173,
@@ -1088,16 +1098,6 @@
       "permalink": "https://www.threads.com/@cheezzphoto/post/DfKx1ukkV7P",
       "action_taken": "indexed",
       "created_at_msk": "31.10.2026 21:15 МСК"
-    },
-    {
-      "reply_id": "17919921411460719",
-      "platform": "threads",
-      "post_id": 2754,
-      "username": "kate__smile.p",
-      "text": "Прям захотелось самой попробовать 😁",
-      "permalink": "https://www.threads.com/@kate__smile.p/post/DfKu7rnDJv1",
-      "action_taken": "indexed",
-      "created_at_msk": "31.10.2026 20:50 МСК"
     }
   ],
   "workflows": [
