@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-15T02:38:14.684510+00:00",
-  "updated_at_msk": "05:38 МСК",
+  "updated_at": "2026-11-15T03:29:40.394647+00:00",
+  "updated_at_msk": "06:29 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -658,7 +658,7 @@
       "tg_url": "https://t.me/dremin_live/3199",
       "metrics": {
         "likes": 6,
-        "views": 218,
+        "views": 219,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -669,7 +669,7 @@
         },
         "twitter": {
           "likes": 3,
-          "views": 119,
+          "views": 120,
           "replies": 2,
           "reposts": 0
         }
