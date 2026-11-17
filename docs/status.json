@@ -1,12 +1,12 @@
 {
-  "updated_at": "2026-11-17T20:44:50.675209+00:00",
-  "updated_at_msk": "23:44 МСК",
+  "updated_at": "2026-11-17T21:29:24.447406+00:00",
+  "updated_at_msk": "00:29 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
     "iso": "2026-11-18T10:00:00+03:00",
     "time_msk": "10:00 МСК",
-    "full_label": "Завтра в 10:00 МСК",
+    "full_label": "Сегодня в 10:00 МСК",
     "short_label": "~10:00 МСК"
   },
   "published": 213,
@@ -18,8 +18,8 @@
   "days_left": 51.8,
   "analytics": {
     "start_date": "2026-10-21",
-    "total_reactions": 3196,
-    "total_views": 49688,
+    "total_reactions": 3197,
+    "total_views": 49693,
     "total_growth": 49,
     "threads": {
       "username": "dremin",
@@ -27,10 +27,10 @@
       "followers": 1286,
       "baseline": 1235,
       "growth": 51,
-      "likes": 2788,
+      "likes": 2789,
       "replies": 153,
       "reposts": 22,
-      "views": 28099
+      "views": 28104
     },
     "twitter": {
       "username": "m_dremin",
@@ -44,10 +44,10 @@
       "views": 21589
     },
     "totals": {
-      "likes": 2970,
+      "likes": 2971,
       "replies": 201,
       "reposts": 25,
-      "views": 49688,
+      "views": 49693,
       "published_photos": 810,
       "total_archive_photos": 1940
     }
@@ -68,7 +68,7 @@
     "is_meme": false,
     "tg_url": "https://t.me/dremin_live/3281",
     "eta_msk": "10:00 МСК",
-    "eta_label": "Завтра в 10:00 МСК",
+    "eta_label": "Сегодня в 10:00 МСК",
     "eta_iso": "2026-11-18T10:00:00+03:00"
   },
   "upcoming_posts": [
@@ -88,7 +88,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3281",
       "eta_msk": "10:00 МСК",
-      "eta_label": "Завтра в 10:00 МСК",
+      "eta_label": "Сегодня в 10:00 МСК",
       "eta_iso": "2026-11-18T10:00:00+03:00"
     },
     {
@@ -104,7 +104,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3291",
       "eta_msk": "13:00 МСК",
-      "eta_label": "Завтра в 13:00 МСК",
+      "eta_label": "Сегодня в 13:00 МСК",
       "eta_iso": "2026-11-18T13:00:00+03:00"
     },
     {
@@ -120,7 +120,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3292",
       "eta_msk": "17:00 МСК",
-      "eta_label": "Завтра в 17:00 МСК",
+      "eta_label": "Сегодня в 17:00 МСК",
       "eta_iso": "2026-11-18T17:00:00+03:00"
     },
     {
@@ -136,7 +136,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3293",
       "eta_msk": "20:00 МСК",
-      "eta_label": "Завтра в 20:00 МСК",
+      "eta_label": "Сегодня в 20:00 МСК",
       "eta_iso": "2026-11-18T20:00:00+03:00"
     },
     {
@@ -155,7 +155,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3294",
       "eta_msk": "23:00 МСК",
-      "eta_label": "Завтра в 23:00 МСК",
+      "eta_label": "Сегодня в 23:00 МСК",
       "eta_iso": "2026-11-18T23:00:00+03:00"
     },
     {
@@ -173,7 +173,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3300",
       "eta_msk": "10:00 МСК",
-      "eta_label": "19.11 в 10:00 МСК",
+      "eta_label": "Завтра в 10:00 МСК",
       "eta_iso": "2026-11-19T10:00:00+03:00"
     },
     {
@@ -192,7 +192,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3303",
       "eta_msk": "13:00 МСК",
-      "eta_label": "19.11 в 13:00 МСК",
+      "eta_label": "Завтра в 13:00 МСК",
       "eta_iso": "2026-11-19T13:00:00+03:00"
     },
     {
@@ -211,7 +211,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3313",
       "eta_msk": "17:00 МСК",
-      "eta_label": "19.11 в 17:00 МСК",
+      "eta_label": "Завтра в 17:00 МСК",
       "eta_iso": "2026-11-19T17:00:00+03:00"
     },
     {
@@ -229,7 +229,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3323",
       "eta_msk": "20:00 МСК",
-      "eta_label": "19.11 в 20:00 МСК",
+      "eta_label": "Завтра в 20:00 МСК",
       "eta_iso": "2026-11-19T20:00:00+03:00"
     },
     {
@@ -247,7 +247,7 @@
       "is_meme": false,
       "tg_url": "https://t.me/dremin_live/3326",
       "eta_msk": "23:00 МСК",
-      "eta_label": "19.11 в 23:00 МСК",
+      "eta_label": "Завтра в 23:00 МСК",
       "eta_iso": "2026-11-19T23:00:00+03:00"
     },
     {
@@ -361,12 +361,12 @@
       "tg_url": "https://t.me/dremin_live/3279",
       "metrics": {
         "likes": 0,
-        "views": 0,
+        "views": 3,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 0,
-          "views": 0,
+          "views": 3,
           "replies": 0,
           "reposts": 0
         },
@@ -435,19 +435,19 @@
       "twitter_url": "https://x.com/m_dremin/status/2122703659188510881",
       "tg_url": "https://t.me/dremin_live/3268",
       "metrics": {
-        "likes": 10,
-        "views": 147,
+        "likes": 11,
+        "views": 149,
         "replies": 1,
         "reposts": 0,
         "threads": {
-          "likes": 7,
+          "likes": 8,
           "views": 92,
           "replies": 0,
           "reposts": 0
         },
         "twitter": {
           "likes": 3,
-          "views": 55,
+          "views": 57,
           "replies": 1,
           "reposts": 0
         }
@@ -472,12 +472,12 @@
       "tg_url": "https://t.me/dremin_live/3267",
       "metrics": {
         "likes": 9,
-        "views": 145,
+        "views": 146,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 9,
-          "views": 145,
+          "views": 146,
           "replies": 0,
           "reposts": 0
         },
@@ -511,7 +511,7 @@
       "tg_url": "https://t.me/dremin_live/3259",
       "metrics": {
         "likes": 2,
-        "views": 77,
+        "views": 78,
         "replies": 1,
         "reposts": 0,
         "threads": {
@@ -522,7 +522,7 @@
         },
         "twitter": {
           "likes": 1,
-          "views": 40,
+          "views": 41,
           "replies": 1,
           "reposts": 0
         }
@@ -663,7 +663,7 @@
       "tg_url": "https://t.me/dremin_live/3242",
       "metrics": {
         "likes": 11,
-        "views": 237,
+        "views": 239,
         "replies": 3,
         "reposts": 0,
         "threads": {
@@ -674,7 +674,7 @@
         },
         "twitter": {
           "likes": 3,
-          "views": 82,
+          "views": 84,
           "replies": 2,
           "reposts": 0
         }
@@ -701,12 +701,12 @@
       "tg_url": "https://t.me/dremin_live/3239",
       "metrics": {
         "likes": 8,
-        "views": 132,
+        "views": 133,
         "replies": 0,
         "reposts": 0,
         "threads": {
           "likes": 8,
-          "views": 132,
+          "views": 133,
           "replies": 0,
           "reposts": 0
         },
@@ -814,7 +814,7 @@
       "tg_url": "https://t.me/dremin_live/3229",
       "metrics": {
         "likes": 21,
-        "views": 321,
+        "views": 322,
         "replies": 1,
         "reposts": 0,
         "threads": {
@@ -825,7 +825,7 @@
         },
         "twitter": {
           "likes": 5,
-          "views": 151,
+          "views": 152,
           "replies": 1,
           "reposts": 0
         }
@@ -1116,8 +1116,8 @@
       "id": "archive_poster.yml",
       "name": "Archive Poster (5 постов в день)",
       "schedule": "5 раз в день (10:00, 13:00, 17:00, 20:00, 23:00 МСК)",
-      "description": "Следующая публикация: Завтра в 10:00 МСК",
-      "next_run_msk": "Завтра в 10:00 МСК"
+      "description": "Следующая публикация: Сегодня в 10:00 МСК",
+      "next_run_msk": "Сегодня в 10:00 МСК"
     },
     {
       "id": "crosspost.yml",
