@@ -1710,7 +1710,7 @@
         if (data.upcoming_posts && data.upcoming_posts.length > 0) {
           const nextPubText = data.next_publication ? ` • След: ${data.next_publication.short_label}` : '';
           const upCountEl = document.getElementById('upcomingCount');
-          if (upCountEl) upCountEl.innerText = `${data.upcoming_posts.length} в очереди${nextPubText}`;
+          if (upCountEl) upCountEl.innerText = `${data.pending ?? data.upcoming_posts.length} в очереди${nextPubText}`;
           
           const upcomingHtml = data.upcoming_posts.map(post => {
             const photosHtml = (post.photos || []).map(url => `
