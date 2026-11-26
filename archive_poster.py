@@ -377,7 +377,7 @@ def check_remote_recent_publication(config: Dict[str, Any], min_minutes: int = 4
     return False
 
 
-def format_archive_caption(tags: Optional[str], raw_text: Optional[str] = None, post_id: int = 0) -> str:
+def format_archive_caption(tags: Optional[str], raw_text: Optional[str] = None, post_id: int = 0, post_date: Optional[str] = None) -> str:
     """
     Returns purely the relevant topic hashtags for the post (NO body text/descriptions).
     """
@@ -386,7 +386,7 @@ def format_archive_caption(tags: Optional[str], raw_text: Optional[str] = None, 
 
     try:
         from tag_posts import analyze_image_tags
-        return analyze_image_tags(post_id, raw_text or "")
+        return analyze_image_tags(post_id, raw_text or "", post_date or "")
     except Exception:
         return "#streetphotography #фотография"
 
@@ -438,7 +438,7 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
 
     post_id, post_date, photos_json, tags, raw_text = row
     photos = json.loads(photos_json)
-    caption = format_archive_caption(tags, raw_text, post_id)
+    caption = format_archive_caption(tags, raw_text, post_id, post_date)
 
     # 3. Atomically claim the post so no concurrent runner can pick it up
     with conn:
