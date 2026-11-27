@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-27T02:38:51.483627+00:00",
-  "updated_at_msk": "05:38 МСК",
+  "updated_at": "2026-11-27T04:58:44.140066+00:00",
+  "updated_at_msk": "07:58 МСК",
   "timezone": "Europe/Moscow (МСК, UTC+3)",
   "is_paused": false,
   "next_publication": {
@@ -351,8 +351,8 @@
       "twitter_url": "https://x.com/m_dremin/status/2126005745560818045",
       "tg_url": "https://t.me/dremin_live/3352",
       "metrics": {
-        "likes": 0,
-        "views": 42,
+        "likes": 2,
+        "views": 46,
         "replies": 1,
         "reposts": 0,
         "threads": {
@@ -362,8 +362,8 @@
           "reposts": 0
         },
         "twitter": {
-          "likes": 0,
-          "views": 25,
+          "likes": 2,
+          "views": 29,
           "replies": 1,
           "reposts": 0
         }
@@ -464,7 +464,7 @@
       "tg_url": "https://t.me/dremin_live/3339",
       "metrics": {
         "likes": 5,
-        "views": 114,
+        "views": 115,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -475,7 +475,7 @@
         },
         "twitter": {
           "likes": 1,
-          "views": 58,
+          "views": 59,
           "replies": 2,
           "reposts": 0
         }
@@ -618,7 +618,7 @@
       "tg_url": "https://t.me/dremin_live/3313",
       "metrics": {
         "likes": 7,
-        "views": 255,
+        "views": 256,
         "replies": 1,
         "reposts": 0,
         "threads": {
@@ -629,7 +629,7 @@
         },
         "twitter": {
           "likes": 2,
-          "views": 145,
+          "views": 146,
           "replies": 1,
           "reposts": 0
         }
@@ -657,7 +657,7 @@
       "tg_url": "https://t.me/dremin_live/3303",
       "metrics": {
         "likes": 10,
-        "views": 213,
+        "views": 214,
         "replies": 2,
         "reposts": 0,
         "threads": {
@@ -668,7 +668,7 @@
         },
         "twitter": {
           "likes": 4,
-          "views": 93,
+          "views": 94,
           "replies": 2,
           "reposts": 0
         }
