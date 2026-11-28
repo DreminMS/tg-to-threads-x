@@ -391,7 +391,7 @@ def format_archive_caption(tags: Optional[str], raw_text: Optional[str] = None, 
         return "#streetphotography #фотография"
 
 
-def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
+def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False, skip_remote_guard: bool = False) -> Optional[int]:
     """
     Fetches the oldest pending post and publishes it to Threads and Twitter with topic hashtags only.
     Starts posting strictly from 07:00 AM MSK onwards.
@@ -403,7 +403,7 @@ def publish_next_archive_post(config: Dict[str, Any], dry_run: bool = False) -> 
         return None
 
     # Check remote duplicate guard to prevent double-posting
-    if check_remote_recent_publication(config, min_minutes=40):
+    if not skip_remote_guard and check_remote_recent_publication(config, min_minutes=40):
         logger.info("Remote duplicate guard: a post was published < 40m ago. Aborting publication.")
         return None
 
@@ -710,17 +710,46 @@ def delete_archive_post(post_id: int, config: Optional[Dict[str, Any]] = None) -
 
 
 
+POSTS_PER_DAY = 5
+MAX_CATCHUP_PER_RUN = 5
+
+
+def _catchup_slots(last_pub: Optional[str], now) -> int:
+    """
+    How many posts should already be out by `now` given the 5-per-day cadence.
+
+    GitHub cron is best-effort: scheduled runs get dropped under load, so a run
+    that finally fires has to make up the missed slots instead of posting once.
+    """
+    from datetime import datetime, timezone
+
+    if not last_pub:
+        return 1
+    try:
+        dt = datetime.fromisoformat(last_pub)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        hours = (now - dt).total_seconds() / 3600.0
+    except Exception as e:
+        logger.warning(f"Could not parse last_pub '{last_pub}': {e}")
+        return 1
+    due = int(hours / (24.0 / POSTS_PER_DAY) + 0.5)
+    return max(1, min(MAX_CATCHUP_PER_RUN, due))
+
+
 def publish_hourly(config: Dict[str, Any], dry_run: bool = False) -> Optional[int]:
     """
     Checks if posting is paused, and if at least 45 minutes have elapsed since last post.
-    If so, publishes the next archive post.
+    If so, publishes every archive post that is due (5/day cadence, catch-up after
+    dropped scheduled runs).
     """
     conn = init_db()
     if is_posting_paused(conn):
         logger.info("⏸️ Posting is currently PAUSED by user. Skipping archive publication.")
         return None
 
-    from datetime import datetime, timezone, timedelta
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
     cur = conn.cursor()
     cur.execute("SELECT max(published_at) FROM archive_posts WHERE status = 'published'")
     row = cur.fetchone()
@@ -730,7 +759,6 @@ def publish_hourly(config: Dict[str, Any], dry_run: bool = False) -> Optional[in
             dt = datetime.fromisoformat(last_pub)
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
-            now = datetime.now(timezone.utc)
             diff_mins = (now - dt).total_seconds() / 60
             if diff_mins < 45:
                 logger.info(f"Last archive post was published {diff_mins:.1f}m ago (<45m). Waiting for next slot.")
@@ -738,8 +766,23 @@ def publish_hourly(config: Dict[str, Any], dry_run: bool = False) -> Optional[in
         except Exception as e:
             logger.warning(f"Could not parse last_pub '{last_pub}': {e}")
 
-    logger.info("Scheduled archive slot available! Proceeding with publication...")
-    return publish_next_archive_post(config, dry_run=dry_run)
+    slots = _catchup_slots(last_pub, now)
+    if slots > 1:
+        logger.info(f"⏩ Catch-up: {slots} posts are due (last publication {last_pub}).")
+
+    published = 0
+    for attempt in range(slots):
+        # Only the first post of the run needs the remote duplicate guard: the
+        # following ones would always see the post we just published.
+        post_id = publish_next_archive_post(config, dry_run=dry_run, skip_remote_guard=attempt > 0)
+        if post_id is None:
+            break
+        published += 1
+
+    if published:
+        logger.info(f"✅ Published {published} archive post(s) this run.")
+        return published
+    return None
 
 
 def main():
