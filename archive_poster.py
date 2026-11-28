@@ -711,7 +711,7 @@ def delete_archive_post(post_id: int, config: Optional[Dict[str, Any]] = None) -
 
 
 POSTS_PER_DAY = 5
-MAX_CATCHUP_PER_RUN = 2
+MAX_CATCHUP_PER_RUN = 5
 
 
 def _catchup_slots(last_pub: Optional[str], now) -> int:
